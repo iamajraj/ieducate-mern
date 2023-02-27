@@ -11,7 +11,7 @@ const Header = () => {
         },
     ];
     return (
-        <div className="min-h-[70px] px-10 flex items-center justify-between shadow-md shadow-gray-200 z-50 w-full">
+        <div className="min-h-[70px] px-10 flex items-center justify-between c-shadow shadow-gray-200 z-50 w-full">
             <h1 className="capitalize text-[15px]">Welcome Admin !</h1>
             <div className="flex gap-4 items-center cursor-pointer relative">
                 <div className="">
