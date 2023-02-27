@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
+import AdminRegister from "../pages/admin/AdminRegister";
 import Admins from "../pages/admin/Admins";
 
 const router = createBrowserRouter([
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "register",
-                        element: <div>register new admin</div>,
+                        element: <AdminRegister />,
                     },
                 ],
             },

@@ -4,17 +4,6 @@ import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
-const data = Array(50)
-    .fill(0)
-    .map((v, i) => {
-        return {
-            key: i,
-            name: "Akmal Raj",
-            email: `akmalraj${i}@gmail.com`,
-            username: `raj${i}`,
-        };
-    });
-
 const Admins = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -35,6 +24,17 @@ const Admins = () => {
 };
 
 export default Admins;
+
+const data = Array(50)
+    .fill(0)
+    .map((v, i) => {
+        return {
+            key: i,
+            name: "Akmal Raj",
+            email: `akmalraj${i}@gmail.com`,
+            username: `raj${i}`,
+        };
+    });
 
 const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
     const [searchText, setSearchText] = useState("");
