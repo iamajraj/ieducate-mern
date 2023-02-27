@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import CustomButton from "../../components/CustomButton";
 
-const Admins = () => {
+const Teachers = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
     return (
@@ -13,19 +13,19 @@ const Admins = () => {
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-[24px]">Admins</h1>
+                        <h1 className="text-[24px]">Teachers</h1>
                         <p className="text-[13px]">
-                            View all the admins that you have added.
+                            View all the teachers that you have added.
                         </p>
                     </div>
                     <CustomButton
-                        text="Add Admin"
+                        text="Add Teacher"
                         className="py-4"
                         textClass="text-[15px]"
                     />
                 </div>
                 <div className="mt-10 border">
-                    <AdminTable
+                    <TeachersTable
                         selectedRowKeys={selectedRowKeys}
                         setSelectedRowKeys={setSelectedRowKeys}
                     />
@@ -35,7 +35,7 @@ const Admins = () => {
     );
 };
 
-export default Admins;
+export default Teachers;
 
 const data = Array(50)
     .fill(0)
@@ -48,7 +48,7 @@ const data = Array(50)
         };
     });
 
-const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
+const TeachersTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);

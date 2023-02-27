@@ -1,7 +1,12 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
-import AdminRegister from "../pages/admin/AdminRegister";
+import AddAdmin from "../pages/admin/AddAdmin";
+import AddStudent from "../pages/admin/AddStudent";
+import AddTeacher from "../pages/admin/AddTeacher";
 import Admins from "../pages/admin/Admins";
+import FeesBilling from "../pages/admin/FeesBilling";
+import Students from "../pages/admin/Students";
+import Teachers from "../pages/admin/Teachers";
 
 const router = createBrowserRouter([
     // admin route
@@ -22,7 +27,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "register",
-                        element: <AdminRegister />,
+                        element: <AddAdmin />,
                     },
                 ],
             },
@@ -31,11 +36,11 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <div>teachers</div>,
+                        element: <Teachers />,
                     },
                     {
                         path: "register",
-                        element: <div>register new teacher</div>,
+                        element: <AddTeacher />,
                     },
                 ],
             },
@@ -44,17 +49,17 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <div>students</div>,
+                        element: <Students />,
                     },
                     {
                         path: "register",
-                        element: <div>register new students</div>,
+                        element: <AddStudent />,
                     },
                 ],
             },
             {
                 path: "fees-billings",
-                element: <div>Fees and billings</div>,
+                element: <FeesBilling />,
             },
             {
                 path: "teachers-attendance",

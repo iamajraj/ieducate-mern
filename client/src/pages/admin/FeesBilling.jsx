@@ -1,41 +1,29 @@
+import React from "react";
 import Container from "../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import CustomButton from "../../components/CustomButton";
 
-const Admins = () => {
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
+const FeesBilling = () => {
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-[24px]">Admins</h1>
-                        <p className="text-[13px]">
-                            View all the admins that you have added.
-                        </p>
-                    </div>
-                    <CustomButton
-                        text="Add Admin"
-                        className="py-4"
-                        textClass="text-[15px]"
-                    />
+                <div className="border-b pb-5">
+                    <h1 className="text-[24px]">Fees / Billing</h1>
+                    <p className="text-[13px]">
+                        View all the fees and billing.
+                    </p>
                 </div>
-                <div className="mt-10 border">
-                    <AdminTable
-                        selectedRowKeys={selectedRowKeys}
-                        setSelectedRowKeys={setSelectedRowKeys}
-                    />
+                <div className="mt-7">
+                    <FeesTable />
                 </div>
             </div>
         </Container>
     );
 };
 
-export default Admins;
+export default FeesBilling;
 
 const data = Array(50)
     .fill(0)
@@ -48,7 +36,7 @@ const data = Array(50)
         };
     });
 
-const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
+const FeesTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -237,18 +225,18 @@ const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
             key: "email",
             ...getColumnSearchProps("email"),
         },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button type="dashed">Edit</Button>
-                    <Button danger type="dashed">
-                        Delete
-                    </Button>
-                </Space>
-            ),
-        },
+        // {
+        //     title: "Action",
+        //     key: "action",
+        //     render: (_, record) => (
+        //         <Space size="middle">
+        //             <Button type="dashed">Edit</Button>
+        //             <Button danger type="dashed">
+        //                 Delete
+        //             </Button>
+        //         </Space>
+        //     ),
+        // },
     ];
 
     return (
