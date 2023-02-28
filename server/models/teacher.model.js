@@ -1,7 +1,22 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const AdminSchema = new mongoose.Schema(
+const TeacherAttendanceSchema = new mongoose.Schema(
+    {
+        fromTime: Date,
+        toTime: Date,
+        date: Date,
+        attendanceBy: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Admin",
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+const TeachersSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -16,13 +31,21 @@ const AdminSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        speciality: {
+            type: String,
+            default: null,
+        },
+        attendance: {
+            type: [TeacherAttendanceSchema],
+            default: [],
+        },
         password: {
             type: String,
             required: true,
         },
         user_type: {
             type: String,
-            default: "admin",
+            default: "teacher",
         },
     },
     {
@@ -30,15 +53,15 @@ const AdminSchema = new mongoose.Schema(
     }
 );
 
-AdminSchema.pre("save", async function (next) {
+TeachersSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(this.password, salt);
     this.password = hashedPassword;
 });
 
-AdminSchema.methods.validatePassword = async function (password) {
+TeachersSchema.methods.validatePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
-module.exports = mongoose.model("Admin", AdminSchema);
+module.exports = mongoose.model("Teacher", TeachersSchema);
