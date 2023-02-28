@@ -1,11 +1,24 @@
 import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import CustomButton from "../../../components/CustomButton";
+import { useAxios } from "../../../hooks/useAxios";
 
 const Students = () => {
+    const [students, setStudents] = useState([]);
+    const { loading, error, response } = useAxios({
+        method: "get",
+        url: "/students",
+    });
+
+    useEffect(() => {
+        if (response) {
+            setStudents(response.students);
+        }
+    }, [response, error, loading]);
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
@@ -23,7 +36,7 @@ const Students = () => {
                     />
                 </div>
                 <div className="mt-10 border">
-                    <StudentsTable />
+                    <StudentsTable data={students} />
                 </div>
             </div>
         </Container>
@@ -32,18 +45,7 @@ const Students = () => {
 
 export default Students;
 
-const data = Array(50)
-    .fill(0)
-    .map((v, i) => {
-        return {
-            key: i,
-            name: "Akmal Raj",
-            email: `akmalraj${i}@gmail.com`,
-            username: `raj${i}`,
-        };
-    });
-
-const StudentsTable = () => {
+const StudentsTable = ({ data }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -171,24 +173,30 @@ const StudentsTable = () => {
 
     const columns = [
         {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
-            width: "30%",
-            ...getColumnSearchProps("name"),
+            title: "Roll No",
+            dataIndex: "student_roll_no",
+            key: "student_roll_no",
+            width: "20%",
+            ...getColumnSearchProps("student_roll_no"),
         },
         {
-            title: "Username",
-            dataIndex: "username",
-            key: "username",
-            width: "20%",
-            ...getColumnSearchProps("username"),
+            title: "Student Name",
+            dataIndex: "student_name",
+            key: "student_name",
+            width: "30%",
+            ...getColumnSearchProps("student_name"),
         },
         {
             title: "Email Address",
             dataIndex: "email",
             key: "email",
             ...getColumnSearchProps("email"),
+        },
+        {
+            title: "Student Telephone",
+            dataIndex: "student_telephone",
+            key: "student_telephone",
+            ...getColumnSearchProps("student_telephone"),
         },
         {
             title: "Action",
