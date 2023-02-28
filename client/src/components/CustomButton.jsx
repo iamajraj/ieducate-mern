@@ -7,7 +7,7 @@ const CustomButton = ({ text, onClick, className, textClass }) => {
             type="text"
             className={`flex items-center bg-main text-white  justify-center hover:bg-transparent hover:border-main hover:border transition-all cursor-pointer ${className} px-4 rounded-lg hover:text-main`}
         >
-            <p className={`text-[13px] ${textClass}`}>{text}</p>
+            {text}
         </button>
     );
 };

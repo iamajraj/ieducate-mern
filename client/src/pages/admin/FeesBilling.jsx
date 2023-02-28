@@ -1,7 +1,7 @@
 import React from "react";
 import Container from "../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, Space, Table, Tag } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
@@ -31,12 +31,13 @@ const data = Array(50)
         return {
             key: i,
             name: "Akmal Raj",
-            email: `akmalraj${i}@gmail.com`,
-            username: `raj${i}`,
+            subject: ["Math", "English"],
+            payment_reminder_date: `2022-10-4`,
+            payment_due_date: `2022-10-14`,
         };
     });
 
-const FeesTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
+const FeesTable = () => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -162,48 +163,6 @@ const FeesTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
             ),
     });
 
-    const onSelectChange = (newSelectedRowKeys) => {
-        console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-        selections: [
-            Table.SELECTION_ALL,
-            Table.SELECTION_INVERT,
-            Table.SELECTION_NONE,
-            {
-                key: "odd",
-                text: "Select Odd Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-            {
-                key: "even",
-                text: "Select Even Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-        ],
-    };
-
     const columns = [
         {
             title: "Name",
@@ -213,39 +172,46 @@ const FeesTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
             ...getColumnSearchProps("name"),
         },
         {
-            title: "Username",
-            dataIndex: "username",
-            key: "username",
+            title: "Subject",
+            dataIndex: "subject",
+            key: "subject",
             width: "20%",
-            ...getColumnSearchProps("username"),
+            render: (_, { subject }) =>
+                subject.map((sub) => {
+                    return (
+                        <Tag color={"geekblue"} key={sub}>
+                            {sub.toUpperCase()}
+                        </Tag>
+                    );
+                }),
         },
         {
-            title: "Email Address",
-            dataIndex: "email",
-            key: "email",
-            ...getColumnSearchProps("email"),
+            title: "Payment Reminder Date",
+            dataIndex: "payment_reminder_date",
+            key: "payment_reminder_date",
+            ...getColumnSearchProps("payment_reminder_date"),
         },
-        // {
-        //     title: "Action",
-        //     key: "action",
-        //     render: (_, record) => (
-        //         <Space size="middle">
-        //             <Button type="dashed">Edit</Button>
-        //             <Button danger type="dashed">
-        //                 Delete
-        //             </Button>
-        //         </Space>
-        //     ),
-        // },
+        {
+            title: "Payment Due Date",
+            dataIndex: "payment_due_date",
+            key: "payment_due_date",
+            ...getColumnSearchProps("payment_due_date"),
+        },
+        {
+            title: "Action",
+            key: "action",
+            render: (_, record) => (
+                <Space size="middle">
+                    <Button type="dashed">View</Button>
+                </Space>
+            ),
+        },
     ];
 
     return (
         <Table
             columns={columns}
             dataSource={data}
-            rowSelection={{
-                ...rowSelection,
-            }}
             pagination={{
                 pageSize: 7,
             }}

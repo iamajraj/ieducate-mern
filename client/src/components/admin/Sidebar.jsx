@@ -32,7 +32,10 @@ const items = [
     ]),
     getItem("Fees / Billing", "fees-billings", <AppstoreOutlined />),
     getItem("Teachers Attendance", "teachers-attendance", <AppstoreOutlined />),
-    getItem("Announcements", "announcements", <AppstoreOutlined />),
+    getItem("Announcements", "announcements-menu", <AppstoreOutlined />, [
+        getItem("All Announcements", "announcements"),
+        getItem("Add Announcement", "announcements/add"),
+    ]),
 ];
 
 const Sidebar = () => {

@@ -1,41 +1,36 @@
-import Container from "../../components/Container";
+import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 
-const Admins = () => {
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
+const Students = () => {
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-[24px]">Admins</h1>
+                        <h1 className="text-[24px]">Students</h1>
                         <p className="text-[13px]">
-                            View all the admins that you have added.
+                            View all the students that you have added.
                         </p>
                     </div>
                     <CustomButton
-                        text="Add Admin"
+                        text="Add Student"
                         className="py-4"
                         textClass="text-[15px]"
                     />
                 </div>
                 <div className="mt-10 border">
-                    <AdminTable
-                        selectedRowKeys={selectedRowKeys}
-                        setSelectedRowKeys={setSelectedRowKeys}
-                    />
+                    <StudentsTable />
                 </div>
             </div>
         </Container>
     );
 };
 
-export default Admins;
+export default Students;
 
 const data = Array(50)
     .fill(0)
@@ -48,7 +43,7 @@ const data = Array(50)
         };
     });
 
-const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
+const StudentsTable = () => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -174,48 +169,6 @@ const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
             ),
     });
 
-    const onSelectChange = (newSelectedRowKeys) => {
-        console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-        selections: [
-            Table.SELECTION_ALL,
-            Table.SELECTION_INVERT,
-            Table.SELECTION_NONE,
-            {
-                key: "odd",
-                text: "Select Odd Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-            {
-                key: "even",
-                text: "Select Even Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-        ],
-    };
-
     const columns = [
         {
             title: "Name",
@@ -255,9 +208,6 @@ const AdminTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
         <Table
             columns={columns}
             dataSource={data}
-            rowSelection={{
-                ...rowSelection,
-            }}
             pagination={{
                 pageSize: 7,
             }}

@@ -6,9 +6,9 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(function (config) {
-    const token = localStorage.getItem("token");
+    const token = JSON.parse(localStorage.getItem("token"));
     if (token) {
-        config.headers.set("token", token);
+        config.headers.set("token", `Bearer ${token}`);
     }
     return config;
 });

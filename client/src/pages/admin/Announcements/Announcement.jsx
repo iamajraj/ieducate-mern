@@ -1,54 +1,54 @@
-import Container from "../../components/Container";
+import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table } from "antd";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import CustomButton from "../../components/CustomButton";
+import { Link } from "react-router-dom";
+import { useAxios } from "../../../hooks/useAxios";
+import MainButton from "../../../components/MainButton";
 
-const Teachers = () => {
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+const Announcements = () => {
+    const { loading, error, response } = useAxios({
+        url: "/announcements",
+        method: "get",
+    });
+    const [announcements, setAnnouncements] = useState([]);
+
+    useEffect(() => {
+        if (response) {
+            setAnnouncements(response.announcements);
+        }
+    }, [response]);
 
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-[24px]">Teachers</h1>
+                        <h1 className="text-[24px]">Announcements</h1>
                         <p className="text-[13px]">
-                            View all the teachers that you have added.
+                            View all the announcements.
                         </p>
                     </div>
-                    <CustomButton
-                        text="Add Teacher"
-                        className="py-4"
-                        textClass="text-[15px]"
-                    />
+                    <Link to="/admin/dashboard/announcements/add">
+                        <MainButton
+                            text="Add Announcement"
+                            className="py-4"
+                            textClass="text-[15px]"
+                        />
+                    </Link>
                 </div>
                 <div className="mt-10 border">
-                    <TeachersTable
-                        selectedRowKeys={selectedRowKeys}
-                        setSelectedRowKeys={setSelectedRowKeys}
-                    />
+                    <AnnouncementsTable data={announcements} />
                 </div>
             </div>
         </Container>
     );
 };
 
-export default Teachers;
+export default Announcements;
 
-const data = Array(50)
-    .fill(0)
-    .map((v, i) => {
-        return {
-            key: i,
-            name: "Akmal Raj",
-            email: `akmalraj${i}@gmail.com`,
-            username: `raj${i}`,
-        };
-    });
-
-const TeachersTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
+const AnnouncementsTable = ({ data }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -174,90 +174,51 @@ const TeachersTable = ({ selectedRowKeys, setSelectedRowKeys }) => {
             ),
     });
 
-    const onSelectChange = (newSelectedRowKeys) => {
-        console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-        selections: [
-            Table.SELECTION_ALL,
-            Table.SELECTION_INVERT,
-            Table.SELECTION_NONE,
-            {
-                key: "odd",
-                text: "Select Odd Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-            {
-                key: "even",
-                text: "Select Even Row",
-                onSelect: (changableRowKeys) => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-                        if (index % 2 !== 0) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys);
-                },
-            },
-        ],
-    };
-
     const columns = [
         {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
+            title: "Title",
+            dataIndex: "title",
+            key: "title",
             width: "30%",
-            ...getColumnSearchProps("name"),
+            ...getColumnSearchProps("title"),
         },
         {
-            title: "Username",
-            dataIndex: "username",
-            key: "username",
+            title: "Description",
+            dataIndex: "description",
+            key: "description",
             width: "20%",
-            ...getColumnSearchProps("username"),
+            ...getColumnSearchProps("description"),
         },
         {
-            title: "Email Address",
-            dataIndex: "email",
-            key: "email",
-            ...getColumnSearchProps("email"),
+            title: "Created By",
+            dataIndex: "created_by",
+            key: "created_by",
+            ...getColumnSearchProps("created_by"),
         },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button type="dashed">Edit</Button>
-                    <Button danger type="dashed">
-                        Delete
-                    </Button>
-                </Space>
-            ),
-        },
+        // {
+        //     title: "Action",
+        //     key: "action",
+        //     render: (_, record) => (
+        //         <Space size="middle">
+        //             <Button type="dashed">Edit</Button>
+        //             <Button danger type="dashed">
+        //                 Delete
+        //             </Button>
+        //         </Space>
+        //     ),
+        // },
     ];
 
     return (
         <Table
             columns={columns}
-            dataSource={data}
-            rowSelection={{
-                ...rowSelection,
-            }}
+            dataSource={data.map((d) => {
+                return {
+                    ...d,
+                    key: d?._id,
+                    created_by: d.created_by?.name ?? "Deleted Admin",
+                };
+            })}
             pagination={{
                 pageSize: 7,
             }}

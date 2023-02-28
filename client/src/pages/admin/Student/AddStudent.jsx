@@ -1,7 +1,7 @@
-import { Button, Select, DatePicker, InputNumber } from "antd";
+import { Button, Select, DatePicker, InputNumber, Input } from "antd";
 import React from "react";
-import Container from "../../components/Container";
-import InputField from "../../components/InputField";
+import Container from "../../../components/Container";
+import InputField from "../../../components/InputField";
 
 const AddStudent = () => {
     const handleSubmit = (e) => {
@@ -58,10 +58,18 @@ const AddStudent = () => {
                             type="email"
                         />
                     </div>
-                    <InputField
-                        label="Learning support needs * (upto 150 characters)"
-                        placeholder="Enter the learning support"
-                    />
+                    <div className="flex flex-col gap-3">
+                        <label>
+                            Learning Support Needs *{" "}
+                            <span className="text-[13px]">(150 character)</span>
+                        </label>
+                        <Input.TextArea
+                            rows={2}
+                            placeholder="Enter the learning support needs"
+                            maxLength={150}
+                            className="text-[15px]"
+                        />
+                    </div>
                     <div className="flex items-center gap-10">
                         <div className="flex flex-col">
                             <label className="text-[18px]">Year *</label>
@@ -98,7 +106,7 @@ const AddStudent = () => {
                                 Registration Amount (in GBP)*
                             </label>
                             <InputNumber
-                                defaultValue={1000}
+                                defaultValue={0}
                                 formatter={(value) =>
                                     `$ ${value}`.replace(
                                         /\B(?=(\d{3})+(?!\d))/g,

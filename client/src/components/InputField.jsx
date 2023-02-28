@@ -10,12 +10,14 @@ const InputField = ({
     isPassword,
     className,
     type,
+    name,
 }) => {
     return (
         <div className="flex flex-col w-full">
             <label className="text-[16px]">{label}</label>
             {isPassword ? (
                 <Input.Password
+                    name={name}
                     className={`mt-2 rounded-md py-3 px-2 text-[17px] ${className}`}
                     placeholder={placeholder ?? ""}
                     iconRender={(visible) =>
@@ -26,6 +28,7 @@ const InputField = ({
                 />
             ) : (
                 <Input
+                    name={name}
                     placeholder={placeholder ?? ""}
                     className={`mt-2 rounded-md py-3 px-2 text-[17px] ${className}`}
                     spellCheck={false}

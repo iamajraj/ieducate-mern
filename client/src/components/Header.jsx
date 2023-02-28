@@ -1,29 +1,41 @@
 import { Avatar, Dropdown, Space } from "antd";
 import { DownOutlined, LogoutOutlined } from "@ant-design/icons";
-import React from "react";
+import React, { useContext } from "react";
+import { authContext } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-    const items = [
-        {
-            label: "Logout",
-            key: "1",
-            icon: <LogoutOutlined />,
-        },
-    ];
+    const { user, setUser } = useContext(authContext);
+
+    const navigate = useNavigate();
+
+    const logout = () => {
+        setUser(null);
+        localStorage.clear();
+        navigate("/admin");
+    };
+
     return (
         <div className="min-h-[70px] px-10 flex items-center justify-between shadow-md shadow-gray-200 z-50 w-full">
             <h1 className="capitalize text-[15px]">Welcome Admin !</h1>
             <div className="flex gap-4 items-center cursor-pointer relative">
                 <div className="">
-                    <p className="text-[14px] text-end">Akmal Raj</p>
-                    <p className="text-[13px]">akmalraj07@gmail.com</p>
+                    <p className="text-[14px] text-end">{user?.name}</p>
+                    <p className="text-[13px]">{user?.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Avatar
-                        size={45}
-                        src="https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=812"
-                    />
-                    <Dropdown menu={{ items }}>
+                    <Dropdown
+                        menu={{
+                            items: [
+                                {
+                                    label: "Logout",
+                                    key: "1",
+                                    icon: <LogoutOutlined />,
+                                    onClick: logout,
+                                },
+                            ],
+                        }}
+                    >
                         <Space>
                             <DownOutlined />
                         </Space>
