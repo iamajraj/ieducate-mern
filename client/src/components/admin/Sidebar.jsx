@@ -1,8 +1,11 @@
 import {
-    AppstoreOutlined,
+    PoundOutlined,
     MenuFoldOutlined,
-    MailOutlined,
+    TeamOutlined,
     MenuUnfoldOutlined,
+    UserOutlined,
+    SolutionOutlined,
+    CalendarOutlined,
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
 import { useState } from "react";
@@ -18,21 +21,21 @@ function getItem(label, key, icon, children, type) {
     };
 }
 const items = [
-    getItem("Admin", "admin", <MailOutlined />, [
+    getItem("Admin", "admin", <UserOutlined />, [
         getItem("All Admins", "admins"),
         getItem("Register Admin", "admins/register"),
     ]),
-    getItem("Teacher", "teacher", <AppstoreOutlined />, [
+    getItem("Teacher", "teacher", <TeamOutlined />, [
         getItem("All Teachers", "teachers"),
         getItem("Register Teacher", "teachers/register"),
     ]),
-    getItem("Student", "student", <AppstoreOutlined />, [
+    getItem("Student", "student", <TeamOutlined />, [
         getItem("All Students", "students"),
         getItem("Register Student", "students/register"),
     ]),
-    getItem("Fees / Billing", "fees-billings", <AppstoreOutlined />),
-    getItem("Teachers Attendance", "teachers-attendance", <AppstoreOutlined />),
-    getItem("Announcements", "announcements-menu", <AppstoreOutlined />, [
+    getItem("Fees / Billing", "fees-billings", <PoundOutlined />),
+    getItem("Teachers Attendance", "teachers-attendance", <CalendarOutlined />),
+    getItem("Announcements", "announcements-menu", <SolutionOutlined />, [
         getItem("All Announcements", "announcements"),
         getItem("Add Announcement", "announcements/add"),
     ]),

@@ -2,11 +2,14 @@ import { Button, Select, DatePicker, InputNumber, Input, message } from "antd";
 import React, { useEffect, useState } from "react";
 import Container from "../../../components/Container";
 import InputField from "../../../components/InputField";
-import { DeleteOutlined, EyeFilled } from "@ant-design/icons";
+import { DeleteOutlined, EditFilled, EyeFilled } from "@ant-design/icons";
 import validEmail from "../../../utils/validateEmail.js";
 import axiosInstance from "../../../services/axiosInstance";
 import SelectSubjectModal from "./Subject/SelectSubjectModal";
 import ViewSubjectModal from "./Subject/ViewSubjectModal";
+import { useParams } from "react-router-dom";
+import moment from "moment";
+import EditMonthlyPayment from "./Subject/EditMonthlyPayment";
 
 const initialData = {
     student_roll_no: "",
@@ -23,28 +26,34 @@ const initialData = {
     registration_date: "",
     registration_amount: "",
     status: "Active",
+    removed_subject_ids: [],
+    new_subject_local_ids: [],
     password: "",
 };
 
-const AddStudent = () => {
+const EditStudent = () => {
     const [studentData, setStudentData] = useState(initialData);
     const [subjectData, setSubjectData] = useState([]);
     const [showSelectSubject, setShowSelectSubject] = useState(false);
     const [viewSubject, setViewSubject] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [editSubject, setEditSubject] = useState(null);
+
+    const { id } = useParams();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (studentData.number_of_subject === 0) {
-            return message.error("Please add student subjects");
-        }
-
         if (
-            studentData.subjects.length < 1 &&
-            studentData.number_of_subject > 0
+            (studentData.subjects.length < 1 &&
+                studentData.number_of_subject > 0) ||
+            studentData.number_of_subject > studentData.subjects.length
         ) {
             return message.error("Please add the selected numbered subjects");
+        }
+
+        if (studentData.number_of_subject < studentData.subjects.length) {
+            return message.error("Please correct the number of subjects field");
         }
 
         let err;
@@ -65,10 +74,8 @@ const AddStudent = () => {
         setLoading(true);
 
         try {
-            await axiosInstance.post("/students", studentData);
-            message.success("Student has been added", 2);
-            setStudentData(initialData);
-            setSubjectData([]);
+            await axiosInstance.put(`/students/${id}`, studentData);
+            message.success("Student has been modified", 2);
         } catch (err) {
             message.error(
                 err.response?.data?.message ?? "Something went wrong"
@@ -99,10 +106,50 @@ const AddStudent = () => {
     };
 
     const removeSubject = (subject) => {
+        if (subject.local_id) {
+            setSubjectData((prev) =>
+                prev.filter((sub) => {
+                    if (sub.local_id) {
+                        return sub.local_id !== subject.local_id;
+                    } else {
+                        return sub._id !== subject.local_id;
+                    }
+                })
+            );
+            return;
+        }
+
         setSubjectData((prev) =>
-            prev.filter((sub) => sub.local_id !== subject.local_id)
+            prev.filter((sub) => {
+                if (sub.local_id) {
+                    return sub.local_id !== subject._id;
+                } else {
+                    return sub._id !== subject._id;
+                }
+            })
         );
+
+        let removed_subject_ids = [
+            ...(studentData?.removed_subject_ids ?? []),
+            subject._id,
+        ];
+        setStudentData((prev) => ({
+            ...prev,
+            removed_subject_ids: removed_subject_ids,
+        }));
     };
+
+    const fetchStudent = async () => {
+        try {
+            const res = await axiosInstance(`/students/${id}`);
+            setStudentData(res.data.student);
+            setSubjectData(res.data.student.subjects);
+        } catch (err) {}
+    };
+
+    useEffect(() => {
+        fetchStudent();
+    }, [id]);
 
     useEffect(() => {
         setStudentData((prev) => ({ ...prev, subjects: subjectData }));
@@ -111,9 +158,9 @@ const AddStudent = () => {
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
-                <h1 className="text-[24px]">Add Student</h1>
+                <h1 className="text-[24px]">Edit Student</h1>
                 <p className="text-[13px] mt-2">
-                    Add the following details to add new student
+                    Edit the following details of the student
                 </p>
                 <div className="border-b w-full my-7"></div>
                 <form
@@ -224,13 +271,6 @@ const AddStudent = () => {
                             value={studentData.number_of_subject}
                             name="number_of_subject"
                             onChange={(e) => {
-                                if (
-                                    Number(e.target.value) <
-                                    studentData.subjects.length
-                                )
-                                    return message.error(
-                                        "First remove the added subject"
-                                    );
                                 onChange({
                                     target: {
                                         name: e.target.name,
@@ -258,32 +298,47 @@ const AddStudent = () => {
                             Add Subject
                         </div>
                     </div>
-                    <div className="flex gap-7 flex-wrap">
+                    <div className="flex flex-col gap-4 flex-wrap">
                         {studentData.subjects.length > 0 ? (
-                            studentData.subjects.map((subject) => (
-                                <div className="flex flex-col gap-5">
-                                    <h2>Subjects</h2>
-                                    <div className="border border-main rounded-md px-10 text-[15px] py-3  hover:bg-gray-200 cursor-pointer relative">
+                            <>
+                                <h2>Subjects</h2>
+                                <div className="flex flex-row gap-5 flex-wrap">
+                                    {studentData.subjects.map((subject) => (
                                         <div
-                                            onClick={() =>
-                                                removeSubject(subject)
+                                            key={
+                                                subject.local_id ?? subject._id
                                             }
-                                            className="absolute -top-3 -right-1 bg-white rounded-full text-red-500 shadow-md border px-1 active:scale-110 transition-all"
+                                            className="border border-main rounded-md px-10 text-[15px] py-3  hover:bg-gray-200 cursor-pointer relative"
                                         >
-                                            <DeleteOutlined />
+                                            <div
+                                                onClick={() =>
+                                                    removeSubject(subject)
+                                                }
+                                                className="absolute -top-3 -right-1 bg-white rounded-full text-red-500 shadow-md border px-1 active:scale-110 transition-all"
+                                            >
+                                                <DeleteOutlined />
+                                            </div>
+                                            <div
+                                                onClick={() =>
+                                                    setViewSubject(subject)
+                                                }
+                                                className="absolute -top-3 right-6 bg-white rounded-full text-blue-500 shadow-md border px-1 active:scale-110 transition-all"
+                                            >
+                                                <EyeFilled />
+                                            </div>
+                                            <div
+                                                onClick={() =>
+                                                    setEditSubject(subject)
+                                                }
+                                                className="absolute -top-3 right-14 bg-white rounded-full text-blue-500 shadow-md border px-1 active:scale-110 transition-all"
+                                            >
+                                                <EditFilled />
+                                            </div>
+                                            {subject.subject_name}
                                         </div>
-                                        <div
-                                            onClick={() =>
-                                                setViewSubject(subject)
-                                            }
-                                            className="absolute -top-3 right-6 bg-white rounded-full text-blue-500 shadow-md border px-1 active:scale-110 transition-all"
-                                        >
-                                            <EyeFilled />
-                                        </div>
-                                        {subject.subject_name}
-                                    </div>
+                                    ))}
                                 </div>
-                            ))
+                            </>
                         ) : (
                             <p className="text-gray-400 text-[14px] font-light">
                                 *Selected subject will show here*
@@ -294,6 +349,7 @@ const AddStudent = () => {
                         <div className="flex flex-col shrink-0">
                             <label className="">Registration Date *</label>
                             <DatePicker
+                                value={moment(studentData.registration_date)}
                                 className="py-3 mt-2 text-[18px]"
                                 onChange={(value) =>
                                     onChange(value, "date", "registration_date")
@@ -368,6 +424,14 @@ const AddStudent = () => {
                 setOpen={setViewSubject}
                 removeSubject={removeSubject}
             />
+            {/* Edit Monthly Payment */}
+            <EditMonthlyPayment
+                setSubjectData={setSubjectData}
+                editSubject={editSubject}
+                open={editSubject}
+                subjectData={subjectData}
+                setOpen={setEditSubject}
+            />
 
             {/* Select Subject */}
             <SelectSubjectModal
@@ -375,9 +439,11 @@ const AddStudent = () => {
                 numberOfSubject={studentData.number_of_subject}
                 setSubjectData={setSubjectData}
                 setOpen={setShowSelectSubject}
+                setStudentData={setStudentData}
+                forEdit
             />
         </Container>
     );
 };
 
-export default AddStudent;
+export default EditStudent;

@@ -15,9 +15,11 @@ import AddStudent from "../pages/admin/Student/AddStudent";
 import Students from "../pages/admin/Student/Students";
 
 import AddAnnouncement from "../pages/admin/Announcements/AddAnnouncement";
-import FeesBilling from "../pages/admin/FeesBilling";
+import FeesBilling from "../pages/admin/feesbillings/FeesBilling";
 import Announcements from "../pages/admin/Announcements/Announcement";
 import Home from "../pages/Home";
+import EditStudent from "../pages/admin/Student/EditStudent";
+import ViewFees from "../pages/admin/feesbillings/ViewFees";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -120,11 +122,24 @@ const router = createBrowserRouter([
                                 path: "register",
                                 element: <AddStudent />,
                             },
+                            {
+                                path: "edit/:id",
+                                element: <EditStudent />,
+                            },
                         ],
                     },
                     {
                         path: "fees-billings",
-                        element: <FeesBilling />,
+                        children: [
+                            {
+                                index: true,
+                                element: <FeesBilling />,
+                            },
+                            {
+                                path: ":id",
+                                element: <ViewFees />,
+                            },
+                        ],
                     },
                     {
                         path: "teachers-attendance",

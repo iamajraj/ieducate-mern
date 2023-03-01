@@ -1,10 +1,13 @@
 import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, message, Modal, Space, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import CustomButton from "../../../components/CustomButton";
+import MainButton from "../../../components/MainButton";
 import { useAxios } from "../../../hooks/useAxios";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../services/axiosInstance";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 const Students = () => {
     const [students, setStudents] = useState([]);
@@ -12,6 +15,37 @@ const Students = () => {
         method: "get",
         url: "/students",
     });
+
+    const fetchStudents = async () => {
+        try {
+            const res = await axiosInstance.get("/students");
+            setStudents(res.data.students);
+        } catch (err) {}
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/students/${id}`);
+            message.success("Student has been deleted");
+            await fetchStudents();
+        } catch (err) {
+            message.error(err.response.data?.message);
+        }
+    };
+
+    const { confirm } = Modal;
+
+    const showConfirm = (student) => {
+        confirm({
+            title: `Do you want to delete ${student.student_name}?`,
+            icon: <ExclamationCircleFilled />,
+            onOk() {
+                handleDelete(student._id);
+            },
+            okButtonProps: { className: "bg-main text-white" },
+            onCancel() {},
+        });
+    };
 
     useEffect(() => {
         if (response) {
@@ -29,14 +63,16 @@ const Students = () => {
                             View all the students that you have added.
                         </p>
                     </div>
-                    <CustomButton
-                        text="Add Student"
-                        className="py-4"
-                        textClass="text-[15px]"
-                    />
+                    <Link to="/admin/dashboard/students/register">
+                        <MainButton
+                            text="Add Student"
+                            className="py-4"
+                            textClass="text-[15px]"
+                        />
+                    </Link>
                 </div>
                 <div className="mt-10 border">
-                    <StudentsTable data={students} />
+                    <StudentsTable data={students} onDelete={showConfirm} />
                 </div>
             </div>
         </Container>
@@ -45,10 +81,12 @@ const Students = () => {
 
 export default Students;
 
-const StudentsTable = ({ data }) => {
+const StudentsTable = ({ data, onDelete }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
+
+    const navigate = useNavigate();
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -203,8 +241,21 @@ const StudentsTable = ({ data }) => {
             key: "action",
             render: (_, record) => (
                 <Space size="middle">
-                    <Button type="dashed">Edit</Button>
-                    <Button danger type="dashed">
+                    <Button
+                        type="dashed"
+                        onClick={() => {
+                            navigate(`edit/${record._id}`);
+                        }}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            onDelete(record);
+                        }}
+                        danger
+                        type="dashed"
+                    >
                         Delete
                     </Button>
                 </Space>

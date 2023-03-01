@@ -1,11 +1,25 @@
-import React from "react";
-import Container from "../../components/Container";
+import React, { useEffect } from "react";
+import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import { useAxios } from "../../../hooks/useAxios";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 const FeesBilling = () => {
+    const [fees, setFees] = useState([]);
+    const { loading, error, response } = useAxios({
+        method: "get",
+        url: "/fees",
+    });
+    useEffect(() => {
+        if (response) {
+            setFees(response.fees);
+        }
+    }, [response, error, loading]);
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
@@ -16,7 +30,7 @@ const FeesBilling = () => {
                     </p>
                 </div>
                 <div className="mt-7">
-                    <FeesTable />
+                    <FeesTable data={fees} />
                 </div>
             </div>
         </Container>
@@ -25,22 +39,12 @@ const FeesBilling = () => {
 
 export default FeesBilling;
 
-const data = Array(50)
-    .fill(0)
-    .map((v, i) => {
-        return {
-            key: i,
-            name: "Akmal Raj",
-            subject: ["Math", "English"],
-            payment_reminder_date: `2022-10-4`,
-            payment_due_date: `2022-10-14`,
-        };
-    });
-
-const FeesTable = () => {
+const FeesTable = ({ data }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
+
+    const navigate = useNavigate();
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -172,36 +176,39 @@ const FeesTable = () => {
             ...getColumnSearchProps("name"),
         },
         {
-            title: "Subject",
-            dataIndex: "subject",
-            key: "subject",
+            title: "Subjects",
+            dataIndex: "subjects",
+            key: "subjects",
             width: "20%",
-            render: (_, { subject }) =>
-                subject.map((sub) => {
-                    return (
-                        <Tag color={"geekblue"} key={sub}>
-                            {sub.toUpperCase()}
-                        </Tag>
-                    );
-                }),
+            render: (_, record) => (
+                <Tag color={"geekblue"} key={record.subjects}>
+                    {record.subjects}
+                </Tag>
+            ),
+            ...getColumnSearchProps("subjects"),
         },
         {
             title: "Payment Reminder Date",
-            dataIndex: "payment_reminder_date",
-            key: "payment_reminder_date",
-            ...getColumnSearchProps("payment_reminder_date"),
+            dataIndex: "payment_reminder",
+            key: "payment_reminder",
+            ...getColumnSearchProps("payment_reminder"),
         },
         {
-            title: "Payment Due Date",
-            dataIndex: "payment_due_date",
-            key: "payment_due_date",
-            ...getColumnSearchProps("payment_due_date"),
+            title: "Due Date",
+            dataIndex: "due_date",
+            key: "due_date",
+            ...getColumnSearchProps("due_date"),
         },
         {
             title: "Action",
             key: "action",
             render: (_, record) => (
-                <Space size="middle">
+                <Space
+                    onClick={() => {
+                        navigate(`${record.id}`);
+                    }}
+                    size="middle"
+                >
                     <Button type="dashed">View</Button>
                 </Space>
             ),
@@ -211,7 +218,18 @@ const FeesTable = () => {
     return (
         <Table
             columns={columns}
-            dataSource={data}
+            dataSource={data.map((d) => {
+                return {
+                    key: d._id,
+                    id: d._id,
+                    name: d.student.student_name,
+                    subjects: d.subjects.map((s) => s.subject_name).join(", "),
+                    payment_reminder: dayjs(d.payment_reminder).format(
+                        "DD/MM/YYYY"
+                    ),
+                    due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
+                };
+            })}
             pagination={{
                 pageSize: 7,
             }}
