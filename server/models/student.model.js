@@ -1,41 +1,47 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const SubjectSchema = new mongoose.Schema(
-    {
-        subject_name: {
-            type: String,
-            required: true,
-        },
-        timetable: {
-            type: String,
-            required: true,
-        },
-        monthly_payment: {
-            type: String,
-            required: true,
-        },
-        first_lesson_date: {
-            type: Date,
-            required: true,
-        },
-        last_payment_date: {
-            type: Date,
-            default: null,
-        },
-        previous_due_date: {
-            type: Date,
-            default: null,
-        },
-        due_date: {
-            type: Date,
-            default: null,
-        },
+const SubSubjectSchema = new mongoose.Schema({
+    subject_name: {
+        type: String,
+        required: true,
     },
-    {
-        timestamps: true,
-    }
-);
+    last_payment_date: {
+        type: Date,
+        default: null,
+    },
+    monthly_payment: {
+        type: Number,
+        required: true,
+    },
+});
+
+const InvoiceSchema = new mongoose.Schema({
+    student_name: {
+        type: String,
+        required: true,
+    },
+    year: {
+        type: Number,
+        required: true,
+    },
+    number_of_subject: {
+        type: Number,
+        required: true,
+    },
+    subjects: {
+        type: [SubSubjectSchema],
+        required: true,
+    },
+    total_amount: {
+        type: Number,
+        required: true,
+    },
+    due_date: {
+        type: Date,
+        required: true,
+    },
+});
 
 const StudentSchema = new mongoose.Schema(
     {
@@ -76,12 +82,17 @@ const StudentSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        invoices: {
+            type: [InvoiceSchema],
+            default: [],
+        },
         number_of_subject: {
             type: Number,
             default: 0,
         },
         subjects: {
-            type: [SubjectSchema],
+            type: [mongoose.SchemaTypes.ObjectId],
+            ref: "Subject",
             default: [],
         },
         registration_date: {
@@ -96,6 +107,10 @@ const StudentSchema = new mongoose.Schema(
             type: String,
             enum: ["Active", "Suspended", "Left"],
             default: "Active",
+        },
+        password: {
+            type: String,
+            required: true,
         },
     },
     {

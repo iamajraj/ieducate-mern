@@ -5,10 +5,10 @@ const connectDB = require("./db");
 connectDB();
 
 const adminInfo = {
-    name: "Akmal Raj",
-    username: "raj123",
-    email: "akmalraj07@gmail.com",
-    password: "raj123",
+    name: "Admin",
+    username: "admin",
+    email: "admin@gmail.com",
+    password: "admin",
 };
 
 const createAdmin = async () => {
