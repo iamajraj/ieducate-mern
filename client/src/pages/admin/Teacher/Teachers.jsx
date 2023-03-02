@@ -58,15 +58,33 @@ const Teachers = () => {
         }
     }, [response, error, loading]);
 
+    const exportToCSV = async () => {
+        try {
+            const res = await axiosInstance.get("/teachers/export-to-csv");
+            const a = document.createElement("a");
+            a.download = "teachers.csv";
+            a.href = "data:text/csv;charset=utf-8," + res.data.exported;
+            a.click();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-[24px]">Teachers</h1>
-                        <p className="text-[13px]">
-                            View all the teachers that you have added.
-                        </p>
+                    <div className="flex items-end gap-5">
+                        <div>
+                            <h1 className="text-[24px]">Teachers</h1>
+                            <p className="text-[13px]">
+                                View all the teachers that you have added.
+                            </p>
+                        </div>
+                        <MainButton
+                            onClick={exportToCSV}
+                            text="Export to CSV"
+                        />
                     </div>
                     <Link to="/admin/dashboard/teachers/register">
                         <MainButton

@@ -2,6 +2,7 @@ const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
 const Teacher = require("../models/teacher.model");
 const sendError = require("../utils/sendError");
+const json2csv = require("json2csv").parse;
 
 const router = express.Router();
 
@@ -38,6 +39,22 @@ router.post("/teachers", verifyToken, async (req, res) => {
     } catch (err) {
         console.log(err);
         return sendError(500, "Something went wrong.", res);
+    }
+});
+router.get("/teachers/export-to-csv", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are allowed", res);
+
+    try {
+        const teachers = await Teacher.find({}, { password: 0 });
+
+        const csv = json2csv(teachers);
+
+        return res.status(200).json({
+            exported: csv,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
     }
 });
 

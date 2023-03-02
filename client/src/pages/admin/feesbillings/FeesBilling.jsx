@@ -7,6 +7,8 @@ import Highlighter from "react-highlight-words";
 import { useAxios } from "../../../hooks/useAxios";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import MainButton from "../../../components/MainButton";
+import axiosInstance from "../../../services/axiosInstance";
 
 const FeesBilling = () => {
     const [fees, setFees] = useState([]);
@@ -20,17 +22,37 @@ const FeesBilling = () => {
         }
     }, [response, error, loading]);
 
+    const exportToCSV = async () => {
+        try {
+            const res = await axiosInstance.get("/fees/export-to-csv");
+            const a = document.createElement("a");
+            a.download = "fees.csv";
+            a.href = "data:text/csv;charset=utf-8," + res.data.exported;
+            a.click();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
                 <div className="border-b pb-5">
-                    <h1 className="text-[24px]">Fees / Billing</h1>
-                    <p className="text-[13px]">
-                        View all the fees and billing.
-                    </p>
+                    <div className="flex items-end gap-5">
+                        <div>
+                            <h1 className="text-[24px]">Fees / Billing</h1>
+                            <p className="text-[13px]">
+                                View all the fees and billing.
+                            </p>
+                        </div>
+                        <MainButton
+                            onClick={exportToCSV}
+                            text="Export to CSV"
+                        />
+                    </div>
                 </div>
                 <div className="mt-7">
-                    <FeesTable data={fees} />
+                    <FeesTable data={fees} loading={loading} />
                 </div>
             </div>
         </Container>
@@ -39,7 +61,7 @@ const FeesBilling = () => {
 
 export default FeesBilling;
 
-const FeesTable = ({ data }) => {
+const FeesTable = ({ data, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -217,6 +239,7 @@ const FeesTable = ({ data }) => {
 
     return (
         <Table
+            loading={loading}
             columns={columns}
             dataSource={data.map((d) => {
                 return {

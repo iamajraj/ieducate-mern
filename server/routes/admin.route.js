@@ -2,6 +2,7 @@ const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
 const Admin = require("../models/admin.model");
 const sendError = require("../utils/sendError");
+const json2csv = require("json2csv").parse;
 
 const router = express.Router();
 
@@ -16,6 +17,23 @@ router.get("/admins", verifyToken, async (req, res) => {
     res.status(200).json({
         admins: admins,
     });
+});
+
+router.get("/admins/export-to-csv", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are allowed", res);
+
+    try {
+        const admins = await Admin.find({}, { password: 0 });
+
+        const csv = json2csv(admins);
+
+        return res.status(200).json({
+            exported: csv,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
 });
 
 router.post("/admins", verifyToken, async (req, res) => {

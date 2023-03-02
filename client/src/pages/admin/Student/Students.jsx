@@ -53,15 +53,33 @@ const Students = () => {
         }
     }, [response, error, loading]);
 
+    const exportToCSV = async () => {
+        try {
+            const res = await axiosInstance.get("/students/export-to-csv");
+            const a = document.createElement("a");
+            a.download = "students.csv";
+            a.href = "data:text/csv;charset=utf-8," + res.data.exported;
+            a.click();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-[24px]">Students</h1>
-                        <p className="text-[13px]">
-                            View all the students that you have added.
-                        </p>
+                    <div className="flex items-end gap-5">
+                        <div>
+                            <h1 className="text-[24px]">Students</h1>
+                            <p className="text-[13px]">
+                                View all the students that you have added.
+                            </p>
+                        </div>
+                        <MainButton
+                            onClick={exportToCSV}
+                            text="Export to CSV"
+                        />
                     </div>
                     <Link to="/admin/dashboard/students/register">
                         <MainButton
@@ -72,7 +90,11 @@ const Students = () => {
                     </Link>
                 </div>
                 <div className="mt-10 border">
-                    <StudentsTable data={students} onDelete={showConfirm} />
+                    <StudentsTable
+                        loading={loading}
+                        data={students}
+                        onDelete={showConfirm}
+                    />
                 </div>
             </div>
         </Container>
@@ -81,7 +103,7 @@ const Students = () => {
 
 export default Students;
 
-const StudentsTable = ({ data, onDelete }) => {
+const StudentsTable = ({ data, onDelete, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -265,6 +287,7 @@ const StudentsTable = ({ data, onDelete }) => {
 
     return (
         <Table
+            loading={loading}
             columns={columns}
             dataSource={data}
             pagination={{

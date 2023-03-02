@@ -39,7 +39,10 @@ const Announcements = () => {
                     </Link>
                 </div>
                 <div className="mt-10 border">
-                    <AnnouncementsTable data={announcements} />
+                    <AnnouncementsTable
+                        loading={loading}
+                        data={announcements}
+                    />
                 </div>
             </div>
         </Container>
@@ -48,7 +51,7 @@ const Announcements = () => {
 
 export default Announcements;
 
-const AnnouncementsTable = ({ data }) => {
+const AnnouncementsTable = ({ data, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -211,6 +214,7 @@ const AnnouncementsTable = ({ data }) => {
 
     return (
         <Table
+            loading={loading}
             columns={columns}
             dataSource={data.map((d) => {
                 return {

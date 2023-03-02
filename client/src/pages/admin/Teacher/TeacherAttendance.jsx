@@ -32,7 +32,7 @@ const TeacherAttendance = () => {
                 </div>
 
                 <div className="mt-10 border">
-                    <TeachersTable data={teachers} />
+                    <TeachersTable loading={loading} data={teachers} />
                 </div>
             </div>
         </Container>
@@ -41,7 +41,7 @@ const TeacherAttendance = () => {
 
 export default TeacherAttendance;
 
-const TeachersTable = ({ data }) => {
+const TeachersTable = ({ data, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -210,6 +210,7 @@ const TeachersTable = ({ data }) => {
 
     return (
         <Table
+            loading={loading}
             columns={columns}
             dataSource={data.map((d) => {
                 return {

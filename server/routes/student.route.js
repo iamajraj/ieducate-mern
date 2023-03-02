@@ -5,6 +5,7 @@ const sendError = require("../utils/sendError");
 const dayjs = require("dayjs");
 const Subject = require("../models/subject.model");
 const Fees = require("../models/fees.model");
+const json2csv = require("json2csv").parse;
 
 const router = express.Router();
 
@@ -301,6 +302,25 @@ router.get("/students", verifyToken, async (req, res) => {
         );
         return res.status(200).json({
             students,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.get("/students/export-to-csv", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are allowed", res);
+
+    try {
+        const students = await Student.find({}, { password: 0 }).populate([
+            "subjects",
+        ]);
+
+        const csv = json2csv(students);
+
+        return res.status(200).json({
+            exported: csv,
         });
     } catch (err) {
         sendError(500, "Something went wrong", res);
