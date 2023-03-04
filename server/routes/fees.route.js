@@ -70,8 +70,8 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
                 }
             );
             fee.previous_due_date = fee.due_date;
-            fee.due_date = dayjs(Date.now()).add(30, "day");
-            fee.payment_reminder = dayjs(Date.now())
+            fee.due_date = dayjs(fee.due_date).add(30, "day");
+            fee.payment_reminder = dayjs(fee.due_date)
                 .add(30, "day")
                 .subtract(10, "day");
         }
