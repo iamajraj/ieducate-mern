@@ -4,7 +4,7 @@ import MainLayout from "../components/MainLayout";
 
 import Admins from "../pages/admin/Admin/Admins";
 import AddAdmin from "../pages/admin/Admin/AddAdmin";
-import AdminLogin from "../pages/Admin/AdminLogin";
+import AdminLogin from "../pages/admin/AdminLogin";
 
 import TeacherLogin from "../pages/teacher/TeacherLogin";
 import AddTeacher from "../pages/admin/Teacher/AddTeacher";
