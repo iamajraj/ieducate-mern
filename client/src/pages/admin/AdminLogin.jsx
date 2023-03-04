@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
-import Login from "../../../components/Login";
+import Login from "../../components/Login";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../../services/axiosInstance";
-import validateEmail from "../../../utils/validateEmail";
-import { authContext } from "../../../context/AuthProvider";
+import axiosInstance from "../../services/axiosInstance";
+import validateEmail from "../../utils/validateEmail";
+import { authContext } from "../../context/AuthProvider";
 
 const AdminLogin = () => {
     const [loading, setLoading] = useState(false);

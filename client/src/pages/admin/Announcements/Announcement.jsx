@@ -1,24 +1,58 @@
 import Container from "../../../components/Container";
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { ExclamationCircleFilled, SearchOutlined } from "@ant-design/icons";
+import { Button, Input, message, Modal, Space, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { Link } from "react-router-dom";
 import { useAxios } from "../../../hooks/useAxios";
 import MainButton from "../../../components/MainButton";
+import axiosInstance from "../../../services/axiosInstance";
+import InputField from "../../../components/InputField";
 
 const Announcements = () => {
     const { loading, error, response } = useAxios({
         url: "/announcements",
         method: "get",
     });
+    const [edit, onEdit] = useState(null);
     const [announcements, setAnnouncements] = useState([]);
+
+    const fetchAnnouncements = async () => {
+        try {
+            const res = await axiosInstance.get("/announcements");
+            setAnnouncements(res.data.announcements);
+        } catch (err) {}
+    };
 
     useEffect(() => {
         if (response) {
             setAnnouncements(response.announcements);
         }
     }, [response]);
+
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/announcements/${id}`);
+            message.success("Announcement has been deleted");
+            await fetchAnnouncements();
+        } catch (err) {
+            message.error(err.response?.data?.message);
+        }
+    };
+
+    const { confirm } = Modal;
+
+    const showConfirm = (announcement) => {
+        confirm({
+            title: `Do you want to delete this announcement?`,
+            icon: <ExclamationCircleFilled />,
+            onOk() {
+                handleDelete(announcement._id);
+            },
+            okButtonProps: { className: "bg-main text-white" },
+            onCancel() {},
+        });
+    };
 
     return (
         <Container>
@@ -42,16 +76,28 @@ const Announcements = () => {
                     <AnnouncementsTable
                         loading={loading}
                         data={announcements}
+                        onEdit={onEdit}
+                        onDelete={showConfirm}
                     />
                 </div>
             </div>
+
+            <EditAdminModal
+                editInfo={edit}
+                setEditInfo={onEdit}
+                open={edit}
+                fetchAnnouncements={fetchAnnouncements}
+                cancel={() => {
+                    onEdit(null);
+                }}
+            />
         </Container>
     );
 };
 
 export default Announcements;
 
-const AnnouncementsTable = ({ data, loading }) => {
+const AnnouncementsTable = ({ data, loading, onEdit, onDelete }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -198,18 +244,31 @@ const AnnouncementsTable = ({ data, loading }) => {
             key: "created_by",
             ...getColumnSearchProps("created_by"),
         },
-        // {
-        //     title: "Action",
-        //     key: "action",
-        //     render: (_, record) => (
-        //         <Space size="middle">
-        //             <Button type="dashed">Edit</Button>
-        //             <Button danger type="dashed">
-        //                 Delete
-        //             </Button>
-        //         </Space>
-        //     ),
-        // },
+        {
+            title: "Action",
+            key: "action",
+            render: (_, record) => (
+                <Space size="middle">
+                    <Button
+                        type="dashed"
+                        onClick={() => {
+                            onEdit(record);
+                        }}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        danger
+                        type="dashed"
+                        onClick={() => {
+                            onDelete(record);
+                        }}
+                    >
+                        Delete
+                    </Button>
+                </Space>
+            ),
+        },
     ];
 
     return (
@@ -227,5 +286,78 @@ const AnnouncementsTable = ({ data, loading }) => {
                 pageSize: 7,
             }}
         />
+    );
+};
+
+const EditAdminModal = ({
+    editInfo,
+    open,
+    cancel,
+    setEditInfo,
+    fetchAnnouncements,
+}) => {
+    const [loading, setLoading] = useState(false);
+
+    const onEditChange = (e) => {
+        setEditInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { title, description } = editInfo;
+
+        if (!title || !description)
+            return message.error("Input fields can't be empty");
+
+        setLoading(true);
+
+        try {
+            await axiosInstance.put(`/announcements/${editInfo._id}`, editInfo);
+            message.success("Announcement has been updated");
+            await fetchAnnouncements();
+            setEditInfo(null);
+        } catch (err) {
+            message.error(err.response.data?.message ?? "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Modal
+            onCancel={cancel}
+            okButtonProps={{
+                type: "ghost",
+                htmlType: "submit",
+                className: "bg-main text-white",
+                loading: loading,
+            }}
+            onOk={handleSubmit}
+            open={Boolean(open)}
+        >
+            <div className="p-5">
+                <h1 className="text-[20px] border-b pb-3">Edit Announcement</h1>
+                <form
+                    onSubmit={handleSubmit}
+                    className="mt-4 flex flex-col gap-5"
+                >
+                    <InputField
+                        label="Title"
+                        value={editInfo?.title}
+                        onChange={onEditChange}
+                        name="title"
+                    />
+                    <div className="flex flex-col gap-3">
+                        <p className="text-[16px]">Description</p>
+                        <Input.TextArea
+                            name="description"
+                            value={editInfo?.description}
+                            onChange={onEditChange}
+                        />
+                    </div>
+                </form>
+            </div>
+        </Modal>
     );
 };

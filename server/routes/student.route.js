@@ -1,11 +1,14 @@
 const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
-const Student = require("../models/student.model");
 const sendError = require("../utils/sendError");
 const dayjs = require("dayjs");
-const Subject = require("../models/subject.model");
 const Fees = require("../models/fees.model");
 const json2csv = require("json2csv").parse;
+
+const Student = require("../models/student.model");
+const Subject = require("../models/subject.model");
+const GeneralReport = require("../models/generalreport.model");
+const TestReport = require("../models/testreport.model");
 
 const router = express.Router();
 
@@ -297,13 +300,16 @@ router.delete("/students/:id", verifyToken, async (req, res) => {
 
 router.get("/students", verifyToken, async (req, res) => {
     try {
-        const students = await Student.find({}, { password: 0 }).populate(
-            "subjects"
-        );
+        const students = await Student.find({}, { password: 0 }).populate([
+            "subjects",
+            "general_reports",
+            "test_reports",
+        ]);
         return res.status(200).json({
             students,
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 });
@@ -330,9 +336,11 @@ router.get("/students/export-to-csv", verifyToken, async (req, res) => {
 router.get("/students/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
     try {
-        const student = await Student.findById(id, { password: 0 }).populate(
-            "subjects"
-        );
+        const student = await Student.findById(id, { password: 0 }).populate([
+            "subjects",
+            "general_reports",
+            "test_reports",
+        ]);
         return res.status(200).json({
             student,
         });
@@ -388,5 +396,171 @@ router.post("/students/issue-invoice", verifyToken, async (req, res) => {
         sendError(500, "Something went wrong", res);
     }
 });
+
+router.get("/students/:id/reports", verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const general_reports = await GeneralReport.find({
+            student: id,
+        }).populate(["student", "subject"]);
+        const test_reports = await TestReport.find({
+            student: id,
+        }).populate(["student", "subject"]);
+
+        res.status(200).json({
+            general_reports,
+            test_reports,
+        });
+    } catch (err) {
+        console.log(err);
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.post("/students/general-report", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "teacher")
+        return sendError(401, "You are not allowed", res);
+    const {
+        student_id,
+        subject_id,
+        date,
+        progress,
+        attainment,
+        effort,
+        comment,
+    } = req.body;
+
+    if (
+        !student_id ||
+        !subject_id ||
+        !date ||
+        !progress ||
+        !attainment ||
+        !effort ||
+        !comment
+    )
+        return sendError(400, "Please provide all fields", res);
+
+    const student = await Student.findById(student_id);
+
+    if (!student) return res.sendError(404, "Student doesn't exists", res);
+
+    try {
+        const created_report = new GeneralReport({
+            student: student_id,
+            subject: subject_id,
+            date,
+            progress,
+            attainment,
+            effort,
+            comment,
+        });
+
+        await created_report.save();
+
+        student.general_reports.push(created_report._id);
+
+        await student.save();
+
+        res.status(201).json({
+            message: "General Report has been created",
+        });
+    } catch (err) {
+        console.log(err);
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.get(
+    "/students/general-report/:reportid",
+    verifyToken,
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+
+        const { reportid } = req.params;
+
+        try {
+            const report = await GeneralReport.findById(reportid);
+
+            if (!report) {
+                return sendError(404, "Report doesn't exists", res);
+            }
+
+            res.status(201).json({
+                report,
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+router.delete(
+    "/students/general-report/:reportid",
+    verifyToken,
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+
+        const { student_id } = req.body;
+        const { reportid } = req.params;
+
+        const student = await Student.findById(student_id);
+
+        if (!student) return sendError(404, "Student doesn't exists", res);
+
+        student.general_reports = student.general_reports.filter((report) => {
+            return report.toString() !== reportid;
+        });
+
+        try {
+            await GeneralReport.findByIdAndDelete(reportid);
+            await student.save();
+            res.status(201).json({
+                message: "General Report has been deleted",
+            });
+        } catch (err) {
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+router.put(
+    "/students/general-report/:reportid",
+    verifyToken,
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+        const { date, progress, attainment, effort, comment } = req.body;
+
+        if (!date || !progress || !attainment || !effort || !comment)
+            return sendError(400, "Please provide all fields", res);
+
+        const { reportid } = req.params;
+
+        const report = await GeneralReport.findById(reportid);
+
+        if (!report) return sendError(404, "Report doesn't exists", res);
+
+        try {
+            await GeneralReport.findByIdAndUpdate(reportid, {
+                $set: {
+                    date,
+                    progress,
+                    attainment,
+                    effort,
+                    comment,
+                },
+            });
+
+            res.status(201).json({
+                message: "General Report has been updated",
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
 
 module.exports = router;

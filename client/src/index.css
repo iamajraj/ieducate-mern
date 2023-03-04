@@ -11,3 +11,29 @@ body {
 .c-shadow {
     box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.2);
 }
+
+.ant-menu-title-content:hover {
+    color: white !important;
+}
+.ant-menu-title-content {
+    color: white !important;
+}
+
+.ant-menu-item:not(.ant-menu-item-selected):hover {
+    color: white !important;
+}
+
+.ant-menu-item.ant-menu-item-selected .ant-menu-item-icon {
+    color: black !important;
+}
+
+.ant-menu-item.ant-menu-item-selected .ant-menu-title-content {
+    color: black !important;
+}
+
+.ant-menu-submenu.ant-menu-submenu-selected .ant-menu-item-icon {
+    color: white !important;
+}
+.ant-menu-submenu.ant-menu-submenu-active .ant-menu-submenu-arrow {
+    color: white !important;
+}

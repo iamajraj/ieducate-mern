@@ -9,15 +9,17 @@ const Header = () => {
 
     const navigate = useNavigate();
 
-    const logout = () => {
+    const logout = (user_type) => {
         setUser(null);
         localStorage.clear();
-        navigate("/admin");
+        navigate(`/${user_type}`);
     };
 
     return (
         <div className="min-h-[70px] px-10 flex items-center justify-between shadow-md shadow-gray-200 z-50 w-full">
-            <h1 className="capitalize text-[15px]">Welcome Admin !</h1>
+            <h1 className="capitalize text-[15px]">
+                Welcome {user?.user_type} !
+            </h1>
             <div className="flex gap-4 items-center cursor-pointer relative">
                 <div className="">
                     <p className="text-[14px] text-end">{user?.name}</p>
@@ -31,7 +33,9 @@ const Header = () => {
                                     label: "Logout",
                                     key: "1",
                                     icon: <LogoutOutlined />,
-                                    onClick: logout,
+                                    onClick: () => {
+                                        logout(user?.user_type);
+                                    },
                                 },
                             ],
                         }}

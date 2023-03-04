@@ -1,15 +1,20 @@
 import { useEffect } from "react";
-import { createBrowserRouter, useNavigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
 
 import Admins from "../pages/admin/Admin/Admins";
 import AddAdmin from "../pages/admin/Admin/AddAdmin";
-import AdminLogin from "../pages/admin/Admin/AdminLogin";
+import AdminLogin from "../pages/Admin/AdminLogin";
 
+import TeacherLogin from "../pages/teacher/TeacherLogin";
 import AddTeacher from "../pages/admin/Teacher/AddTeacher";
 import TeacherAttendance from "../pages/admin/Teacher/TeacherAttendance";
 import SetTeacherAttendance from "../pages/admin/Teacher/SetTeacherAttendance";
 import Teachers from "../pages/admin/Teacher/Teachers";
+
+import AllStudents from "../pages/teacher/Report/AllStudents";
+import CreateGeneralReport from "../pages/teacher/Report/CreateGeneralReport";
+import CreateTestReport from "../pages/teacher/Report/CreateTestReport";
 
 import AddStudent from "../pages/admin/Student/AddStudent";
 import Students from "../pages/admin/Student/Students";
@@ -20,6 +25,11 @@ import Announcements from "../pages/admin/Announcements/Announcement";
 import Home from "../pages/Home";
 import EditStudent from "../pages/admin/Student/EditStudent";
 import ViewFees from "../pages/admin/feesbillings/ViewFees";
+import CredentialsUpdate from "../pages/teacher/CredentialsUpdate";
+import TrackAttendance from "../pages/teacher/TrackAttendance";
+import StudentReports from "../pages/teacher/Report/StudentReports";
+import EditGeneralReport from "../pages/teacher/Report/EditGeneralReport";
+import Dashboard from "../pages/Dashboard";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -28,7 +38,20 @@ const AdminProtectedRoute = ({ children }) => {
         if (!user) {
             return navigate("/admin");
         } else if (user.user_type !== "admin") {
-            return navigate("/admin");
+            return navigate("/");
+        }
+    }, []);
+    return children;
+};
+
+const TeacherProtectedRoute = ({ children }) => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) {
+            return navigate("/teacher");
+        } else if (user.user_type !== "teacher") {
+            return navigate("/");
         }
     }, []);
     return children;
@@ -83,7 +106,7 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <Admins />,
+                        element: <Dashboard />,
                     },
                     {
                         path: "admins",
@@ -164,6 +187,75 @@ const router = createBrowserRouter([
                             {
                                 path: "add",
                                 element: <AddAnnouncement />,
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    // teacher route
+    {
+        path: "/teacher",
+        children: [
+            {
+                index: true,
+                element: <TeacherLogin />,
+            },
+            {
+                path: "dashboard",
+                element: (
+                    <TeacherProtectedRoute>
+                        <MainLayout />
+                    </TeacherProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <AllStudents />,
+                    },
+                    {
+                        path: "update",
+                        element: <CredentialsUpdate />,
+                    },
+                    {
+                        path: "track-attendance",
+                        element: <TrackAttendance />,
+                    },
+                    {
+                        path: "reports",
+                        children: [
+                            {
+                                index: true,
+                                element: <Navigate to="/teacher/dashboard" />,
+                            },
+                            {
+                                path: ":id",
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <StudentReports />,
+                                    },
+                                    {
+                                        path: "general-report",
+                                        children: [
+                                            {
+                                                index: true,
+                                                element: (
+                                                    <CreateGeneralReport />
+                                                ),
+                                            },
+                                            {
+                                                path: "edit/:reportId",
+                                                element: <EditGeneralReport />,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        path: "test-report",
+                                        element: <CreateTestReport />,
+                                    },
+                                ],
                             },
                         ],
                     },

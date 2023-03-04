@@ -103,6 +103,16 @@ const StudentSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        general_reports: {
+            type: [mongoose.SchemaTypes.ObjectId],
+            default: [],
+            ref: "GeneralReport",
+        },
+        test_reports: {
+            type: [mongoose.SchemaTypes.ObjectId],
+            default: [],
+            ref: "TestReport",
+        },
         status: {
             type: String,
             enum: ["Active", "Suspended", "Left"],
@@ -111,6 +121,10 @@ const StudentSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
+        },
+        user_type: {
+            type: String,
+            default: "student",
         },
     },
     {

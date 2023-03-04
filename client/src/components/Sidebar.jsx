@@ -6,10 +6,14 @@ import {
     UserOutlined,
     SolutionOutlined,
     CalendarOutlined,
+    SettingOutlined,
+    BookOutlined,
+    AppstoreOutlined,
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authContext } from "../context/AuthProvider";
 
 function getItem(label, key, icon, children, type) {
     return {
@@ -20,7 +24,9 @@ function getItem(label, key, icon, children, type) {
         type,
     };
 }
-const items = [
+
+const adminItems = [
+    getItem("Dashboard", "", <AppstoreOutlined />),
     getItem("Admin", "admin", <UserOutlined />, [
         getItem("All Admins", "admins"),
         getItem("Register Admin", "admins/register"),
@@ -41,51 +47,68 @@ const items = [
     ]),
 ];
 
+const teacherItems = [
+    getItem("Report", "", <BookOutlined />),
+    getItem("Track Attendance", "track-attendance", <CalendarOutlined />),
+    getItem("Credentials Update", "update", <SettingOutlined />),
+];
+
+const items = {
+    admin: adminItems,
+    teacher: teacherItems,
+};
+
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
+    const { user } = useContext(authContext);
+
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
     };
     const navigate = useNavigate();
+
     return (
         <div
             className={`${
                 collapsed ? "w-[85px]" : "w-[250px]"
-            } h-full transition-all border-r`}
+            } h-full transition-all border-r bg-main text-white`}
         >
-            <div className="flex items-center justify-between py-7 px-5">
+            <div className="flex items-center justify-between py-7 px-5 ">
                 {!collapsed && (
                     <div className="">
                         <h1 className="text-[24px] relative w-max">
                             iEducate
-                            <p className="absolute -top-3 right-0 text-[14px]">
-                                Admin
+                            <p className="absolute -top-3 right-0 text-[14px] capitalize">
+                                {user?.user_type}
                             </p>
                         </h1>
                     </div>
                 )}
                 <Button
                     type="ghost"
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center text-white text-[20px]"
                     onClick={toggleCollapsed}
                 >
                     {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 </Button>
             </div>
-            <Menu
-                defaultSelectedKeys={["1"]}
-                defaultOpenKeys={["sub1"]}
-                mode="inline"
-                theme="light"
-                inlineCollapsed={collapsed}
-                items={items}
-                style={{ border: "none" }}
-                onSelect={(info) => {
-                    console.log(info);
-                    navigate(`${info.key}`);
-                }}
-            />
+            {user && (
+                <Menu
+                    defaultSelectedKeys={[items[user.user_type][0].key]}
+                    defaultOpenKeys={[items[user.user_type][0].key]}
+                    mode="inline"
+                    theme="light"
+                    inlineCollapsed={collapsed}
+                    items={items[user.user_type]}
+                    className="bg-main text-white"
+                    style={{ border: "none" }}
+                    onSelect={(info) => {
+                        navigate(`${info.key}`);
+                    }}
+                />
+            )}
         </div>
     );
 };
+
 export default Sidebar;

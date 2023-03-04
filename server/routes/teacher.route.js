@@ -116,7 +116,7 @@ router.get("/teachers/:id", verifyToken, async (req, res) => {
 
 router.put("/teachers/:id", verifyToken, async (req, res) => {
     const { name, username, email, speciality, _id: id } = req.body;
-    if (req.user.user_type !== "admin" && req.user.user_type !== "teacher")
+    if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are allowed", res);
 
     if (!name || !username || !email)
@@ -164,6 +164,56 @@ router.delete("/teachers/:id", verifyToken, async (req, res) => {
         await Teacher.findByIdAndDelete(req.params.id);
         res.status(201).json({
             message: "Teacher has been deleted",
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Something went wrong",
+        });
+    }
+});
+
+router.patch("/teachers/update-credentials", verifyToken, async (req, res) => {
+    const { email, password } = req.body;
+
+    if (req.user.user_type !== "teacher")
+        return sendError(401, "Only Teacher are allowed", res);
+
+    if (!email && !password)
+        return sendError(400, "Both field can't be empty!", res);
+
+    const id = req.user._id;
+
+    const teacher = await Teacher.findById(id);
+
+    if (email) {
+        if (email != teacher.email) {
+            const isEmailExists = await Teacher.find({
+                email,
+            });
+
+            if (isEmailExists.length > 0) {
+                return sendError(400, "Email already exists", res);
+            } else {
+                teacher.email = email;
+            }
+        }
+    }
+
+    if (password) {
+        teacher.password = password;
+    }
+
+    try {
+        await teacher.save();
+        res.status(201).json({
+            message: "Credentials has been updated !",
+            user: {
+                id: teacher._id,
+                username: teacher.username,
+                email: teacher.email,
+                name: teacher.name,
+                user_type: teacher.user_type,
+            },
         });
     } catch (err) {
         res.status(500).json({

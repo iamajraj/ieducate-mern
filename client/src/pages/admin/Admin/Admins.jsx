@@ -67,7 +67,6 @@ const Admins = () => {
         } catch (err) {
             console.log(err);
         }
-        console.log("EXPORTING...");
     };
 
     return (

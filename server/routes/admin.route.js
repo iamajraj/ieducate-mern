@@ -1,22 +1,49 @@
 const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
 const Admin = require("../models/admin.model");
+const Student = require("../models/student.model");
+const Teacher = require("../models/teacher.model");
 const sendError = require("../utils/sendError");
 const json2csv = require("json2csv").parse;
 
 const router = express.Router();
 
 router.get("/admins", verifyToken, async (req, res) => {
-    const admins = await Admin.find(
-        {},
-        {
-            password: 0,
-        }
-    );
+    try {
+        const admins = await Admin.find(
+            {},
+            {
+                password: 0,
+            }
+        );
 
-    res.status(200).json({
-        admins: admins,
-    });
+        res.status(200).json({
+            admins: admins,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.get("/get-all", verifyToken, async (req, res) => {
+    try {
+        const admins = await Admin.find(
+            {},
+            {
+                password: 0,
+            }
+        );
+        const students = await Student.find({}, { password: 0 });
+        const teachers = await Teacher.find({}, { password: 0 });
+
+        res.status(200).json({
+            admins,
+            students,
+            teachers,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
 });
 
 router.get("/admins/export-to-csv", verifyToken, async (req, res) => {

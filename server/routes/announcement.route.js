@@ -31,6 +31,48 @@ router.post("/announcements", verifyToken, async (req, res) => {
     }
 });
 
+router.put("/announcements/:id", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only admins are allowed", res);
+
+    const { id } = req.params;
+
+    const { title, description } = req.body;
+
+    if (!title || !description)
+        return sendError(400, "All fields are required", res);
+
+    try {
+        await Announcement.findByIdAndUpdate(id, {
+            $set: {
+                title,
+                description,
+            },
+        });
+        return res.status(201).json({
+            message: "Announcement has been updated",
+        });
+    } catch (err) {
+        return sendError(500, "Something went wrong", res);
+    }
+});
+router.delete("/announcements/:id", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only admins are allowed", res);
+
+    const { id } = req.params;
+
+    if (!id) return sendError(400, "Id are required", res);
+
+    try {
+        await Announcement.findByIdAndDelete(id);
+        return res.status(201).json({
+            message: "Announcement has been deleted",
+        });
+    } catch (err) {
+        return sendError(500, "Something went wrong", res);
+    }
+});
 router.get("/announcements", verifyToken, async (req, res) => {
     try {
         const announcements = await Announcement.find({}).populate(
