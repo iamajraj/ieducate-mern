@@ -1,6 +1,7 @@
 import { DatePicker, message, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../services/axiosInstance";
+import dayjs from "dayjs";
 
 const EditDueDate = ({ open, setOpen, editData, fetchFees }) => {
     const [dueDate, setDueDate] = useState(null);
@@ -48,6 +49,7 @@ const EditDueDate = ({ open, setOpen, editData, fetchFees }) => {
                             onChange={(value) => {
                                 setDueDate(value.toISOString());
                             }}
+                            defaultValue={dayjs(editData?.due_date)}
                         />
                     </div>
                 </div>

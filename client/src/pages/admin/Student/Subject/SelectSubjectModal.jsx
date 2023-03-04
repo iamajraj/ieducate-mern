@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import InputField from "../../../../components/InputField";
 
 const initialSubjectData = {
-    id: "",
     subject_name: "",
     timetable: "",
     monthly_payment: "",

@@ -57,9 +57,7 @@ const TrackAttendance = () => {
             <div className="bg-white p-8 rounded-lg">
                 <div className="flex items-center justify-between border-b pb-3">
                     <div>
-                        <h1 className="text-[24px]">
-                            Attendance of {teacher?.name}
-                        </h1>
+                        <h1 className="text-[24px]">Your Attendance</h1>
                     </div>
                 </div>
                 <div className="mt-5">

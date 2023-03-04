@@ -10,7 +10,7 @@ const initialSubjectData = {
     first_lesson_date: "",
 };
 
-const EditMonthlyPayment = ({
+const EditSubject = ({
     open,
     setOpen,
     setSubjectData,
@@ -119,4 +119,4 @@ const EditMonthlyPayment = ({
     );
 };
 
-export default EditMonthlyPayment;
+export default EditSubject;

@@ -25,10 +25,6 @@ const FeesSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
-        total_paid: {
-            type: Number,
-            default: 0,
-        },
         isPaid: {
             type: String,
             enum: ["Paid", "Not Paid"],

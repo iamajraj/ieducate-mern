@@ -183,15 +183,26 @@ router.put("/students/:id", verifyToken, async (req, res) => {
             },
         });
 
-        if (password) {
+        if (password && password.trim() !== "") {
             student.password = password;
         }
 
         // set the subject ids
         let allSubjectIds = [];
-        subjects.forEach((sub) => {
+        subjects.forEach(async (sub) => {
             if (sub._id) {
                 allSubjectIds.push(sub._id);
+
+                if (sub.isModified) {
+                    await Subject.findByIdAndUpdate(sub._id, {
+                        $set: {
+                            first_lesson_date: sub.first_lesson_date,
+                            timetable: sub.timetable,
+                            subject_name: sub.subject_name,
+                            monthly_payment: sub.monthly_payment,
+                        },
+                    });
+                }
             }
         });
 

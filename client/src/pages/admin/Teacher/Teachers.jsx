@@ -104,7 +104,7 @@ const Teachers = () => {
                 </div>
             </div>
 
-            <EditAdminModal
+            <EditTeacherModal
                 editInfo={editInfo}
                 setEditInfo={setEditInfo}
                 open={editInfo}
@@ -308,7 +308,7 @@ const TeachersTable = ({ data, loading, onDelete, onEdit }) => {
     );
 };
 
-const EditAdminModal = ({
+const EditTeacherModal = ({
     editInfo,
     open,
     cancel,
@@ -327,7 +327,7 @@ const EditAdminModal = ({
         const { email, name, username } = editInfo;
 
         if (!email || !username || !name)
-            return message.error("Input fields can't be empty");
+            return message.error("Input fields marked with (*) can't be empty");
 
         if (!isValidEmail(email))
             return message.error("Email address is not valid");
@@ -367,19 +367,19 @@ const EditAdminModal = ({
                     className="mt-4 flex flex-col gap-5"
                 >
                     <InputField
-                        label="Name"
+                        label="Name *"
                         value={editInfo?.name}
                         onChange={onEditChange}
                         name="name"
                     />
                     <InputField
-                        label="Email"
+                        label="Email *"
                         value={editInfo?.email}
                         onChange={onEditChange}
                         name="email"
                     />
                     <InputField
-                        label="Username"
+                        label="Username *"
                         value={editInfo?.username}
                         onChange={onEditChange}
                         name="username"
@@ -389,6 +389,13 @@ const EditAdminModal = ({
                         value={editInfo?.speciality}
                         onChange={onEditChange}
                         name="speciality"
+                    />
+                    <InputField
+                        label="Password"
+                        value={editInfo?.password ?? ""}
+                        onChange={onEditChange}
+                        name="password"
+                        isPassword
                     />
                 </form>
             </div>

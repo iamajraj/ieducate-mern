@@ -98,7 +98,7 @@ router.post("/admins", verifyToken, async (req, res) => {
 });
 
 router.put("/admins/:id", verifyToken, async (req, res) => {
-    const { name, username, email, _id: id } = req.body;
+    const { name, username, email, _id: id, password } = req.body;
 
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are allowed", res);
@@ -117,6 +117,10 @@ router.put("/admins/:id", verifyToken, async (req, res) => {
             return sendError(400, "Email already exists", res);
     }
 
+    if (password && password.trim() !== "") {
+        user.password = password;
+    }
+
     try {
         await Admin.findByIdAndUpdate(id, {
             $set: {
@@ -125,6 +129,7 @@ router.put("/admins/:id", verifyToken, async (req, res) => {
                 email: email,
             },
         });
+        await user.save();
         res.status(201).json({
             message: "Admin has been modified",
         });

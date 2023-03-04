@@ -92,6 +92,31 @@ router.post("/teachers/set-attendance", verifyToken, async (req, res) => {
     }
 });
 
+router.delete("/teachers/delete-attendance", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are allowed", res);
+
+    const { attendance_id, teacher_id } = req.body;
+
+    const teacher = await Teacher.findById(teacher_id);
+
+    if (!teacher) return sendError(404, "Teacher doesn't Exists", res);
+
+    teacher.attendance = teacher.attendance.filter((att) => {
+        return att._id.toString() !== String(attendance_id);
+    });
+
+    try {
+        await teacher.save();
+        return res.status(201).json({
+            message: "Teacher attendance has been deleted",
+        });
+    } catch (err) {
+        console.log(err);
+        return sendError(500, "Something went wrong.", res);
+    }
+});
+
 router.get("/teachers", verifyToken, async (req, res) => {
     try {
         const teachers = await Teacher.find({}, { password: 0 });
@@ -115,7 +140,7 @@ router.get("/teachers/:id", verifyToken, async (req, res) => {
 });
 
 router.put("/teachers/:id", verifyToken, async (req, res) => {
-    const { name, username, email, speciality, _id: id } = req.body;
+    const { name, username, email, speciality, _id: id, password } = req.body;
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are allowed", res);
 
@@ -133,6 +158,10 @@ router.put("/teachers/:id", verifyToken, async (req, res) => {
             return sendError(400, "Email already exists", res);
     }
 
+    if (password && password.trim() !== "") {
+        user.password = password;
+    }
+
     try {
         await Teacher.findByIdAndUpdate(id, {
             $set: {
@@ -142,6 +171,7 @@ router.put("/teachers/:id", verifyToken, async (req, res) => {
                 speciality: speciality,
             },
         });
+        await user.save();
         res.status(201).json({
             message: "Teacher has been modified",
         });

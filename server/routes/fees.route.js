@@ -53,23 +53,29 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
 
     if (!isPaid) return sendError(400, "Required fields can't be empty", res);
 
-    const fee = await Fees.findById(id);
+    const fee = await Fees.findById(id).populate("subjects");
 
     if (!fee) return sendError(404, "Fee not found", res);
 
     try {
         if (isPaid === "Paid") {
-            await Subject.updateMany({
-                last_payment_date: Date.now(),
-            });
-
+            await Subject.updateMany(
+                {
+                    student_id: fee.student,
+                },
+                {
+                    $set: {
+                        last_payment_date: Date.now(),
+                    },
+                }
+            );
+            fee.previous_due_date = fee.due_date;
             fee.due_date = dayjs(Date.now()).add(30, "day");
             fee.payment_reminder = dayjs(Date.now())
                 .add(30, "day")
                 .subtract(10, "day");
         }
         fee.isPaid = isPaid;
-
         await fee.save();
 
         return res.status(200).json({

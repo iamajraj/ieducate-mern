@@ -22,8 +22,8 @@ const Header = () => {
             </h1>
             <div className="flex gap-4 items-center cursor-pointer relative">
                 <div className="">
-                    <p className="text-[14px] text-end">{user?.name}</p>
-                    <p className="text-[13px]">{user?.email}</p>
+                    <p className="text-[12px] text-end">{user?.name}</p>
+                    <p className="text-[12px]">{user?.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Dropdown
@@ -41,7 +41,7 @@ const Header = () => {
                         }}
                     >
                         <Space>
-                            <DownOutlined />
+                            <DownOutlined className="text-[16px]" />
                         </Space>
                     </Dropdown>
                 </div>

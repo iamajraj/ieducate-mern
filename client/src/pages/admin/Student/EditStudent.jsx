@@ -9,7 +9,7 @@ import SelectSubjectModal from "./Subject/SelectSubjectModal";
 import ViewSubjectModal from "./Subject/ViewSubjectModal";
 import { useParams } from "react-router-dom";
 import moment from "moment";
-import EditMonthlyPayment from "./Subject/EditMonthlyPayment";
+import EditSubjectModal from "./Subject/EditSubjectModal";
 
 const initialData = {
     student_roll_no: "",
@@ -59,6 +59,14 @@ const EditStudent = () => {
         let err;
         Object.keys(studentData).some((key) => {
             let value = studentData[key];
+
+            if (
+                key === "invoices" ||
+                key === "test_reports" ||
+                key === "general_reports"
+            ) {
+                return false;
+            }
 
             if (value === null || value === "" || value?.length < 1) {
                 err = true;
@@ -403,7 +411,7 @@ const EditStudent = () => {
                             name="password"
                             className=""
                             onChange={onChange}
-                            value={studentData.password}
+                            value={studentData.password ?? ""}
                             isPassword
                         />
                         <Button
@@ -411,7 +419,7 @@ const EditStudent = () => {
                             htmlType="submit"
                             className={`flex items-center bg-main text-white  justify-center hover:bg-transparent cursor-pointer mt-5 py-7 w-[180px] ml-auto`}
                         >
-                            <p className={`text-[18px]`}>Add</p>
+                            <p className={`text-[18px]`}>Save</p>
                         </Button>
                     </div>
                 </form>
@@ -425,11 +433,11 @@ const EditStudent = () => {
                 removeSubject={removeSubject}
             />
             {/* Edit Monthly Payment */}
-            <EditMonthlyPayment
+            <EditSubjectModal
                 setSubjectData={setSubjectData}
                 editSubject={editSubject}
-                open={editSubject}
                 subjectData={subjectData}
+                open={editSubject}
                 setOpen={setEditSubject}
             />
 
