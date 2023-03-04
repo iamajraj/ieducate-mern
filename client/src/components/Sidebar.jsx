@@ -62,13 +62,19 @@ const Sidebar = ({ className, collapsed, setCollapsed }) => {
         >
             <div className="flex items-center justify-between py-7 px-5 ">
                 {!collapsed && (
-                    <div className="">
-                        <h1 className="text-[24px] relative w-max">
+                    <div className="flex items-end">
+                        {/* <h1 className="text-[24px] relative w-max">
                             iEducate
                             <p className="absolute -top-3 right-0 text-[14px] capitalize">
                                 {user?.user_type}
                             </p>
-                        </h1>
+                        </h1> */}
+                        <img
+                            src="/assets/logo.png"
+                            alt=""
+                            className="h-[40px] object-contain"
+                        />
+                        <h1 className="text-[24px]">Educate</h1>
                     </div>
                 )}
                 <Button

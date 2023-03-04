@@ -37,3 +37,33 @@ body {
 .ant-menu-submenu.ant-menu-submenu-active .ant-menu-submenu-arrow {
     color: white !important;
 }
+body
+    > div:nth-child(3)
+    > div
+    > div
+    > div
+    > div.ant-picker-panel-container
+    > div
+    > div
+    > div.ant-picker-footer
+    > ul
+    > li
+    > button {
+    background-color: #0958d9 !important;
+}
+
+body
+    > div:nth-child(3)
+    > div
+    > div
+    > div
+    > div.ant-picker-panel-container
+    > div
+    > div
+    > div.ant-picker-footer
+    > ul
+    > li
+    > button {
+    background-color: #199fda !important;
+    color: white !important;
+}

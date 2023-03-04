@@ -5,11 +5,13 @@ import MainButton from "../components/MainButton";
 const Home = () => {
     return (
         <div className="flex flex-col h-screen items-center justify-center gap-[70px] px-4 bg-gradient-to-r from-sky-700 via-cyan-500 to-cyan-600">
-            <div className="flex itesm-center">
-                <p className="text-white block rotate-180 scale-150 text-[22px] mb-2">
-                    i
-                </p>
-                <h1 className="text-white text-[30px] border-b-2 border-white">
+            <div className="flex items-end">
+                <img
+                    src="/assets/logo.png"
+                    alt=""
+                    className="h-[70px] object-contain"
+                />
+                <h1 className="text-[35px] text-white font-semibold">
                     Educate
                 </h1>
             </div>
