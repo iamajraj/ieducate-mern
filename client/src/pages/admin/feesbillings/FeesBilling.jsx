@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import MainButton from "../../../components/MainButton";
 import axiosInstance from "../../../services/axiosInstance";
+import EditDueDate from "./EditDueDate";
 
 const FeesBilling = () => {
     const [fees, setFees] = useState([]);
@@ -16,6 +17,15 @@ const FeesBilling = () => {
         method: "get",
         url: "/fees",
     });
+    const [editDue, setEditDue] = useState(null);
+
+    const fetchFees = async () => {
+        try {
+            const res = await axiosInstance.get("/fees");
+            setFees(res.data.fees);
+        } catch (err) {}
+    };
+
     useEffect(() => {
         if (response) {
             setFees(response.fees);
@@ -52,16 +62,26 @@ const FeesBilling = () => {
                     </div>
                 </div>
                 <div className="mt-7">
-                    <FeesTable data={fees} loading={loading} />
+                    <FeesTable
+                        data={fees}
+                        loading={loading}
+                        onEditDue={setEditDue}
+                    />
                 </div>
             </div>
+            <EditDueDate
+                open={editDue}
+                setOpen={setEditDue}
+                editData={editDue}
+                fetchFees={fetchFees}
+            />
         </Container>
     );
 };
 
 export default FeesBilling;
 
-const FeesTable = ({ data, loading }) => {
+const FeesTable = ({ data, loading, onEditDue }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -225,13 +245,23 @@ const FeesTable = ({ data, loading }) => {
             title: "Action",
             key: "action",
             render: (_, record) => (
-                <Space
-                    onClick={() => {
-                        navigate(`${record.id}`);
-                    }}
-                    size="middle"
-                >
-                    <Button type="dashed">View</Button>
+                <Space size="middle">
+                    <Button
+                        type="dashed"
+                        onClick={() => {
+                            onEditDue(record);
+                        }}
+                    >
+                        Edit Due date
+                    </Button>
+                    <Button
+                        type="dashed"
+                        onClick={() => {
+                            navigate(`${record.id}`);
+                        }}
+                    >
+                        View
+                    </Button>
                 </Space>
             ),
         },
@@ -251,6 +281,7 @@ const FeesTable = ({ data, loading }) => {
                         "DD/MM/YYYY"
                     ),
                     due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
+                    due_date_iso: d.due_date,
                 };
             })}
             pagination={{

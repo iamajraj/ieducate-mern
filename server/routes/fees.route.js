@@ -99,4 +99,32 @@ router.get("/fees/:id", verifyToken, async (req, res) => {
     }
 });
 
+router.patch("/fees/change-due-date/:id", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are alloed", res);
+
+    const { id } = req.params;
+
+    const { due_date } = req.body;
+
+    if (!due_date) return sendError(400, "Due date required", res);
+
+    const fees = await Fees.findById(id);
+
+    if (!fees) return sendError(404, "Fees doesn't exists", res);
+
+    fees.previous_due_date = fees.due_date;
+    fees.due_date = due_date;
+    fees.payment_reminder = dayjs(due_date).subtract(10, "day");
+
+    try {
+        await fees.save();
+        res.status(200).json({
+            message: "Success",
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
 module.exports = router;

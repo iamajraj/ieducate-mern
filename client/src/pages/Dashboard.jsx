@@ -419,6 +419,7 @@ const TeachersTable = ({ data, loading }) => {
 
     return (
         <Table
+            bordered
             loading={loading}
             columns={columns}
             dataSource={data?.map((d) => ({
@@ -589,6 +590,7 @@ const StudentsTable = ({ data, loading }) => {
 
     return (
         <Table
+            bordered
             loading={loading}
             columns={columns}
             dataSource={data}

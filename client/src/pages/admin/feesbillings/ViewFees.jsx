@@ -1,10 +1,10 @@
 import React, { createElement, useEffect, useState } from "react";
 import Container from "../../../components/Container";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import dayjs from "dayjs";
 import { message, Select } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
 
 const ViewFees = () => {
     const [fee, setFee] = useState(null);
@@ -165,6 +165,8 @@ const ViewFees = () => {
         fetchFee();
     }, [id]);
 
+    const navigate = useNavigate();
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg flex flex-col">
@@ -175,6 +177,11 @@ const ViewFees = () => {
                 ) : (
                     <div className="flex flex-col">
                         <div className="flex items-center gap-5">
+                            <ArrowLeftOutlined
+                                onClick={() => {
+                                    navigate(-1);
+                                }}
+                            />
                             <h1 className="text-[23px]">
                                 View Fee for {fee?.student.student_name}
                             </h1>

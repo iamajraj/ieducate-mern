@@ -27,24 +27,12 @@ function getItem(label, key, icon, children, type) {
 
 const adminItems = [
     getItem("Dashboard", "", <AppstoreOutlined />),
-    getItem("Admin", "admin", <UserOutlined />, [
-        getItem("All Admins", "admins"),
-        getItem("Register Admin", "admins/register"),
-    ]),
-    getItem("Teacher", "teacher", <TeamOutlined />, [
-        getItem("All Teachers", "teachers"),
-        getItem("Register Teacher", "teachers/register"),
-    ]),
-    getItem("Student", "student", <TeamOutlined />, [
-        getItem("All Students", "students"),
-        getItem("Register Student", "students/register"),
-    ]),
+    getItem("Admin Management", "admins", <UserOutlined />),
+    getItem("Teacher Management", "teachers", <TeamOutlined />),
+    getItem("Student Management", "students", <TeamOutlined />),
     getItem("Fees / Billing", "fees-billings", <PoundOutlined />),
     getItem("Teachers Attendance", "teachers-attendance", <CalendarOutlined />),
-    getItem("Announcements", "announcements-menu", <SolutionOutlined />, [
-        getItem("All Announcements", "announcements"),
-        getItem("Add Announcement", "announcements/add"),
-    ]),
+    getItem("Announcements", "announcements", <SolutionOutlined />),
 ];
 
 const teacherItems = [
@@ -58,8 +46,7 @@ const items = {
     teacher: teacherItems,
 };
 
-const Sidebar = () => {
-    const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ className, collapsed, setCollapsed }) => {
     const { user } = useContext(authContext);
 
     const toggleCollapsed = () => {
@@ -71,7 +58,7 @@ const Sidebar = () => {
         <div
             className={`${
                 collapsed ? "w-[85px]" : "w-[250px]"
-            } h-full transition-all border-r bg-main text-white`}
+            } h-full transition-all border-r bg-main text-white ${className}`}
         >
             <div className="flex items-center justify-between py-7 px-5 ">
                 {!collapsed && (
