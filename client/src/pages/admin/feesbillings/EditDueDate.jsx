@@ -42,17 +42,19 @@ const EditDueDate = ({ open, setOpen, editData, fetchFees }) => {
                 <h1 className="text-[20px]">
                     Edit the Due Date for {editData?.name}
                 </h1>
-                <div className="mt-4 flex flex-col gap-5">
-                    <div className="flex flex-col gap-3">
-                        <label htmlFor="">Due Date *</label>
-                        <DatePicker
-                            onChange={(value) => {
-                                setDueDate(value.toISOString());
-                            }}
-                            defaultValue={dayjs(editData?.due_date)}
-                        />
+                {editData && (
+                    <div className="mt-4 flex flex-col gap-5">
+                        <div className="flex flex-col gap-3">
+                            <label htmlFor="">Due Date *</label>
+                            <DatePicker
+                                onChange={(value) => {
+                                    setDueDate(value.toISOString());
+                                }}
+                                defaultValue={dayjs(editData.due_date_iso)}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </Modal>
     );

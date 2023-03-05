@@ -21,6 +21,7 @@ import Students from "../pages/admin/Student/Students";
 
 import AddAnnouncement from "../pages/admin/Announcements/AddAnnouncement";
 import FeesBilling from "../pages/admin/feesbillings/FeesBilling";
+import FeesStudents from "../pages/admin/feesbillings/FeesStudents";
 import Announcements from "../pages/admin/Announcements/Announcement";
 import Home from "../pages/Home";
 import EditStudent from "../pages/admin/Student/EditStudent";
@@ -156,11 +157,20 @@ const router = createBrowserRouter([
                         children: [
                             {
                                 index: true,
-                                element: <FeesBilling />,
+                                element: <FeesStudents />,
                             },
                             {
-                                path: ":id",
-                                element: <ViewFees />,
+                                path: ":student_id",
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <FeesBilling />,
+                                    },
+                                    {
+                                        path: "view/:fee_id",
+                                        element: <ViewFees />,
+                                    },
+                                ],
                             },
                         ],
                     },

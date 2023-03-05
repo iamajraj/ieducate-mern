@@ -95,7 +95,10 @@ const Sidebar = ({ className, collapsed, setCollapsed }) => {
                     items={items[user.user_type]}
                     className="bg-main text-white"
                     style={{ border: "none" }}
-                    onSelect={(info) => {
+                    // onSelect={(info) => {
+                    //     navigate(`${info.key}`);
+                    // }}
+                    onClick={(info) => {
                         navigate(`${info.key}`);
                     }}
                 />

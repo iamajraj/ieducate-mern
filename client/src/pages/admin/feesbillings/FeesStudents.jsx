@@ -1,89 +1,57 @@
-import React, { useEffect } from "react";
 import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table, Tag } from "antd";
-import { useRef, useState } from "react";
+import { Button, Input, message, Modal, Space, Table } from "antd";
+import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { useAxios } from "../../../hooks/useAxios";
-import { useNavigate, useParams } from "react-router-dom";
-import dayjs from "dayjs";
 import MainButton from "../../../components/MainButton";
-import axiosInstance from "../../../services/axiosInstance";
-import EditDueDate from "./EditDueDate";
+import { useAxios } from "../../../hooks/useAxios";
+import { Link, useNavigate } from "react-router-dom";
 
-const FeesBilling = () => {
-    const [fees, setFees] = useState([]);
-    const [editDue, setEditDue] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const { student_id } = useParams();
-
-    const fetchFees = async () => {
-        setLoading(true);
-        try {
-            const res = await axiosInstance.get(`/fees/${student_id}`);
-            setFees(res.data.fees);
-        } catch (err) {
-        } finally {
-            setLoading(false);
-        }
-    };
+const Students = () => {
+    const [students, setStudents] = useState([]);
+    const { loading, error, response } = useAxios({
+        method: "get",
+        url: "/students",
+    });
 
     useEffect(() => {
-        fetchFees();
-    }, []);
-
-    const exportToCSV = async () => {
-        try {
-            const res = await axiosInstance.get(
-                `/fees/export-to-csv/${student_id}`
-            );
-            const a = document.createElement("a");
-            a.download = "fees.csv";
-            a.href = "data:text/csv;charset=utf-8," + res.data.exported;
-            a.click();
-        } catch (err) {
-            console.log(err);
+        if (response) {
+            setStudents(response.students);
         }
-    };
+    }, [response, error, loading]);
 
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg">
-                <div className="border-b pb-5">
+                <div className="flex items-center justify-between">
                     <div className="flex items-end gap-5">
                         <div>
-                            <h1 className="text-[24px]">Fees / Billing</h1>
+                            <h1 className="text-[24px]">Fees / Billings</h1>
                             <p className="text-[13px]">
-                                View all the fees and billing.
+                                You can view the fees of a student by clicking
+                                on the <b>View Fees</b> button.
                             </p>
                         </div>
-                        <MainButton
-                            onClick={exportToCSV}
-                            text="Export to CSV"
-                        />
                     </div>
+                    <Link to="/admin/dashboard/students/register">
+                        <MainButton
+                            text="Add Student"
+                            className="py-4"
+                            textClass="text-[15px]"
+                        />
+                    </Link>
                 </div>
-                <div className="mt-7">
-                    <FeesTable
-                        data={fees}
-                        loading={loading}
-                        onEditDue={setEditDue}
-                    />
+                <div className="mt-10 border">
+                    <StudentsTable loading={loading} data={students} />
                 </div>
             </div>
-            <EditDueDate
-                open={editDue}
-                setOpen={setEditDue}
-                editData={editDue}
-                fetchFees={fetchFees}
-            />
         </Container>
     );
 };
 
-export default FeesBilling;
+export default Students;
 
-const FeesTable = ({ data, loading, onEditDue }) => {
+const StudentsTable = ({ data, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -213,47 +181,30 @@ const FeesTable = ({ data, loading, onEditDue }) => {
 
     const columns = [
         {
-            title: "Subjects",
-            dataIndex: "subjects",
-            key: "subjects",
+            title: "Roll No",
+            dataIndex: "student_roll_no",
+            key: "student_roll_no",
             width: "20%",
-            render: (_, record) => (
-                <Tag color={"geekblue"} key={record.subjects}>
-                    {record.subjects}
-                </Tag>
-            ),
-            ...getColumnSearchProps("subjects"),
+            ...getColumnSearchProps("student_roll_no"),
         },
         {
-            title: "Payment Reminder Date",
-            dataIndex: "payment_reminder",
-            key: "payment_reminder",
-            ...getColumnSearchProps("payment_reminder"),
+            title: "Student Name",
+            dataIndex: "student_name",
+            key: "student_name",
+            width: "30%",
+            ...getColumnSearchProps("student_name"),
         },
         {
-            title: "Due Date",
-            dataIndex: "due_date",
-            key: "due_date",
-            ...getColumnSearchProps("due_date"),
+            title: "Email Address",
+            dataIndex: "email",
+            key: "email",
+            ...getColumnSearchProps("email"),
         },
         {
-            title: "Is Paid",
-            dataIndex: "is_paid",
-            key: "is_paid",
-            ...getColumnSearchProps("is_paid"),
-        },
-        {
-            title: "Active",
-            dataIndex: "active",
-            key: "active",
-            render: (_, record) =>
-                record.active === "Active" ? (
-                    <Space size="middle">
-                        <Tag className="bg-green-500 text-white">
-                            {record.active}
-                        </Tag>
-                    </Space>
-                ) : null,
+            title: "Student Telephone",
+            dataIndex: "student_telephone",
+            key: "student_telephone",
+            ...getColumnSearchProps("student_telephone"),
         },
         {
             title: "Action",
@@ -263,18 +214,10 @@ const FeesTable = ({ data, loading, onEditDue }) => {
                     <Button
                         type="dashed"
                         onClick={() => {
-                            onEditDue(record);
+                            navigate(`${record._id}`);
                         }}
                     >
-                        Edit Due date
-                    </Button>
-                    <Button
-                        type="dashed"
-                        onClick={() => {
-                            navigate(`view/${record.id}`);
-                        }}
-                    >
-                        View
+                        View Fees
                     </Button>
                 </Space>
             ),
@@ -285,25 +228,7 @@ const FeesTable = ({ data, loading, onEditDue }) => {
         <Table
             loading={loading}
             columns={columns}
-            dataSource={data
-                .map((d) => {
-                    return {
-                        key: d._id,
-                        id: d._id,
-                        name: d.student.student_name,
-                        subjects: d.subjects
-                            .map((s) => s.subject_name)
-                            .join(", "),
-                        payment_reminder: dayjs(d.payment_reminder).format(
-                            "DD/MM/YYYY"
-                        ),
-                        due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
-                        due_date_iso: d.due_date,
-                        active: d.isActive ? "Active" : "Not Active",
-                        is_paid: d.isPaid,
-                    };
-                })
-                .reverse()}
+            dataSource={data}
             pagination={{
                 pageSize: 7,
             }}

@@ -10,11 +10,11 @@ const ViewFees = () => {
     const [fee, setFee] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const { id } = useParams();
+    const { fee_id } = useParams();
 
     const fetchFee = async () => {
         try {
-            const res = await axiosInstance(`/fees/${id}`);
+            const res = await axiosInstance(`/single-fee/${fee_id}`);
             setFee(res.data.fee);
         } catch (err) {
         } finally {
@@ -25,7 +25,7 @@ const ViewFees = () => {
     const setPaid = async (value) => {
         try {
             await axiosInstance.patch("/fees/set-paid", {
-                fee_id: id,
+                fee_id: fee_id,
                 isPaid: value,
             });
             await fetchFee();
@@ -59,7 +59,7 @@ const ViewFees = () => {
         const subjectValue = [
             ...fee.subjects.map((item) => [
                 item.subject_name,
-                dayjs(item.last_payment_date).format("DD/MM/YYYY"),
+                dayjs(fee.student.last_payment_date).format("DD/MM/YYYY"),
                 item.monthly_payment,
             ]),
         ]
@@ -103,13 +103,13 @@ const ViewFees = () => {
 
         const subjectKey = [
             "Subject Name",
-            "Last Payment Date",
+            // "Last Payment Date",
             "Monthly Payment",
         ].join(",");
         const subjectValue = [
             ...fee.subjects.map((item) => [
                 item.subject_name,
-                dayjs(item.last_payment_date).format("DD/MM/YYYY"),
+                // dayjs(item.last_payment_date).format("DD/MM/YYYY"),
                 item.monthly_payment,
             ]),
         ]
@@ -163,7 +163,7 @@ const ViewFees = () => {
 
     useEffect(() => {
         fetchFee();
-    }, [id]);
+    }, [fee_id]);
 
     const navigate = useNavigate();
 
@@ -222,6 +222,16 @@ const ViewFees = () => {
                                 <h1>Student Telephone: </h1>
                                 <span>{fee.student.student_telephone}</span>
                             </div>
+                            <div className="flex items-center gap-4">
+                                <h1>Last Payment:</h1>
+                                <span>
+                                    {fee.student.last_payment_date
+                                        ? dayjs(
+                                              fee.student.last_payment_date
+                                          ).format("DD/MM/YYYY")
+                                        : "_"}
+                                </span>
+                            </div>
                             <div className="flex items-center gap-5">
                                 <h1>Number of Subjects: </h1>
                                 <span>{fee.subjects.length}</span>
@@ -234,16 +244,6 @@ const ViewFees = () => {
                                             <div className="flex items-center gap-4">
                                                 <h1>Name:</h1>
                                                 <span>{sub.subject_name}</span>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <h1>Last Payment:</h1>
-                                                <span>
-                                                    {sub.last_payment_date
-                                                        ? dayjs(
-                                                              sub.last_payment_date
-                                                          ).format("DD/MM/YYYY")
-                                                        : "_"}
-                                                </span>
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 <h1>Monthly Payment:</h1>

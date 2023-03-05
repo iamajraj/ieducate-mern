@@ -180,6 +180,7 @@ const SetTeacherAttendance = () => {
                                 onChange("time", value);
                             }}
                             name="time"
+                            disabled={false}
                             use12Hours
                         />
                     </div>

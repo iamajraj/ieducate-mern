@@ -49,7 +49,7 @@ body
     > ul
     > li
     > button {
-    background-color: #0958d9 !important;
+    background-color: #199fda !important;
 }
 
 body
@@ -63,7 +63,7 @@ body
     > div.ant-picker-footer
     > ul
     > li
-    > button {
+    > button:disabled {
     background-color: #199fda !important;
     color: white !important;
 }
