@@ -57,16 +57,18 @@ const EditStudent = () => {
         }
 
         let err;
-        Object.keys(studentData).some((key) => {
-            let value = studentData[key];
-
+        Object.keys(initialData).some((key) => {
             if (
                 key === "invoices" ||
                 key === "test_reports" ||
-                key === "general_reports"
+                key === "general_reports" ||
+                key === "removed_subject_ids" ||
+                key === "new_subject_local_ids" ||
+                key === "password"
             ) {
                 return false;
             }
+            let value = studentData[key];
 
             if (value === null || value === "" || value?.length < 1) {
                 err = true;
