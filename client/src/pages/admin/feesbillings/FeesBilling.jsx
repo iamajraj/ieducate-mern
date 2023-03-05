@@ -4,7 +4,6 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { useAxios } from "../../../hooks/useAxios";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import MainButton from "../../../components/MainButton";
@@ -228,19 +227,34 @@ const FeesTable = ({ data, loading, onEditDue }) => {
             title: "Payment Reminder Date",
             dataIndex: "payment_reminder",
             key: "payment_reminder",
-            ...getColumnSearchProps("payment_reminder"),
+            sorter: (a, b) =>
+                Date.parse(b.payment_reminder_iso) -
+                Date.parse(a.payment_reminder_iso),
         },
         {
             title: "Due Date",
             dataIndex: "due_date",
             key: "due_date",
-            ...getColumnSearchProps("due_date"),
+            defaultSortOrder: "ascend",
+            sorter: (a, b) =>
+                Date.parse(b.due_date_iso) - Date.parse(a.due_date_iso),
         },
         {
             title: "Is Paid",
             dataIndex: "is_paid",
             key: "is_paid",
-            ...getColumnSearchProps("is_paid"),
+            filters: [
+                {
+                    text: "Paid",
+                    value: "Paid",
+                },
+                {
+                    text: "Not Paid",
+                    value: "Not Paid",
+                },
+            ],
+            filterMultiple: false,
+            onFilter: (value, record) => record.is_paid === value,
         },
         {
             title: "Active",
@@ -297,6 +311,8 @@ const FeesTable = ({ data, loading, onEditDue }) => {
                         payment_reminder: dayjs(d.payment_reminder).format(
                             "DD/MM/YYYY"
                         ),
+                        due_date_iso: d.due_date,
+                        payment_reminder_iso: d.payment_reminder,
                         due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
                         due_date_iso: d.due_date,
                         active: d.isActive ? "Active" : "Not Active",

@@ -31,6 +31,7 @@ import TrackAttendance from "../pages/teacher/TrackAttendance";
 import StudentReports from "../pages/teacher/Report/StudentReports";
 import EditGeneralReport from "../pages/teacher/Report/EditGeneralReport";
 import Dashboard from "../pages/Dashboard";
+import AllFees from "../pages/admin/feesbillings/AllFees";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -157,18 +158,27 @@ const router = createBrowserRouter([
                         children: [
                             {
                                 index: true,
-                                element: <FeesStudents />,
+                                element: <AllFees />,
                             },
                             {
-                                path: ":student_id",
+                                path: "students",
                                 children: [
                                     {
                                         index: true,
-                                        element: <FeesBilling />,
+                                        element: <FeesStudents />,
                                     },
                                     {
-                                        path: "view/:fee_id",
-                                        element: <ViewFees />,
+                                        path: ":student_id",
+                                        children: [
+                                            {
+                                                index: true,
+                                                element: <FeesBilling />,
+                                            },
+                                            {
+                                                path: "view/:fee_id",
+                                                element: <ViewFees />,
+                                            },
+                                        ],
                                     },
                                 ],
                             },

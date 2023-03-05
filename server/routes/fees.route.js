@@ -111,6 +111,41 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
         sendError(500, "Something went wrong", res);
     }
 });
+router.patch("/fees/change-subject-fee", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are alloed", res);
+
+    const { fee_id, subject_id, fee_amount } = req.body;
+
+    if (!fee_amount)
+        return sendError(400, "Please provide the fee amount", res);
+    if (!fee_id) return sendError(400, "Please provide the fee id", res);
+    if (!subject_id)
+        return sendError(400, "Please provide the subject id", res);
+
+    const fee = await Fees.findById(fee_id);
+
+    if (!fee) {
+        return sendError(404, "Fee doesn't exists", res);
+    }
+
+    try {
+        fee.subjects = fee.subjects.map((sub) => {
+            if (sub._id.toString() === String(subject_id)) {
+                sub.monthly_payment = fee_amount;
+            }
+            return sub;
+        });
+        await fee.save();
+
+        return res.status(200).json({
+            message: "Success",
+        });
+    } catch (err) {
+        console.log(err);
+        sendError(500, "Something went wrong", res);
+    }
+});
 
 router.get("/single-fee/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
@@ -125,6 +160,21 @@ router.get("/single-fee/:id", verifyToken, async (req, res) => {
 
         return res.status(200).json({
             fee,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.get("/active-fees", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "admin")
+        return sendError(401, "Only Admins are alloed", res);
+
+    try {
+        const fees = await Fees.find({ isActive: true }).populate(["student"]);
+        if (!fees) return sendError(404, "Fees doesn't exists", res);
+        return res.status(200).json({
+            fees,
         });
     } catch (err) {
         sendError(500, "Something went wrong", res);

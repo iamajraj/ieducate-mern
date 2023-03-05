@@ -3,12 +3,18 @@ import Container from "../../../components/Container";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import dayjs from "dayjs";
-import { message, Select } from "antd";
-import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
+import { InputNumber, message, Modal, Select } from "antd";
+import {
+    ArrowLeftOutlined,
+    DownloadOutlined,
+    EditOutlined,
+} from "@ant-design/icons";
 
 const ViewFees = () => {
     const [fee, setFee] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [updateSubjectMonthlyPayment, setUpdateSubjectMonthlyPayment] =
+        useState(null);
 
     const { fee_id } = useParams();
 
@@ -145,9 +151,10 @@ const ViewFees = () => {
                 student_name: fee.student.student_name,
                 year: fee.student.year,
                 number_of_subject: fee.student.number_of_subject,
+                last_payment_date: fee.student.last_payment_date,
                 subjects: fee.subjects.map((sub) => ({
                     subject_name: sub.subject_name,
-                    last_payment_date: sub.last_payment_date,
+                    // last_payment_date: sub.last_payment_date,
                     monthly_payment: sub.monthly_payment,
                 })),
                 total_amount: fee.subjects.reduce((acc, cur) => {
@@ -199,12 +206,12 @@ const ViewFees = () => {
                                 <p className="text-[13px]">Standard CSV</p>
                                 <DownloadOutlined />
                             </button>
-                            {/* <button
+                            <button
                                 onClick={issueInvoice}
                                 className="flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
                             >
                                 <p className="text-[13px]">Issue Invoice</p>
-                            </button> */}
+                            </button>
                         </div>
 
                         <div className="border-b mt-3 mb-10"></div>
@@ -250,6 +257,17 @@ const ViewFees = () => {
                                                 <span>
                                                     £ {sub.monthly_payment}
                                                 </span>
+                                                {fee.isActive && (
+                                                    <div className="cursor-pointer">
+                                                        <EditOutlined
+                                                            onClick={() => {
+                                                                setUpdateSubjectMonthlyPayment(
+                                                                    sub
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -290,8 +308,77 @@ const ViewFees = () => {
                     </div>
                 )}
             </div>
+
+            <UpdateSubjectMonthlyPaymentModal
+                open={updateSubjectMonthlyPayment}
+                setOpen={setUpdateSubjectMonthlyPayment}
+                updateSubjectMonthlyPayment={updateSubjectMonthlyPayment}
+                setUpdateSubjectMonthlyPayment={setUpdateSubjectMonthlyPayment}
+                fee_id={fee_id}
+                fetchFee={fetchFee}
+            />
         </Container>
     );
 };
 
 export default ViewFees;
+
+const UpdateSubjectMonthlyPaymentModal = ({
+    open,
+    setOpen,
+    updateSubjectMonthlyPayment,
+    fee_id,
+    fetchFee,
+}) => {
+    const [subject, setSubject] = useState(updateSubjectMonthlyPayment);
+    const updateFee = async () => {
+        if (!subject.monthly_payment)
+            return message.error("Fee input can't be empty");
+        try {
+            await axiosInstance.patch("/fees/change-subject-fee", {
+                fee_id: fee_id,
+                subject_id: subject._id,
+                fee_amount: subject.monthly_payment,
+            });
+            message.success("Fee amount has been updated");
+            setOpen(null);
+            await fetchFee();
+        } catch (err) {
+            message.error(
+                err.response?.data?.message ?? "Something went wrong"
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (updateSubjectMonthlyPayment) {
+            setSubject(updateSubjectMonthlyPayment);
+        }
+    }, [updateSubjectMonthlyPayment]);
+
+    return (
+        <Modal open={open} onCancel={() => setOpen(null)} onOk={updateFee}>
+            <div className="p-5">
+                <h1 className="text-[20px]">
+                    Edit the subject fee for {subject?.subject_name}
+                </h1>
+
+                <div className="my-5 border-b"></div>
+
+                <InputNumber
+                    defaultValue={0}
+                    formatter={(value) => `£ ${value}`}
+                    className="w-full py-2 text-[17px]"
+                    name="monthly_payment"
+                    onChange={(value) => {
+                        setSubject((prev) => ({
+                            ...prev,
+                            monthly_payment: value,
+                        }));
+                    }}
+                    value={subject?.monthly_payment}
+                />
+            </div>
+        </Modal>
+    );
+};

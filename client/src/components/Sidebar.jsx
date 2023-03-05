@@ -72,7 +72,7 @@ const Sidebar = ({ className, collapsed, setCollapsed }) => {
                         <img
                             src="/assets/logo.png"
                             alt=""
-                            className="h-[40px] object-contain"
+                            className="h-[50px] object-contain"
                         />
                         <h1 className="text-[24px]">Educate</h1>
                     </div>
