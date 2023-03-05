@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { SubjectSchema } = require("./subject.model");
 
 const FeesSchema = new mongoose.Schema(
     {
@@ -8,8 +9,7 @@ const FeesSchema = new mongoose.Schema(
             required: true,
         },
         subjects: {
-            type: [mongoose.SchemaTypes.ObjectId],
-            ref: "Subject",
+            type: [SubjectSchema],
             required: true,
             default: [],
         },
@@ -29,6 +29,10 @@ const FeesSchema = new mongoose.Schema(
             type: String,
             enum: ["Paid", "Not Paid"],
             default: "Not Paid",
+        },
+        isActive: {
+            type: Boolean,
+            default: true,
         },
     },
     {

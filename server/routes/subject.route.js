@@ -1,6 +1,6 @@
 const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
-const Subject = require("../models/subject.model");
+const { Subject } = require("../models/subject.model");
 const sendError = require("../utils/sendError");
 
 const router = express.Router();

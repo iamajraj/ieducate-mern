@@ -6,7 +6,7 @@ const Fees = require("../models/fees.model");
 const json2csv = require("json2csv").parse;
 
 const Student = require("../models/student.model");
-const Subject = require("../models/subject.model");
+const { Subject } = require("../models/subject.model");
 const GeneralReport = require("../models/generalreport.model");
 const TestReport = require("../models/testreport.model");
 
@@ -88,7 +88,7 @@ router.post("/students", verifyToken, async (req, res) => {
     student.subjects.push(subject_ids);
 
     await Fees.create({
-        subjects: subject_ids,
+        subjects: created_subjects,
         student: student._id,
         due_date: dayjs(subjects[subjects.length - 1].first_lesson_date).add(
             30,
@@ -100,6 +100,7 @@ router.post("/students", verifyToken, async (req, res) => {
         previous_due_date: dayjs(
             subjects[subjects.length - 1].first_lesson_date
         ).add(30, "day"),
+        isActive: true,
     });
 
     try {
@@ -206,14 +207,6 @@ router.put("/students/:id", verifyToken, async (req, res) => {
             }
         });
 
-        // update fees
-        const fees = await Fees.findOne({ student: student._id });
-        fees.updateOne({
-            $set: {
-                subjects: allSubjectIds,
-            },
-        });
-
         await student.updateOne({
             $set: {
                 subjects: allSubjectIds,
@@ -259,6 +252,20 @@ router.put("/students/:id", verifyToken, async (req, res) => {
                 student.subjects.push(created_subjects.map((sub) => sub._id));
             }
         }
+
+        // update fees
+        const updated_subjects = await Subject.find({ student_id: id });
+        const fees = await Fees.findOne({
+            student: student._id,
+            isActive: true,
+        });
+        fees.updateOne({
+            $set: {
+                subjects: updated_subjects,
+            },
+        });
+
+        await fees.save();
 
         await student.save();
 

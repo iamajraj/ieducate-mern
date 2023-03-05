@@ -22,14 +22,15 @@ const SubjectSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        last_payment_date: {
-            type: Date,
-            default: null,
-        },
     },
     {
         timestamps: true,
     }
 );
 
-module.exports = mongoose.model("Subject", SubjectSchema);
+const Subject = mongoose.model("Subject", SubjectSchema);
+
+module.exports = {
+    Subject,
+    SubjectSchema,
+};

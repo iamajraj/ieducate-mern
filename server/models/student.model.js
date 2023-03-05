@@ -126,6 +126,10 @@ const StudentSchema = new mongoose.Schema(
             type: String,
             default: "student",
         },
+        last_payment_date: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps: true,

@@ -2,18 +2,26 @@ const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
 const sendError = require("../utils/sendError");
 const Fees = require("../models/fees.model");
-const Subject = require("../models/subject.model");
+const { Subject } = require("../models/subject.model");
+const Student = require("../models/student.model");
 const dayjs = require("dayjs");
 const json2csv = require("json2csv").parse;
 
 const router = express.Router();
 
-router.get("/fees", verifyToken, async (req, res) => {
+router.get("/fees/:student_id", verifyToken, async (req, res) => {
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are alloed", res);
 
+    const { student_id } = req.params;
+
+    if (!student_id) return sendError(404, "Student doesn't exists", res);
+
     try {
-        const fees = await Fees.find({}).populate(["student", "subjects"]);
+        const fees = await Fees.find({ student: student_id }).populate([
+            "student",
+        ]);
+        if (!fees) return sendError(404, "Fees doesn't exists", res);
         return res.status(200).json({
             fees,
         });
@@ -22,15 +30,18 @@ router.get("/fees", verifyToken, async (req, res) => {
     }
 });
 
-router.get("/fees/export-to-csv", verifyToken, async (req, res) => {
+router.get("/fees/export-to-csv/:student_id", verifyToken, async (req, res) => {
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are allowed", res);
 
+    const { student_id } = req.params;
+
+    if (!student_id) return sendError(400, "Please provide student id", res);
+
     try {
-        const fees = await Fees.find({}, { password: 0 }).populate([
-            "student",
-            "subjects",
-        ]);
+        const fees = await Fees.find({}, { password: 0 }).populate(["student"]);
+
+        if (!fees) return sendError(404, "Fees doesn't exists", res);
 
         const csv = json2csv(fees);
 
@@ -50,30 +61,45 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
     const { fee_id: id, isPaid } = req.body;
 
     if (!id) return sendError(400, "Please provide the fee id", res);
-
     if (!isPaid) return sendError(400, "Required fields can't be empty", res);
 
     const fee = await Fees.findById(id).populate("subjects");
-
     if (!fee) return sendError(404, "Fee not found", res);
 
     try {
         if (isPaid === "Paid") {
-            await Subject.updateMany(
-                {
-                    student_id: fee.student,
-                },
-                {
-                    $set: {
-                        last_payment_date: Date.now(),
-                    },
-                }
-            );
-            fee.previous_due_date = fee.due_date;
-            fee.due_date = dayjs(fee.due_date).add(30, "day");
-            fee.payment_reminder = dayjs(fee.due_date)
-                .add(30, "day")
-                .subtract(10, "day");
+            // await Subject.updateMany(
+            //     {
+            //         student_id: fee.student,
+            //     },
+            //     {
+            //         $set: {
+            //             last_payment_date: Date.now(),
+            //         },
+            //     }
+            // );
+            if (fee.isActive) {
+                const student = await Student.findById(fee.student._id);
+                student.last_payment_date = Date.now();
+
+                await student.save();
+
+                const all_subjects = await Subject.find({
+                    student_id: fee.student._id,
+                });
+
+                await Fees.create({
+                    subjects: all_subjects,
+                    student: fee.student._id,
+                    due_date: dayjs(fee.due_date).add(30, "day"),
+                    payment_reminder: dayjs(fee.due_date)
+                        .add(30, "day")
+                        .subtract(10, "day"),
+                    previous_due_date: fee.previous_due_date,
+                    isActive: true,
+                });
+                fee.isActive = false;
+            }
         }
         fee.isPaid = isPaid;
         await fee.save();
@@ -86,14 +112,14 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
     }
 });
 
-router.get("/fees/:id", verifyToken, async (req, res) => {
+router.get("/single-fee/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
 
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are alloed", res);
 
     try {
-        const fee = await Fees.findById(id).populate(["student", "subjects"]);
+        const fee = await Fees.findById(id).populate(["student"]);
 
         if (!fee) return sendError(404, "Fee doesn't exists with that ID", res);
 
@@ -118,6 +144,12 @@ router.patch("/fees/change-due-date/:id", verifyToken, async (req, res) => {
     const fees = await Fees.findById(id);
 
     if (!fees) return sendError(404, "Fees doesn't exists", res);
+
+    if (!fees.isActive)
+        return sendError(
+            400,
+            "You can only edit the due date of the current active invoice"
+        );
 
     fees.previous_due_date = fees.due_date;
     fees.due_date = due_date;

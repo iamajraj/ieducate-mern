@@ -9,12 +9,14 @@ const teacherRoute = require("./routes/teacher.route");
 const studentRoute = require("./routes/student.route");
 const feesRoute = require("./routes/fees.route");
 const subjectRoute = require("./routes/subject.route");
+const morgan = require("morgan");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(morgan("short"));
 
 // API SETUP
 app.get("/api", (req, res) => {
