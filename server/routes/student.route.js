@@ -235,10 +235,10 @@ router.put("/students/:id", verifyToken, async (req, res) => {
                     };
                 });
                 const created_subjects = await Subject.insertMany(subjects);
-                const fees = await Fees.findOne({
-                    student: student._id,
-                });
-                fees.subjects.push(created_subjects.map((sub) => sub._id));
+                // const fees = await Fees.findOne({
+                //     student: student._id,
+                // });
+                // fees.subjects.push(created_subjects.map((sub) => sub._id));
                 // fees.previous_due_date = fees.due_date;
                 // fees.due_date = dayjs(
                 //     subjects[subjects.length - 1].first_lesson_date
@@ -248,7 +248,7 @@ router.put("/students/:id", verifyToken, async (req, res) => {
                 // )
                 // .add(30, "day")
                 // .subtract(10, "day");
-                await fees.save();
+                // await fees.save();
                 student.subjects.push(created_subjects.map((sub) => sub._id));
             }
         }
@@ -259,14 +259,11 @@ router.put("/students/:id", verifyToken, async (req, res) => {
             student: student._id,
             isActive: true,
         });
-        fees.updateOne({
+        await fees.updateOne({
             $set: {
                 subjects: updated_subjects,
             },
         });
-
-        await fees.save();
-
         await student.save();
 
         res.status(201).json({
@@ -341,12 +338,15 @@ router.get("/students/export-to-csv", verifyToken, async (req, res) => {
             "subjects",
         ]);
 
+        if (!students) return sendError(404, "No Students", res);
+
         const csv = json2csv(students);
 
         return res.status(200).json({
             exported: csv,
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 });

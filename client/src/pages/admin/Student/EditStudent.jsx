@@ -182,7 +182,7 @@ const EditStudent = () => {
                             placeholder="Enter the roll number"
                             type="number"
                             name="student_roll_no"
-                            value={studentData.student_roll_no}
+                            value={studentData?.student_roll_no}
                             onChange={onChange}
                         />
                         <InputField
@@ -190,7 +190,7 @@ const EditStudent = () => {
                             label="Student Name *"
                             placeholder="Enter the student name"
                             name="student_name"
-                            value={studentData.student_name}
+                            value={studentData?.student_name}
                             onChange={onChange}
                         />
                         <InputField
@@ -199,7 +199,7 @@ const EditStudent = () => {
                             placeholder="Enter the student address"
                             name="student_address"
                             onChange={onChange}
-                            value={studentData.student_address}
+                            value={studentData?.student_address}
                         />
                         <InputField
                             label="Student Telephone *"
@@ -207,7 +207,7 @@ const EditStudent = () => {
                             type="number"
                             name="student_telephone"
                             onChange={onChange}
-                            value={studentData.student_telephone}
+                            value={studentData?.student_telephone}
                         />
                     </div>
                     <div className="flex items-center gap-10">
@@ -216,7 +216,7 @@ const EditStudent = () => {
                             placeholder="Enter the emergency name"
                             name="emergency_name"
                             onChange={onChange}
-                            value={studentData.emergency_name}
+                            value={studentData?.emergency_name}
                         />
                         <InputField
                             label="Emergency Contact Number *"
@@ -224,7 +224,7 @@ const EditStudent = () => {
                             type="number"
                             name="emergency_contact_number"
                             onChange={onChange}
-                            value={studentData.emergency_contact_number}
+                            value={studentData?.emergency_contact_number}
                         />
                         <InputField
                             label="Email *"
@@ -232,7 +232,7 @@ const EditStudent = () => {
                             type="email"
                             name="email"
                             onChange={onChange}
-                            value={studentData.email}
+                            value={studentData?.email}
                         />
                     </div>
                     <div className="flex flex-col gap-3">
@@ -247,7 +247,7 @@ const EditStudent = () => {
                             className="text-[15px]"
                             name="learning_support_needs"
                             onChange={onChange}
-                            value={studentData.learning_support_needs}
+                            value={studentData?.learning_support_needs}
                         />
                     </div>
                     <div className="flex items-center gap-10">

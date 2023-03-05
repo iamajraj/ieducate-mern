@@ -199,12 +199,12 @@ const ViewFees = () => {
                                 <p className="text-[13px]">Standard CSV</p>
                                 <DownloadOutlined />
                             </button>
-                            <button
+                            {/* <button
                                 onClick={issueInvoice}
                                 className="flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
                             >
                                 <p className="text-[13px]">Issue Invoice</p>
-                            </button>
+                            </button> */}
                         </div>
 
                         <div className="border-b mt-3 mb-10"></div>
