@@ -82,13 +82,11 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
                 const student = await Student.findById(fee.student._id);
                 student.last_payment_date = Date.now();
 
-                await student.save();
-
                 const all_subjects = await Subject.find({
                     student_id: fee.student._id,
                 });
 
-                await Fees.create({
+                const created_fee = await Fees.create({
                     subjects: all_subjects,
                     student: fee.student._id,
                     due_date: dayjs(fee.due_date).add(30, "day"),
@@ -98,10 +96,14 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
                     previous_due_date: fee.previous_due_date,
                     isActive: true,
                 });
+                student.active_invoice = created_fee._id;
                 fee.isActive = false;
+
+                await student.save();
             }
         }
         fee.isPaid = isPaid;
+
         await fee.save();
 
         return res.status(200).json({

@@ -130,6 +130,11 @@ const StudentSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+        active_invoice: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Fees",
+            default: null,
+        },
     },
     {
         timestamps: true,

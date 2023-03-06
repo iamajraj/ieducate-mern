@@ -20,12 +20,24 @@ const Header = () => {
             <h1 className="capitalize text-[15px]">
                 Welcome {user?.user_type} !
             </h1>
-            <div className="flex gap-4 items-center cursor-pointer relative">
+            <div className="flex gap-4 group items-center cursor-pointer relative">
                 <div className="">
                     <p className="text-[12px] text-end">{user?.name}</p>
                     <p className="text-[12px]">{user?.email}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <DownOutlined className="text-[16px]" />
+                <div className="absolute top-10 border right-0 scale-0 group-hover:scale-100 bg-white rounded-lg py-1 shadow-md transition-all origin-top-right">
+                    <div
+                        onClick={() => {
+                            logout(user?.user_type);
+                        }}
+                        className="flex items-center gap-2 hover:bg-gray-100 px-3 py-1"
+                    >
+                        <LogoutOutlined className="text-[13px]" />
+                        <p className="text-[13px]">Logout</p>
+                    </div>
+                </div>
+                {/* <div className="flex items-center gap-2">
                     <Dropdown
                         menu={{
                             items: [
@@ -44,7 +56,7 @@ const Header = () => {
                             <DownOutlined className="text-[16px]" />
                         </Space>
                     </Dropdown>
-                </div>
+                </div> */}
             </div>
         </div>
     );

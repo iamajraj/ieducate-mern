@@ -1,11 +1,11 @@
 import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, message, Modal, Space, Table } from "antd";
+import { Button, Input, message, Modal, Space, Table, Tag } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import MainButton from "../../../components/MainButton";
 import { useAxios } from "../../../hooks/useAxios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 const Students = () => {
     const [students, setStudents] = useState([]);
@@ -33,13 +33,13 @@ const Students = () => {
                             </p>
                         </div>
                     </div>
-                    <Link to="view">
+                    {/* <Link to="view">
                         <MainButton
                             text="All Fees"
                             className="py-4"
                             textClass="text-[15px]"
                         />
-                    </Link>
+                    </Link> */}
                 </div>
                 <div className="mt-10 border">
                     <StudentsTable loading={loading} data={students} />
@@ -184,14 +184,14 @@ const StudentsTable = ({ data, loading }) => {
             title: "Roll No",
             dataIndex: "student_roll_no",
             key: "student_roll_no",
-            width: "20%",
+            // width: "20%",
             ...getColumnSearchProps("student_roll_no"),
         },
         {
             title: "Student Name",
             dataIndex: "student_name",
             key: "student_name",
-            width: "30%",
+            // width: "30%",
             ...getColumnSearchProps("student_name"),
         },
         {
@@ -205,6 +205,44 @@ const StudentsTable = ({ data, loading }) => {
             dataIndex: "student_telephone",
             key: "student_telephone",
             ...getColumnSearchProps("student_telephone"),
+        },
+        {
+            title: "Due Date",
+            dataIndex: "due_date",
+            key: "due_date",
+            defaultSortOrder: "ascend",
+            sorter: (a, b) =>
+                Date.parse(b.due_date_iso) - Date.parse(a.due_date_iso),
+        },
+        {
+            title: "Is Paid",
+            dataIndex: "is_paid",
+            key: "is_paid",
+            filters: [
+                {
+                    text: "Paid",
+                    value: "Paid",
+                },
+                {
+                    text: "Not Paid",
+                    value: "Not Paid",
+                },
+            ],
+            filterMultiple: false,
+            onFilter: (value, record) => record.is_paid === value,
+        },
+        {
+            title: "Active",
+            dataIndex: "active",
+            key: "active",
+            render: (_, record) =>
+                record.active === "Active" ? (
+                    <Space size="middle">
+                        <Tag className="bg-green-500 text-white">
+                            {record.active}
+                        </Tag>
+                    </Space>
+                ) : null,
         },
         {
             title: "Action",
@@ -228,7 +266,19 @@ const StudentsTable = ({ data, loading }) => {
         <Table
             loading={loading}
             columns={columns}
-            dataSource={data}
+            dataSource={data.map((d) => {
+                return {
+                    ...d,
+                    due_date_iso: d.active_invoice.due_date,
+                    payment_reminder_iso: d.active_invoice.payment_reminder,
+                    due_date: dayjs(d.active_invoice.due_date).format(
+                        "DD/MM/YYYY"
+                    ),
+                    due_date_iso: d.active_invoice.due_date,
+                    active: d.active_invoice.isActive ? "Active" : "Not Active",
+                    is_paid: d.active_invoice.isPaid,
+                };
+            })}
             pagination={{
                 pageSize: 7,
             }}

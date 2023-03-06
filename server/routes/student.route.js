@@ -87,7 +87,7 @@ router.post("/students", verifyToken, async (req, res) => {
     const subject_ids = created_subjects.map((sub) => sub._id);
     student.subjects.push(subject_ids);
 
-    await Fees.create({
+    const fees = await Fees.create({
         subjects: created_subjects,
         student: student._id,
         due_date: dayjs(subjects[subjects.length - 1].first_lesson_date).add(
@@ -104,6 +104,7 @@ router.post("/students", verifyToken, async (req, res) => {
     });
 
     try {
+        student.active_invoice = fees._id;
         await student.save();
 
         res.status(201).json({
@@ -319,6 +320,7 @@ router.get("/students", verifyToken, async (req, res) => {
             "subjects",
             "general_reports",
             "test_reports",
+            "active_invoice",
         ]);
         return res.status(200).json({
             students,

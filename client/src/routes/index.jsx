@@ -158,27 +158,18 @@ const router = createBrowserRouter([
                         children: [
                             {
                                 index: true,
-                                element: <AllFees />,
+                                element: <FeesStudents />,
                             },
                             {
-                                path: "students",
+                                path: ":student_id",
                                 children: [
                                     {
                                         index: true,
-                                        element: <FeesStudents />,
+                                        element: <FeesBilling />,
                                     },
                                     {
-                                        path: ":student_id",
-                                        children: [
-                                            {
-                                                index: true,
-                                                element: <FeesBilling />,
-                                            },
-                                            {
-                                                path: "view/:fee_id",
-                                                element: <ViewFees />,
-                                            },
-                                        ],
+                                        path: "view/:fee_id",
+                                        element: <ViewFees />,
                                     },
                                 ],
                             },
