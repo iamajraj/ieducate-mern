@@ -66,7 +66,7 @@ const StudentReports = () => {
                             <div className="flex items-center gap-3">
                                 <ArrowLeftOutlined
                                     onClick={() => {
-                                        navigate("/teacher/dashboard");
+                                        navigate("/teacher/dashboard/reports");
                                     }}
                                 />
                                 <h1 className="text-[22px]">

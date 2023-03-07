@@ -62,9 +62,9 @@ router.post("/teachers/set-attendance", verifyToken, async (req, res) => {
     if (req.user.user_type !== "admin")
         return sendError(401, "Only Admins are allowed", res);
 
-    const { date, fromTime, toTime, teacher_id } = req.body;
+    const { date, fromTime, toTime, teacher_id, total_hour } = req.body;
 
-    if (!date || !fromTime || !toTime || !teacher_id)
+    if (!date || !fromTime || !toTime || !teacher_id || !total_hour)
         return sendError(400, "Required fields can't be empty", res);
 
     const teacher = await Teacher.findById(teacher_id);
@@ -76,6 +76,7 @@ router.post("/teachers/set-attendance", verifyToken, async (req, res) => {
         date: date,
         fromTime: fromTime,
         toTime: toTime,
+        total_hour: total_hour,
     });
 
     try {

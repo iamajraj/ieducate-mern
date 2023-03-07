@@ -201,7 +201,7 @@ const StudentsTable = ({ data, loading }) => {
                 <Space size="middle">
                     <Button
                         onClick={() => {
-                            navigate(`reports/${record._id}`);
+                            navigate(`${record._id}`);
                         }}
                         type="dashed"
                     >

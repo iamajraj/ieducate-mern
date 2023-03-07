@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Container from "../components/Container";
+import Container from "../../components/Container";
 import { SearchOutlined, TeamOutlined, UserOutlined } from "@ant-design/icons";
-import { useAxios } from "../hooks/useAxios";
+import { useAxios } from "../../hooks/useAxios";
 import Highlighter from "react-highlight-words";
 import { Button, Input, Space, Table } from "antd";
-import { authContext } from "../context/AuthProvider";
+import { authContext } from "../../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {

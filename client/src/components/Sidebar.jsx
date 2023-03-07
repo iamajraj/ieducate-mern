@@ -36,7 +36,8 @@ const adminItems = [
 ];
 
 const teacherItems = [
-    getItem("Report", "", <BookOutlined />),
+    getItem("Dashboard", "", <AppstoreOutlined />),
+    getItem("Report", "reports", <BookOutlined />),
     getItem("Track Attendance", "track-attendance", <CalendarOutlined />),
     getItem("Credentials Update", "update", <SettingOutlined />),
 ];

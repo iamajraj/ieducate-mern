@@ -6,6 +6,7 @@ const TeacherAttendanceSchema = new mongoose.Schema(
         fromTime: Date,
         toTime: Date,
         date: Date,
+        total_hour: Number,
         attendanceBy: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: "Admin",

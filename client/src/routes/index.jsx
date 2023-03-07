@@ -30,9 +30,10 @@ import CredentialsUpdate from "../pages/teacher/CredentialsUpdate";
 import TrackAttendance from "../pages/teacher/TrackAttendance";
 import StudentReports from "../pages/teacher/Report/StudentReports";
 import EditGeneralReport from "../pages/teacher/Report/EditGeneralReport";
-import Dashboard from "../pages/Dashboard";
+import Dashboard from "../pages/admin/Dashboard";
 import AllFees from "../pages/admin/feesbillings/AllFees";
 import EditTestReport from "../pages/teacher/Report/EditTestReport";
+import TeacherDashboard from "../pages/teacher/TeacherDashboard";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -224,7 +225,7 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <AllStudents />,
+                        element: <TeacherDashboard />,
                     },
                     {
                         path: "update",
@@ -239,7 +240,7 @@ const router = createBrowserRouter([
                         children: [
                             {
                                 index: true,
-                                element: <Navigate to="/teacher/dashboard" />,
+                                element: <AllStudents />,
                             },
                             {
                                 path: ":id",

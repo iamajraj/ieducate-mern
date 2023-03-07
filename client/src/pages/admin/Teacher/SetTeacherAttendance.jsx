@@ -28,9 +28,14 @@ const SetTeacherAttendance = () => {
 
         setLoading(true);
 
+        const total_hour =
+            dayjs(attendanceData.toTime).hour() -
+            dayjs(attendanceData.fromTime).hour();
+
         try {
             await axiosInstance.post("/teachers/set-attendance", {
                 ...attendanceData,
+                total_hour: total_hour,
                 teacher_id: teacher._id,
             });
 
@@ -40,7 +45,7 @@ const SetTeacherAttendance = () => {
                 toTime: "",
                 date: "",
             });
-            await fetchTeacher(params.id);
+            fetchTeacher(params.id);
         } catch (err) {
             message.error(
                 err.response?.data?.message ?? "Something went wrong"
@@ -127,6 +132,9 @@ const SetTeacherAttendance = () => {
                 attendDate.date() == date &&
                 attendDate.month() == month &&
                 attendDate.year() == year;
+
+            console.log(attendDate.year(), year);
+            console.log(condition);
 
             return condition;
         });
