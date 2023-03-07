@@ -32,6 +32,7 @@ import StudentReports from "../pages/teacher/Report/StudentReports";
 import EditGeneralReport from "../pages/teacher/Report/EditGeneralReport";
 import Dashboard from "../pages/Dashboard";
 import AllFees from "../pages/admin/feesbillings/AllFees";
+import EditTestReport from "../pages/teacher/Report/EditTestReport";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -264,7 +265,16 @@ const router = createBrowserRouter([
                                     },
                                     {
                                         path: "test-report",
-                                        element: <CreateTestReport />,
+                                        children: [
+                                            {
+                                                index: true,
+                                                element: <CreateTestReport />,
+                                            },
+                                            {
+                                                path: "edit/:reportId",
+                                                element: <EditTestReport />,
+                                            },
+                                        ],
                                     },
                                 ],
                             },

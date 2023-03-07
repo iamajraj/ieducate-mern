@@ -274,7 +274,6 @@ const StudentsTable = ({ data, loading }) => {
                     due_date: dayjs(d.active_invoice.due_date).format(
                         "DD/MM/YYYY"
                     ),
-                    due_date_iso: d.active_invoice.due_date,
                     active: d.active_invoice.isActive ? "Active" : "Not Active",
                     is_paid: d.active_invoice.isPaid,
                 };

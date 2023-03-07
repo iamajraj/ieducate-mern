@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+const FeedbackFileSchema = new mongoose.Schema({
+    filename: String,
+    originalname: String,
+    url: String,
+});
+
 const TestReportSchema = new mongoose.Schema(
     {
         student: {
@@ -15,7 +21,7 @@ const TestReportSchema = new mongoose.Schema(
             required: true,
         },
         feedback_files: {
-            type: [String],
+            type: [FeedbackFileSchema],
             default: [],
         },
         comment: {

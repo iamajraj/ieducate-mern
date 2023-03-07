@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, message, Modal, Space, Table } from "antd";
+import { Button, Input, message, Modal, Space, Table, Tag } from "antd";
 import { useContext, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { authContext } from "../../../context/AuthProvider";
@@ -143,14 +143,11 @@ const TestReports = ({ loading, reports, fetchReports }) => {
         if (!report_id || !student_id) return;
 
         try {
-            await axiosInstance.delete(
-                `/students/general-report/${report_id}`,
-                {
-                    data: {
-                        student_id,
-                    },
-                }
-            );
+            await axiosInstance.delete(`/students/test-report/${report_id}`, {
+                data: {
+                    student_id,
+                },
+            });
             message.success("Report has been deleted.");
             await fetchReports(id);
         } catch (err) {
@@ -179,42 +176,41 @@ const TestReports = ({ loading, reports, fetchReports }) => {
             title: "Date",
             dataIndex: "date",
             key: "date",
-            width: "10%",
             ...getColumnSearchProps("date"),
         },
         {
             title: "Subject",
             dataIndex: "subject",
             key: "subject",
-            width: "10%",
             ...getColumnSearchProps("progress"),
-        },
-        {
-            title: "Progress",
-            dataIndex: "progress",
-            key: "progress",
-
-            ...getColumnSearchProps("progress"),
-        },
-        {
-            title: "Effort",
-            dataIndex: "effort",
-            key: "effort",
-            ...getColumnSearchProps("effort"),
-        },
-        {
-            title: "Attainment",
-            dataIndex: "attainment",
-            key: "attainment",
-            ...getColumnSearchProps("attainment"),
         },
         {
             title: "Comment",
             dataIndex: "comment",
             key: "comment",
-            width: "15%",
             ellipsis: true,
             ...getColumnSearchProps("comment"),
+        },
+        {
+            title: "Summary",
+            dataIndex: "summary",
+            key: "summary",
+            ellipsis: true,
+            ...getColumnSearchProps("summary"),
+        },
+        {
+            title: "Feedback Files",
+            dataIndex: "feedback_files",
+            key: "feedback_files",
+            render: (_, record) => {
+                return record.feedback_files.length > 0 ? (
+                    <Space size="middle">
+                        {record.feedback_files?.map((file) => (
+                            <Tag color="blue">{file.originalname}</Tag>
+                        ))}
+                    </Space>
+                ) : null;
+            },
         },
         {
             title: "Action",
@@ -224,7 +220,7 @@ const TestReports = ({ loading, reports, fetchReports }) => {
                     <Button
                         type="dashed"
                         onClick={() =>
-                            navigate(`general-report/edit/${record.id}`)
+                            navigate(`test-report/edit/${record.id}`)
                         }
                     >
                         Edit
@@ -256,10 +252,9 @@ const TestReports = ({ loading, reports, fetchReports }) => {
                     subject: report.subject.subject_name,
                     student_id: report.student._id,
                     date: dayjs(report.date).format("DD/MM/YYYY"),
-                    progress: report.progress,
-                    attainment: report.attainment,
-                    effort: report.effort,
                     comment: report.comment,
+                    summary: report.summary,
+                    feedback_files: report.feedback_files,
                 };
             })}
             pagination={{

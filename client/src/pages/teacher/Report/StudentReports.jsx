@@ -12,6 +12,7 @@ const StudentReports = () => {
     const [student, setStudent] = useState(null);
     const [reports, setReports] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedTab, setSelectedTab] = useState("general_reports");
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -44,6 +45,14 @@ const StudentReports = () => {
         }
     }, [id]);
 
+    useEffect(() => {
+        if (location.hash) {
+            setSelectedTab(location.hash.slice(1));
+        } else {
+            setSelectedTab("general_reports");
+        }
+    }, [location.hash]);
+
     return (
         <Container>
             <div className="bg-white p-8 rounded-lg flex flex-col">
@@ -57,7 +66,7 @@ const StudentReports = () => {
                             <div className="flex items-center gap-3">
                                 <ArrowLeftOutlined
                                     onClick={() => {
-                                        navigate(-1);
+                                        navigate("/teacher/dashboard");
                                     }}
                                 />
                                 <h1 className="text-[22px]">
@@ -81,12 +90,16 @@ const StudentReports = () => {
                         </div>
                         <div className="my-5 border-b"></div>
                         <Tabs
-                            // onChange={onChange}
+                            onChange={(key) => {
+                                navigate(`#${key}`);
+                            }}
                             type="card"
+                            defaultActiveKey={selectedTab}
                             items={[
                                 {
                                     label: "General Reports",
-                                    key: "General Reports",
+                                    key: "general_reports",
+
                                     children: (
                                         <GeneralReports
                                             reports={reports?.general_reports}
@@ -96,7 +109,7 @@ const StudentReports = () => {
                                 },
                                 {
                                     label: "Test Reports",
-                                    key: "Test Reports",
+                                    key: "test_reports",
                                     children: (
                                         <TestReports
                                             reports={reports?.test_reports}

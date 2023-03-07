@@ -4,11 +4,15 @@ const sendError = require("../utils/sendError");
 const dayjs = require("dayjs");
 const Fees = require("../models/fees.model");
 const json2csv = require("json2csv").parse;
+const fsPromise = require("fs").promises;
+const fs = require("fs");
+const path = require("path");
 
 const Student = require("../models/student.model");
 const { Subject } = require("../models/subject.model");
 const GeneralReport = require("../models/generalreport.model");
 const TestReport = require("../models/testreport.model");
+const upload = require("../utils/upload");
 
 const router = express.Router();
 
@@ -437,6 +441,7 @@ router.get("/students/:id/reports", verifyToken, async (req, res) => {
     }
 });
 
+// GENERAL REPORT
 router.post("/students/general-report", verifyToken, async (req, res) => {
     if (req.user.user_type !== "teacher")
         return sendError(401, "You are not allowed", res);
@@ -570,6 +575,184 @@ router.put(
                     attainment,
                     effort,
                     comment,
+                },
+            });
+
+            res.status(201).json({
+                message: "General Report has been updated",
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+
+// TEST REPORT
+router.post(
+    "/students/test-report",
+    verifyToken,
+    upload.array("feedback_files[]"),
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+
+        const { student_id, subject_id, date, comment, summary } = req.body;
+
+        if (!student_id || !subject_id || !date || !comment || !summary)
+            return sendError(400, "Please provide required fields", res);
+
+        const test_report = new TestReport({
+            student: student_id,
+            subject: subject_id,
+            date: date,
+            comment: comment,
+            summary: summary,
+        });
+
+        if (req.files.length > 0) {
+            const files = req.files.map((file) => {
+                return {
+                    filename: file.filename,
+                    originalname: file.originalname,
+                    url: `/uploads/${file.filename}`,
+                };
+            });
+            test_report.feedback_files = files;
+        }
+
+        try {
+            await test_report.save();
+
+            res.status(201).json({
+                test_report,
+            });
+        } catch (err) {
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+router.get("/students/test-report/:reportid", verifyToken, async (req, res) => {
+    if (req.user.user_type !== "teacher")
+        return sendError(401, "You are not allowed", res);
+
+    const { reportid } = req.params;
+
+    try {
+        const report = await TestReport.findById(reportid);
+
+        if (!report) {
+            return sendError(404, "Report doesn't exists", res);
+        }
+
+        res.status(201).json({
+            report,
+        });
+    } catch (err) {
+        console.log(err);
+        sendError(500, "Something went wrong", res);
+    }
+});
+router.delete(
+    "/students/test-report/:reportid",
+    verifyToken,
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+
+        const { student_id } = req.body;
+        const { reportid } = req.params;
+
+        const student = await Student.findById(student_id);
+        const test_reports = await TestReport.findById(reportid);
+
+        if (!student) return sendError(404, "Student doesn't exists", res);
+        if (!test_reports)
+            return sendError(404, "Test Report doesn't exists", res);
+
+        try {
+            if (
+                test_reports?.feedback_files &&
+                test_reports.feedback_files.length > 0
+            ) {
+                test_reports.feedback_files.forEach(async (file) => {
+                    await fsPromise.unlink(
+                        path.join(__dirname, "..", file.url)
+                    );
+                });
+            }
+
+            student.test_reports = student.test_reports.filter((report) => {
+                return report.toString() !== reportid;
+            });
+
+            await TestReport.findByIdAndDelete(reportid);
+            await student.save();
+            res.status(201).json({
+                message: "Test Report has been deleted",
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+router.put(
+    "/students/test-report/:reportid",
+    upload.array("feedback_files[]"),
+    verifyToken,
+    async (req, res) => {
+        if (req.user.user_type !== "teacher")
+            return sendError(401, "You are not allowed", res);
+        const { date, comment, summary, removed_files } = req.body;
+
+        if (!date || !comment || !summary)
+            return sendError(400, "Please provide all fields", res);
+
+        const { reportid } = req.params;
+        const report = await TestReport.findById(reportid);
+        if (!report) return sendError(404, "Report doesn't exists", res);
+
+        try {
+            if (removed_files) {
+                let edited_feedback_files_list;
+                JSON.parse(removed_files).forEach((removed_file) => {
+                    edited_feedback_files_list = report.feedback_files.map(
+                        (file) => {
+                            if (String(file._id) === String(removed_file.uid)) {
+                                fs.unlinkSync(
+                                    path.join(__dirname, "..", file.url)
+                                );
+                                return null;
+                            } else {
+                                return file;
+                            }
+                        }
+                    );
+                });
+                report.feedback_files =
+                    edited_feedback_files_list.filter(Boolean);
+            }
+
+            if (req.files.length > 0) {
+                const files = req.files.map((file) => {
+                    return {
+                        filename: file.filename,
+                        originalname: file.originalname,
+                        url: `/uploads/${file.filename}`,
+                    };
+                });
+                report.feedback_files =
+                    [...report.feedback_files, ...files].length < 1
+                        ? null
+                        : [...report.feedback_files, ...files];
+            }
+            await report.save();
+            await TestReport.findByIdAndUpdate(reportid, {
+                $set: {
+                    date,
+                    comment,
+                    summary,
                 },
             });
 

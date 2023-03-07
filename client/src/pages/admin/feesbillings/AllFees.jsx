@@ -322,7 +322,6 @@ const FeesTable = ({ data, loading, onEditDue }) => {
                             "DD/MM/YYYY"
                         ),
                         student_id: d.student._id,
-                        due_date_iso: d.due_date,
                         payment_reminder_iso: d.payment_reminder,
                         due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
                         due_date_iso: d.due_date,

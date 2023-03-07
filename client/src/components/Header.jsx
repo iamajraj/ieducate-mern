@@ -18,7 +18,7 @@ const Header = () => {
     return (
         <div className="min-h-[70px] px-10 flex items-center justify-between shadow-md shadow-gray-200 z-50 w-full">
             <h1 className="capitalize text-[15px]">
-                Welcome {user?.user_type} !
+                Welcome {user?.user_type === "admin" ? "Admin" : user?.name} !
             </h1>
             <div className="flex gap-4 group items-center cursor-pointer relative">
                 <div className="">

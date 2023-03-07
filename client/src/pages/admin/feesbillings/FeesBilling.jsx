@@ -314,7 +314,6 @@ const FeesTable = ({ data, loading, onEditDue }) => {
                         due_date_iso: d.due_date,
                         payment_reminder_iso: d.payment_reminder,
                         due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
-                        due_date_iso: d.due_date,
                         active: d.isActive ? "Active" : "Not Active",
                         is_paid: d.isPaid,
                     };

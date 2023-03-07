@@ -24,7 +24,6 @@ const CreateGeneralReport = () => {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const { Dragger } = Upload;
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -34,6 +33,7 @@ const CreateGeneralReport = () => {
             setStudent(res.data.student);
         } catch (err) {}
     };
+
     useEffect(() => {
         if (id) {
             fetchStudent();
@@ -53,25 +53,37 @@ const CreateGeneralReport = () => {
 
         console.log(report);
 
-        const { date, progress, attainment, comment, effort } = report;
+        const { date, comment, summary } = report;
 
-        if (!date || !progress || !attainment || !comment || !effort)
+        if (!selectedSubjectId || !student) return;
+
+        if (!date || !comment || !summary)
             return message.error("Please provide all fields");
 
         setLoading(true);
 
+        const formData = new FormData();
+
+        formData.append("subject_id", selectedSubjectId);
+        formData.append("student_id", id);
+        formData.append("comment", comment);
+        formData.append("date", date);
+        formData.append("summary", summary);
+
+        files.forEach((file) => {
+            formData.append("feedback_files[]", file);
+        });
+
         try {
-            await axiosInstance.post("/students/general-report", {
-                subject_id: selectedSubjectId,
-                student_id: id,
-                ...report,
-            });
+            await axiosInstance.post("/students/test-report", formData);
             message.success("Report has been created !");
             navigate(-1);
         } catch (err) {
             message.error(
                 err.response?.data?.message ?? "Something went wrong."
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -86,7 +98,6 @@ const CreateGeneralReport = () => {
             newFileList.splice(index, 1);
             setFiles(newFileList);
         },
-
         files,
     };
 
@@ -170,7 +181,8 @@ const CreateGeneralReport = () => {
                                         {...props}
                                         accept=".pdf"
                                         listType="picture"
-                                        beforeUpload={() => {
+                                        beforeUpload={(file) => {
+                                            setFiles((prev) => [...prev, file]);
                                             return false;
                                         }}
                                     >
@@ -180,6 +192,7 @@ const CreateGeneralReport = () => {
                                     </Upload>
                                 </div>
                                 <MainButton
+                                    loading={loading}
                                     text="Create Report"
                                     type="submit"
                                 />
