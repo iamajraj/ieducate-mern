@@ -71,11 +71,11 @@ const Sidebar = ({ className, collapsed, setCollapsed }) => {
                             </p>
                         </h1> */}
                         <img
-                            src="/assets/logo.png"
+                            src="/assets/header_logo.png"
                             alt=""
                             className="h-[70px] object-contain"
                         />
-                        <h1 className="text-[24px]">Educate</h1>
+                        {/* <h1 className="text-[24px]">Educate</h1> */}
                     </div>
                 )}
                 <Button

@@ -8,13 +8,13 @@ const Login = ({ usertype, onSubmit, loading, values, onChange, message }) => {
         <div className="flex items-center justify-center h-screen w-full bg-[#f8f8f8] flex-col gap-[30px] bg-gradient-to-r from-sky-700 via-cyan-500 to-cyan-600">
             <div className="flex items-end">
                 <img
-                    src="/assets/logo.png"
+                    src="/assets/header_logo.png"
                     alt=""
-                    className="h-[70px] object-contain"
+                    className="h-[100px] object-contain"
                 />
-                <h1 className="text-[35px] text-white font-semibold">
+                {/* <h1 className="text-[35px] text-white font-semibold">
                     Educate
-                </h1>
+                </h1> */}
             </div>
             <div className="bg-white shadow-md w-full max-w-[500px] rounded-lg px-5 pb-7 pt-9">
                 <h1 className="text-[28px] font-bold leading-[25px] relative w-max">
