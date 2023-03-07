@@ -89,7 +89,7 @@ router.post("/students", verifyToken, async (req, res) => {
 
     const created_subjects = await Subject.insertMany(subjects);
     const subject_ids = created_subjects.map((sub) => sub._id);
-    student.subjects.push(subject_ids);
+    student.subjects.push(...subject_ids);
 
     const fees = await Fees.create({
         subjects: created_subjects,
