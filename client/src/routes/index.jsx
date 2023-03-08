@@ -34,6 +34,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import AllFees from "../pages/admin/feesbillings/AllFees";
 import EditTestReport from "../pages/teacher/Report/EditTestReport";
 import TeacherDashboard from "../pages/teacher/TeacherDashboard";
+import AutoLogout from "../components/AutoLogout";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -219,7 +220,9 @@ const router = createBrowserRouter([
                 path: "dashboard",
                 element: (
                     <TeacherProtectedRoute>
-                        <MainLayout />
+                        <AutoLogout>
+                            <MainLayout />
+                        </AutoLogout>
                     </TeacherProtectedRoute>
                 ),
                 children: [

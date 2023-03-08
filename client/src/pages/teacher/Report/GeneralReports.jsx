@@ -8,7 +8,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import axiosInstance from "../../../services/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 
-const GeneralReports = ({ loading, reports, fetchReports }) => {
+const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -179,14 +179,12 @@ const GeneralReports = ({ loading, reports, fetchReports }) => {
             title: "Date",
             dataIndex: "date",
             key: "date",
-            width: "10%",
             ...getColumnSearchProps("date"),
         },
         {
             title: "Subject",
             dataIndex: "subject",
             key: "subject",
-            width: "10%",
             ...getColumnSearchProps("progress"),
         },
         {
@@ -212,9 +210,14 @@ const GeneralReports = ({ loading, reports, fetchReports }) => {
             title: "Comment",
             dataIndex: "comment",
             key: "comment",
-            width: "15%",
             ellipsis: true,
             ...getColumnSearchProps("comment"),
+        },
+        {
+            title: "Teacher",
+            dataIndex: "report_by",
+            key: "report_by",
+            ...getColumnSearchProps("report_by"),
         },
         {
             title: "Action",
@@ -229,39 +232,70 @@ const GeneralReports = ({ loading, reports, fetchReports }) => {
                     >
                         Edit
                     </Button>
-                    {record._id !== user.id && (
-                        <Button
-                            onClick={() => {
-                                showConfirm(record.id, record.student_id);
-                            }}
-                            danger
-                            type="dashed"
-                        >
-                            Delete
-                        </Button>
-                    )}
+
+                    <Button
+                        onClick={() => {
+                            showConfirm(record.id, record.student_id);
+                        }}
+                        danger
+                        type="dashed"
+                    >
+                        Delete
+                    </Button>
                 </Space>
             ),
+        },
+    ];
+
+    const dashboard_columns = [
+        {
+            title: "Date",
+            dataIndex: "date",
+            key: "date",
+            ...getColumnSearchProps("date"),
+        },
+        {
+            title: "Subject",
+            dataIndex: "subject",
+            key: "subject",
+            ...getColumnSearchProps("progress"),
+        },
+        {
+            title: "Student",
+            dataIndex: "student",
+            key: "student",
+            ...getColumnSearchProps("student"),
+        },
+        {
+            title: "Teacher",
+            dataIndex: "report_by",
+            key: "report_by",
+            ...getColumnSearchProps("report_by"),
         },
     ];
 
     return (
         <Table
             loading={loading}
-            columns={columns}
-            dataSource={reports?.map((report, i) => {
-                return {
-                    key: report._id,
-                    id: report._id,
-                    subject: report.subject.subject_name,
-                    student_id: report.student._id,
-                    date: dayjs(report.date).format("DD/MM/YYYY"),
-                    progress: report.progress,
-                    attainment: report.attainment,
-                    effort: report.effort,
-                    comment: report.comment,
-                };
-            })}
+            columns={dashboard ? dashboard_columns : columns}
+            dataSource={reports
+                ?.map((report, i) => {
+                    return {
+                        key: report._id,
+                        id: report._id,
+                        subject: report.subject.subject_name,
+                        student_id: report.student._id,
+                        date: dayjs(report.date).format("DD/MM/YYYY"),
+                        progress: report.progress,
+                        attainment: report.attainment,
+                        effort: report.effort,
+                        comment: report.comment,
+                        report_by: report.report_by.name,
+                        teacher_id: report.report_by._id,
+                        student: report.student.student_name,
+                    };
+                })
+                .reverse()}
             pagination={{
                 pageSize: 7,
             }}

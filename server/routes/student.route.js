@@ -426,10 +426,10 @@ router.get("/students/:id/reports", verifyToken, async (req, res) => {
     try {
         const general_reports = await GeneralReport.find({
             student: id,
-        }).populate(["student", "subject"]);
+        }).populate(["student", "subject", "report_by"]);
         const test_reports = await TestReport.find({
             student: id,
-        }).populate(["student", "subject"]);
+        }).populate(["student", "subject", "report_by"]);
 
         res.status(200).json({
             general_reports,
@@ -440,6 +440,47 @@ router.get("/students/:id/reports", verifyToken, async (req, res) => {
         sendError(500, "Something went wrong", res);
     }
 });
+
+// teacher specific reports
+router.get(
+    "/students/single-teacher-reports/:id",
+    verifyToken,
+    async (req, res) => {
+        const { id } = req.params;
+        try {
+            const general_reports = await GeneralReport.find(
+                {
+                    report_by: id,
+                },
+                {},
+                {
+                    sort: {
+                        created_at: -1,
+                    },
+                }
+            ).populate(["student", "subject", "report_by"]);
+            const test_reports = await TestReport.find(
+                {
+                    report_by: id,
+                },
+                {},
+                {
+                    sort: {
+                        created_at: -1,
+                    },
+                }
+            ).populate(["student", "subject", "report_by"]);
+
+            res.status(200).json({
+                general_reports,
+                test_reports,
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
 
 // GENERAL REPORT
 router.post("/students/general-report", verifyToken, async (req, res) => {
@@ -479,6 +520,7 @@ router.post("/students/general-report", verifyToken, async (req, res) => {
             attainment,
             effort,
             comment,
+            report_by: req.user._id,
         });
 
         await created_report.save();
@@ -608,6 +650,7 @@ router.post(
             date: date,
             comment: comment,
             summary: summary,
+            report_by: req.user._id,
         });
 
         if (req.files.length > 0) {

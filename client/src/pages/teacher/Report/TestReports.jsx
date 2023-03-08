@@ -8,7 +8,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import axiosInstance from "../../../services/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 
-const TestReports = ({ loading, reports, fetchReports }) => {
+const TestReports = ({ loading, reports, fetchReports, dashboard }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -182,7 +182,7 @@ const TestReports = ({ loading, reports, fetchReports }) => {
             title: "Subject",
             dataIndex: "subject",
             key: "subject",
-            ...getColumnSearchProps("progress"),
+            ...getColumnSearchProps("subject"),
         },
         {
             title: "Comment",
@@ -213,6 +213,12 @@ const TestReports = ({ loading, reports, fetchReports }) => {
             },
         },
         {
+            title: "Teacher",
+            dataIndex: "report_by",
+            key: "report_by",
+            ...getColumnSearchProps("report_by"),
+        },
+        {
             title: "Action",
             key: "action",
             render: (_, record) => (
@@ -225,38 +231,82 @@ const TestReports = ({ loading, reports, fetchReports }) => {
                     >
                         Edit
                     </Button>
-                    {record._id !== user.id && (
-                        <Button
-                            onClick={() => {
-                                showConfirm(record.id, record.student_id);
-                            }}
-                            danger
-                            type="dashed"
-                        >
-                            Delete
-                        </Button>
-                    )}
+
+                    <Button
+                        onClick={() => {
+                            showConfirm(record.id, record.student_id);
+                        }}
+                        danger
+                        type="dashed"
+                    >
+                        Delete
+                    </Button>
                 </Space>
             ),
+        },
+    ];
+
+    const dashboard_columns = [
+        {
+            title: "Date",
+            dataIndex: "date",
+            key: "date",
+            ...getColumnSearchProps("date"),
+        },
+        {
+            title: "Subject",
+            dataIndex: "subject",
+            key: "subject",
+            ...getColumnSearchProps("subject"),
+        },
+        {
+            title: "Student",
+            dataIndex: "student",
+            key: "student",
+            ...getColumnSearchProps("student"),
+        },
+        {
+            title: "Feedback Files",
+            dataIndex: "feedback_files",
+            key: "feedback_files",
+            render: (_, record) => {
+                return record.feedback_files.length > 0 ? (
+                    <Space size="middle">
+                        {record.feedback_files?.map((file) => (
+                            <Tag color="blue">{file.originalname}</Tag>
+                        ))}
+                    </Space>
+                ) : null;
+            },
+        },
+        {
+            title: "Teacher",
+            dataIndex: "report_by",
+            key: "report_by",
+            ...getColumnSearchProps("report_by"),
         },
     ];
 
     return (
         <Table
             loading={loading}
-            columns={columns}
-            dataSource={reports?.map((report, i) => {
-                return {
-                    key: report._id,
-                    id: report._id,
-                    subject: report.subject.subject_name,
-                    student_id: report.student._id,
-                    date: dayjs(report.date).format("DD/MM/YYYY"),
-                    comment: report.comment,
-                    summary: report.summary,
-                    feedback_files: report.feedback_files,
-                };
-            })}
+            columns={dashboard ? dashboard_columns : columns}
+            dataSource={reports
+                ?.map((report, i) => {
+                    return {
+                        key: report._id,
+                        id: report._id,
+                        subject: report.subject.subject_name,
+                        student_id: report.student._id,
+                        date: dayjs(report.date).format("DD/MM/YYYY"),
+                        comment: report.comment,
+                        summary: report.summary,
+                        feedback_files: report.feedback_files,
+                        report_by: report.report_by.name,
+                        teacher_id: report.report_by._id,
+                    };
+                })
+                .reverse()}
             pagination={{
                 pageSize: 7,
             }}

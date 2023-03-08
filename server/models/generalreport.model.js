@@ -30,6 +30,10 @@ const GeneralReportSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        report_by: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Teacher",
+        },
     },
     {
         timestamps: true,

@@ -73,7 +73,7 @@ const TrackAttendance = () => {
                 <div className="flex items-center justify-between border-b pb-3">
                     <div>
                         <h1 className="text-[24px]">Your Attendance</h1>
-                        <DatePicker
+                        {/* <DatePicker
                             className="mt-2"
                             defaultValue={dayjs(selectedDate)}
                             format="MMMM - YYYY"
@@ -81,7 +81,7 @@ const TrackAttendance = () => {
                             onChange={(value) => {
                                 setSelectedDate(value.toISOString());
                             }}
-                        />
+                        /> */}
                         <p className="mt-2">
                             Total Hour Worked on{" "}
                             {dayjs(selectedDate).format("MMMM")}:{" "}
@@ -90,7 +90,12 @@ const TrackAttendance = () => {
                     </div>
                 </div>
                 <div className="mt-5">
-                    <Calendar dateCellRender={renderDataCell} />
+                    <Calendar
+                        onChange={(value) => {
+                            setSelectedDate(value.toISOString());
+                        }}
+                        dateCellRender={renderDataCell}
+                    />
                 </div>
             </div>
         </Container>
