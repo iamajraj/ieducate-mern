@@ -66,7 +66,7 @@ const AddStudent = () => {
 
         try {
             await axiosInstance.post("/students", studentData);
-            message.success("Student has been added", 2);
+            message.success("Student has been created successfully !", 2);
             setStudentData(initialData);
             setSubjectData([]);
         } catch (err) {
