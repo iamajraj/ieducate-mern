@@ -114,14 +114,14 @@ router.post("/students", verifyToken, async (req, res) => {
         isActive: true,
     });
 
-    mailService(
-        email,
-        "support@ieducate.com",
-        due_date.format("DD/MM/YYYY"),
-        "payment"
-    )
-        .then(() => {})
-        .catch(() => {});
+    // mailService(
+    //     email,
+    //     "support@ieducate.com",
+    //     due_date.format("DD/MM/YYYY"),
+    //     "payment"
+    // )
+    //     .then(() => {})
+    //     .catch(() => {});
 
     try {
         student.active_invoice = fees._id;

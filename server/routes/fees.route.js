@@ -98,14 +98,14 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
                     isActive: true,
                 });
 
-                mailService(
-                    student.email,
-                    "support@ieducate.com",
-                    due_date.format("DD/MM/YYYY"),
-                    "payment"
-                )
-                    .then(() => {})
-                    .catch(() => {});
+                // mailService(
+                //     student.email,
+                //     "support@ieducate.com",
+                //     due_date.format("DD/MM/YYYY"),
+                //     "payment"
+                // )
+                //     .then(() => {})
+                //     .catch(() => {});
 
                 student.active_invoice = created_fee._id;
                 fee.isActive = false;
