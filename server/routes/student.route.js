@@ -13,6 +13,7 @@ const { Subject } = require("../models/subject.model");
 const GeneralReport = require("../models/generalreport.model");
 const TestReport = require("../models/testreport.model");
 const upload = require("../utils/upload");
+const mailService = require("../utils/mailService");
 
 const router = express.Router();
 
@@ -91,21 +92,36 @@ router.post("/students", verifyToken, async (req, res) => {
     const subject_ids = created_subjects.map((sub) => sub._id);
     student.subjects.push(...subject_ids);
 
+    const due_date = dayjs(subjects[subjects.length - 1].first_lesson_date).add(
+        30,
+        "day"
+    );
+
+    const payment_reminder_date = dayjs(
+        subjects[subjects.length - 1].first_lesson_date
+    )
+        .add(30, "day")
+        .subtract(10, "day");
+
     const fees = await Fees.create({
         subjects: created_subjects,
         student: student._id,
-        due_date: dayjs(subjects[subjects.length - 1].first_lesson_date).add(
-            30,
-            "day"
-        ),
-        payment_reminder: dayjs(subjects[subjects.length - 1].first_lesson_date)
-            .add(30, "day")
-            .subtract(10, "day"),
+        due_date: due_date,
+        payment_reminder: payment_reminder_date,
         previous_due_date: dayjs(
             subjects[subjects.length - 1].first_lesson_date
         ).add(30, "day"),
         isActive: true,
     });
+
+    mailService(
+        email,
+        "support@ieducate.com",
+        due_date.format("DD/MM/YYYY"),
+        "payment"
+    )
+        .then(() => {})
+        .catch(() => {});
 
     try {
         student.active_invoice = fees._id;

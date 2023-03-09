@@ -2,6 +2,12 @@ const express = require("express");
 const verifyToken = require("../middlewares/verifyToken");
 const sendError = require("../utils/sendError");
 const Announcement = require("../models/announcement.model");
+const Student = require("../models/student.model");
+const { fork } = require("child_process");
+const path = require("path");
+const child = fork(
+    path.resolve(__dirname, "..", "tasks", "sendAnnouncementMail.js")
+);
 
 const router = express.Router();
 
@@ -19,6 +25,10 @@ router.post("/announcements", verifyToken, async (req, res) => {
         description,
         created_by: req.user._id,
     });
+
+    const students = await Student.find({}).select("email");
+
+    child.send({ students, announcement: new_announcement });
 
     try {
         await new_announcement.save();

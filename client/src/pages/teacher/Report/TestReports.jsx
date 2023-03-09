@@ -297,6 +297,7 @@ const TestReports = ({ loading, reports, fetchReports, dashboard }) => {
                         key: report._id,
                         id: report._id,
                         subject: report.subject.subject_name,
+                        student: report.student.student_name,
                         student_id: report.student._id,
                         date: dayjs(report.date).format("DD/MM/YYYY"),
                         comment: report.comment,

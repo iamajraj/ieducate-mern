@@ -5,6 +5,7 @@ const Fees = require("../models/fees.model");
 const { Subject } = require("../models/subject.model");
 const Student = require("../models/student.model");
 const dayjs = require("dayjs");
+const mailService = require("../utils/mailService");
 const json2csv = require("json2csv").parse;
 
 const router = express.Router();
@@ -85,17 +86,27 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
                 const all_subjects = await Subject.find({
                     student_id: fee.student._id,
                 });
-
+                const due_date = dayjs(fee.due_date).add(30, "day");
                 const created_fee = await Fees.create({
                     subjects: all_subjects,
                     student: fee.student._id,
-                    due_date: dayjs(fee.due_date).add(30, "day"),
+                    due_date: due_date,
                     payment_reminder: dayjs(fee.due_date)
                         .add(30, "day")
                         .subtract(10, "day"),
                     previous_due_date: fee.previous_due_date,
                     isActive: true,
                 });
+
+                mailService(
+                    student.email,
+                    "support@ieducate.com",
+                    due_date.format("DD/MM/YYYY"),
+                    "payment"
+                )
+                    .then(() => {})
+                    .catch(() => {});
+
                 student.active_invoice = created_fee._id;
                 fee.isActive = false;
 
