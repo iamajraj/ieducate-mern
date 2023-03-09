@@ -59,8 +59,6 @@ const getPaymentReminderHtml = async (payment_date) => {
         payment_date
     );
 
-    console.log(payment_reminder_html);
-
     return payment_reminder_html;
 };
 
