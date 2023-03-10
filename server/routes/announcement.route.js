@@ -28,7 +28,7 @@ router.post("/announcements", verifyToken, async (req, res) => {
 
     const students = await Student.find({}).select("email");
 
-    // child.send({ students, announcement: new_announcement });
+    child.send({ students, announcement: new_announcement });
 
     try {
         await new_announcement.save();
