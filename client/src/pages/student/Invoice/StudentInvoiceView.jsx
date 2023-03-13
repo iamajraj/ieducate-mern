@@ -129,7 +129,7 @@ const StudentInvoiceView = () => {
                                                       },
                                                       0
                                                   )}{" "}
-                                                  RS
+                                                  GBP
                                               </p>
                                           </div>
                                           <div className="flex items-center justify-between">
