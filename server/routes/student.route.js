@@ -299,6 +299,28 @@ router.put("/students/:id", verifyToken, async (req, res) => {
     }
 });
 
+router.patch("/students/change-password", verifyToken, async (req, res) => {
+    const { old_password, new_password, confirm_password } = req.body;
+
+    try {
+        const student = await Student.findById(req.user._id);
+
+        if (!student) return sendError(404, "Student doesn't Exists", res);
+
+        const isValidPassword = await student.validatePassword(old_password);
+
+        if (!isValidPassword)
+            return sendError(401, "Old password is not correct", res);
+
+        student.password = new_password;
+
+        await student.save();
+        res.status(204).end();
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
 router.delete("/students/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
 
@@ -471,7 +493,7 @@ router.get(
                 {},
                 {
                     sort: {
-                        created_at: -1,
+                        createdAt: -1,
                     },
                 }
             ).populate(["student", "subject", "report_by"]);
@@ -482,7 +504,7 @@ router.get(
                 {},
                 {
                     sort: {
-                        created_at: -1,
+                        createdAt: -1,
                     },
                 }
             ).populate(["student", "subject", "report_by"]);
@@ -553,6 +575,27 @@ router.post("/students/general-report", verifyToken, async (req, res) => {
         sendError(500, "Something went wrong", res);
     }
 });
+
+router.get(
+    "/students/general-reports/:student_id",
+    verifyToken,
+    async (req, res) => {
+        const { student_id } = req.params;
+
+        try {
+            const reports = await GeneralReport.find({
+                student: student_id,
+            }).populate("subject");
+
+            res.status(201).json({
+                reports,
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
 
 router.get(
     "/students/general-report/:reportid",
@@ -638,6 +681,33 @@ router.put(
 
             res.status(201).json({
                 message: "General Report has been updated",
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+
+router.get(
+    "/students/general-report/recent/:studentId",
+    verifyToken,
+    async (req, res) => {
+        const { studentId } = req.params;
+
+        try {
+            const report = await GeneralReport.findOne(
+                {
+                    student: studentId,
+                },
+                {},
+                {
+                    sort: { createdAt: -1 },
+                }
+            ).populate("subject");
+
+            res.status(201).json({
+                report,
             });
         } catch (err) {
             console.log(err);
@@ -817,6 +887,76 @@ router.put(
 
             res.status(201).json({
                 message: "General Report has been updated",
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+
+router.get(
+    "/students/test-report/recent/:studentId",
+    verifyToken,
+    async (req, res) => {
+        const { studentId } = req.params;
+
+        try {
+            const report = await TestReport.findOne(
+                {
+                    student: studentId,
+                },
+                {},
+                {
+                    sort: { createdAt: -1 },
+                }
+            ).populate("subject");
+
+            res.status(201).json({
+                report,
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+
+router.get(
+    "/students/test-reports/single/:id",
+    verifyToken,
+    async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const report = await TestReport.findById(id).populate([
+                "subject",
+                "report_by",
+            ]);
+
+            res.status(201).json({
+                report,
+            });
+        } catch (err) {
+            console.log(err);
+            sendError(500, "Something went wrong", res);
+        }
+    }
+);
+
+router.get(
+    "/students/test-reports/:student_id",
+    verifyToken,
+    async (req, res) => {
+        const { student_id } = req.params;
+
+        try {
+            const reports = await TestReport.find({
+                student: student_id,
+            }).populate("subject");
+
+            res.status(201).json({
+                reports,
             });
         } catch (err) {
             console.log(err);

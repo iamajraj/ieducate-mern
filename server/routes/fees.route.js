@@ -11,9 +11,6 @@ const json2csv = require("json2csv").parse;
 const router = express.Router();
 
 router.get("/fees/:student_id", verifyToken, async (req, res) => {
-    if (req.user.user_type !== "admin")
-        return sendError(401, "Only Admins are alloed", res);
-
     const { student_id } = req.params;
 
     if (!student_id) return sendError(404, "Student doesn't exists", res);
@@ -163,9 +160,6 @@ router.patch("/fees/change-subject-fee", verifyToken, async (req, res) => {
 router.get("/single-fee/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
 
-    if (req.user.user_type !== "admin")
-        return sendError(401, "Only Admins are alloed", res);
-
     try {
         const fee = await Fees.findById(id).populate(["student"]);
 
@@ -180,14 +174,27 @@ router.get("/single-fee/:id", verifyToken, async (req, res) => {
 });
 
 router.get("/active-fees", verifyToken, async (req, res) => {
-    if (req.user.user_type !== "admin")
-        return sendError(401, "Only Admins are alloed", res);
-
     try {
         const fees = await Fees.find({ isActive: true }).populate(["student"]);
         if (!fees) return sendError(404, "Fees doesn't exists", res);
         return res.status(200).json({
             fees,
+        });
+    } catch (err) {
+        sendError(500, "Something went wrong", res);
+    }
+});
+
+router.get("/active-invoice/:studentid", verifyToken, async (req, res) => {
+    const { studentid } = req.params;
+    try {
+        const activeInvoice = await Fees.findOne({
+            student: studentid,
+            isActive: true,
+        });
+        if (!activeInvoice) return sendError(404, "Fees doesn't exists", res);
+        return res.status(200).json({
+            activeInvoice,
         });
     } catch (err) {
         sendError(500, "Something went wrong", res);

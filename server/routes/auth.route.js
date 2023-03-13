@@ -1,6 +1,7 @@
 const express = require("express");
 const sendError = require("../utils/sendError");
 const Admin = require("../models/admin.model");
+const Student = require("../models/student.model");
 const Teacher = require("../models/teacher.model");
 const { jwtSign } = require("../utils/jwtService");
 
@@ -67,6 +68,39 @@ router.post("/teacher/login", async (req, res) => {
             email: teacher.email,
             name: teacher.name,
             user_type: teacher.user_type,
+        },
+    });
+});
+
+router.post("/student/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+        return sendError(400, "All fields are required", res);
+
+    const student = await Student.findOne({
+        email: email,
+    });
+
+    if (!student) return sendError(404, "Account doesn't exist.", res);
+
+    const isValidPassword = await student.validatePassword(password);
+
+    if (!isValidPassword)
+        return sendError(400, "Email or Password is invalid", res);
+
+    const token = jwtSign({
+        user_type: student.user_type,
+        _id: student._id,
+    });
+
+    res.status(200).json({
+        token,
+        user: {
+            id: student._id,
+            email: student.email,
+            name: student.student_name,
+            user_type: student.user_type,
         },
     });
 });

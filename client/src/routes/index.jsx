@@ -35,6 +35,16 @@ import AllFees from "../pages/admin/feesbillings/AllFees";
 import EditTestReport from "../pages/teacher/Report/EditTestReport";
 import TeacherDashboard from "../pages/teacher/TeacherDashboard";
 import AutoLogout from "../components/AutoLogout";
+import StudentLogin from "../pages/student/StudentLogin";
+import StudentDashboard from "../pages/student/StudentDashboard";
+import StudentAnnouncement from "../pages/student/Announcement/StudentAnnouncement";
+import StudentGeneralReport from "../pages/student/GeneralReport/StudentGeneralReport";
+import StudentTermsReport from "../pages/student/TermsReport/StudentTermsReport";
+import StudentTermsReportView from "../pages/student/TermsReport/StudentTermsReportView";
+import StudentInvoice from "../pages/student/Invoice/StudentInvoice";
+import StudentInvoiceView from "../pages/student/Invoice/StudentInvoiceView";
+import ProfileSetting from "../pages/student/Setting/ProfileSetting";
+import StudentLayout from "../components/StudentLayout";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -56,6 +66,19 @@ const TeacherProtectedRoute = ({ children }) => {
         if (!user) {
             return navigate("/teacher");
         } else if (user.user_type !== "teacher") {
+            return navigate("/");
+        }
+    }, []);
+    return children;
+};
+
+const StudentProtectedRoute = ({ children }) => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) {
+            return navigate("/student");
+        } else if (user.user_type !== "student") {
             return navigate("/");
         }
     }, []);
@@ -214,7 +237,11 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <TeacherLogin />,
+                element: (
+                    <AuthRoute>
+                        <TeacherLogin />
+                    </AuthRoute>
+                ),
             },
             {
                 path: "dashboard",
@@ -283,6 +310,69 @@ const router = createBrowserRouter([
                                 ],
                             },
                         ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        path: "/student",
+        children: [
+            {
+                index: true,
+                element: <StudentLogin />,
+            },
+            {
+                path: "dashboard",
+                element: (
+                    <StudentProtectedRoute>
+                        <AutoLogout>
+                            <StudentLayout />
+                        </AutoLogout>
+                    </StudentProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        element: <StudentDashboard />,
+                    },
+                    {
+                        path: "announcements",
+                        element: <StudentAnnouncement />,
+                    },
+                    {
+                        path: "general-feedback",
+                        element: <StudentGeneralReport />,
+                    },
+                    {
+                        path: "terms-report",
+                        children: [
+                            {
+                                index: true,
+                                element: <StudentTermsReport />,
+                            },
+                            {
+                                path: ":id",
+                                element: <StudentTermsReportView />,
+                            },
+                        ],
+                    },
+                    {
+                        path: "invoices",
+                        children: [
+                            {
+                                index: true,
+                                element: <StudentInvoice />,
+                            },
+                            {
+                                path: ":id",
+                                element: <StudentInvoiceView />,
+                            },
+                        ],
+                    },
+                    {
+                        path: "setting",
+                        element: <ProfileSetting />,
                     },
                 ],
             },

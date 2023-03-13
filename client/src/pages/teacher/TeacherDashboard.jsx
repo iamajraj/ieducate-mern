@@ -108,39 +108,43 @@ const Reports = () => {
         }
     }, [user]);
 
+    console.log(reports);
+
     return (
         <div className="">
             <div className="my-5 border-b"></div>
-            <Tabs
-                type="card"
-                items={[
-                    {
-                        label: "General Reports",
-                        key: "general_reports",
+            {user && (
+                <Tabs
+                    type="card"
+                    items={[
+                        {
+                            label: "General Reports",
+                            key: "general_reports",
 
-                        children: (
-                            <GeneralReports
-                                dashboard
-                                reports={reports?.general_reports}
-                                fetchReports={fetchReports}
-                                loading={loading}
-                            />
-                        ),
-                    },
-                    {
-                        label: "Test Reports",
-                        key: "test_reports",
-                        children: (
-                            <TestReports
-                                dashboard
-                                loading={loading}
-                                reports={reports?.test_reports}
-                                fetchReports={fetchReports}
-                            />
-                        ),
-                    },
-                ]}
-            />
+                            children: (
+                                <GeneralReports
+                                    dashboard
+                                    reports={reports?.general_reports}
+                                    fetchReports={fetchReports}
+                                    loading={loading}
+                                />
+                            ),
+                        },
+                        {
+                            label: "Test Reports",
+                            key: "test_reports",
+                            children: (
+                                <TestReports
+                                    dashboard
+                                    loading={loading}
+                                    reports={reports?.test_reports}
+                                    fetchReports={fetchReports}
+                                />
+                            ),
+                        },
+                    ]}
+                />
+            )}
         </div>
     );
 };

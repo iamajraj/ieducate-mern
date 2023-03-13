@@ -6,6 +6,7 @@
 
 body {
     font-family: "Poppins", sans-serif;
+    background: "#F3F3F9";
 }
 
 * {
@@ -87,4 +88,17 @@ a {
 }
 .ant-menu-submenu.ant-menu-submenu-active .ant-menu-submenu-arrow {
     color: white !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.progress_slider .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px #78b72b !important;
+}
+.attainment_slider .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px #ed6f1b !important;
+}
+.effort_slider .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px #199fda !important;
 }

@@ -23,7 +23,7 @@ const MainLayout = () => {
                 >
                     <Header />
                 </div>
-                <div className="mt-[70px] overflow-y-scroll h-full bg-[#F8F8F8] pb-[40px]">
+                <div className="mt-[70px] overflow-y-scroll h-full bg-[#F3F3F9] pb-[40px]">
                     <Outlet />
                 </div>
             </div>
