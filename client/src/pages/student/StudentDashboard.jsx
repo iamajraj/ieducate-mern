@@ -6,6 +6,7 @@ import QuoteRight from "../../svgassets/QuoteRight";
 import { Slider } from "antd";
 import axiosInstance from "../../services/axiosInstance";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const PROGRESS = [
     "Below Expected Progress",
@@ -31,6 +32,8 @@ const StudentDashboard = () => {
     const [activeInvoice, setActiveInvoice] = useState(null);
     const [termReport, setTermReport] = useState(null);
     const [generalReport, setGeneralReport] = useState(null);
+
+    const navigate = useNavigate();
 
     const getAnnouncements = async () => {
         try {
@@ -138,7 +141,14 @@ const StudentDashboard = () => {
                                             <QuoteLeft className="absolute -left-3" />
                                             {termReport?.summary.slice(0, 70) +
                                                 "..."}
-                                            <span className="text-blue-500 ml-5 cursor-pointer relative">
+                                            <span
+                                                className="text-blue-500 ml-5 cursor-pointer relative"
+                                                onClick={() => {
+                                                    navigate(
+                                                        `terms-report/${termReport._id}`
+                                                    );
+                                                }}
+                                            >
                                                 <QuoteRight className="absolute top-0 -left-5" />
                                                 View More
                                             </span>
