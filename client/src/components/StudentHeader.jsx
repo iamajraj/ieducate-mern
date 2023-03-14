@@ -23,7 +23,7 @@ const StudentHeader = ({ setCollapsed, title }) => {
     };
 
     return (
-        <div className="min-h-[70px] px-[15px] md:px-10 flex items-center justify-between shadow-md shadow-gray-200 z-50 w-full bg-[#F3F3F9] md:bg-white">
+        <div className="min-h-[70px] px-[15px] md:px-10 flex items-center justify-between md:shadow-md md:shadow-gray-200 relative z-50 w-full bg-[#F3F3F9] md:bg-white">
             {user?.user_type !== "student" ? (
                 <h1 className="capitalize text-[15px]">
                     Welcome {user?.user_type === "admin" ? "Admin" : user?.name}{" "}
