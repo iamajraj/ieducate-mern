@@ -104,14 +104,6 @@ const AuthRoute = ({ children }) => {
 };
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: (
-            <AuthRoute>
-                <Home />
-            </AuthRoute>
-        ),
-    },
     // admin route
     {
         path: "/admin",

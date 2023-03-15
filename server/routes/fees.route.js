@@ -97,7 +97,6 @@ router.patch("/fees/set-paid", verifyToken, async (req, res) => {
 
                 mailService(
                     student.email,
-                    "support@ieducate.com",
                     due_date.format("DD/MM/YYYY"),
                     "payment"
                 )

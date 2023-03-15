@@ -59,9 +59,6 @@ const Login = ({ usertype, onSubmit, loading, values, onChange, message }) => {
                             className="w-full mt-3 text-[18px] py-6"
                         />
                     </div>
-                    <Link to="/" className="text-main underline cursor-pointer">
-                        Back to home
-                    </Link>
                 </form>
             </div>
         </div>

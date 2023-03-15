@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
 import StudentHeader from "./StudentHeader";
 import StudentSidebar from "./StudentSidebar";
 
 const StudentLayout = () => {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
+    const [mobileCollapsed, setMobileCollapsed] = useState(true);
     const [currentMenu, setCurrentMenu] = useState("Dashboard");
 
     return (
         <div className="flex h-full md:h-screen w-full ">
             <StudentSidebar
-                className="h-screen hidden md:block"
+                className="h-screen hidden md:block z-[999]"
                 collapsed={collapsed}
                 setCollapsed={setCollapsed}
             />
@@ -19,11 +19,12 @@ const StudentLayout = () => {
             {/* Mobile View */}
             <StudentSidebar
                 className="h-screen fixed top-0 md:hidden z-[999]"
-                collapsed={collapsed}
-                setCollapsed={setCollapsed}
+                collapsed={mobileCollapsed}
+                setCollapsed={setMobileCollapsed}
                 setCurrentMenu={setCurrentMenu}
                 mobile
             />
+
             <div className="flex-1 w-full h-full flex flex-col">
                 <div
                     className={`fixed ${
@@ -37,7 +38,7 @@ const StudentLayout = () => {
 
                 <div className="md:hidden">
                     <StudentHeader
-                        setCollapsed={setCollapsed}
+                        setCollapsed={setMobileCollapsed}
                         title={currentMenu}
                     />
                 </div>

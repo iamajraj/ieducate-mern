@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const fs = require("fs").promises;
 const path = require("path");
 
-const mailService = async (to, from, content, type) => {
+const mailService = async (to, content, type) => {
     const transport = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         auth: {
@@ -19,7 +19,7 @@ const mailService = async (to, from, content, type) => {
     try {
         const res = await transport.sendMail({
             to,
-            from,
+            from: "noreply@ieducateacademy.com",
             subject:
                 type === "payment"
                     ? "Your Next Payment Reminder - ieducate"

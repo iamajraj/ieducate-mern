@@ -75,7 +75,7 @@ const StudentDashboard = () => {
             getAnnouncements();
             getActiveInvoice(user?.id);
             getRecentTermsReport(user?.id);
-            getRecentGeneralReport(user?.id);
+            // getRecentGeneralReport(user?.id);
         }
     }, [user]);
 
@@ -266,7 +266,10 @@ const StudentDashboard = () => {
                                 </div>
                             </>
                         ) : (
-                            <p>No general report yet.</p>
+                            <p className="my-3 text-[14px]">
+                                Feedback will show here once we have evaluated
+                                your performance.
+                            </p>
                         )}
                     </div>
                 </div>

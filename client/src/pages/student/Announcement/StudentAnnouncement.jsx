@@ -25,9 +25,13 @@ const StudentAnnouncement = () => {
                 Announcement
             </h1>
             <div className="overflow-y-scroll mt-[32px] no-scrollbar h-full flex flex-col gap-[32px]">
-                {announcements
-                    ?.map((item) => <AnnouncementCard item={item} />)
-                    .reverse()}
+                {announcements && announcements?.length > 0 ? (
+                    announcements
+                        ?.map((item) => <AnnouncementCard item={item} />)
+                        .reverse()
+                ) : (
+                    <p>No new announcement</p>
+                )}
             </div>
         </div>
     );
