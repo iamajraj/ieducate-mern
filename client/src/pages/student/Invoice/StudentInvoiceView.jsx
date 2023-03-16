@@ -102,12 +102,15 @@ const StudentInvoiceView = () => {
                                                   <div className="border-b flex items-center justify-around py-5 text-[12px] md:text-[16px]">
                                                       <p>{sub.subject_name}</p>
                                                       <p>
-                                                          {dayjs(
-                                                              fee.student
-                                                                  .last_payment_date
-                                                          ).format(
-                                                              "DD/MM/YYYY"
-                                                          )}
+                                                          {fee.student
+                                                              .last_payment_date
+                                                              ? dayjs(
+                                                                    fee.student
+                                                                        .last_payment_date
+                                                                ).format(
+                                                                    "DD/MM/YYYY"
+                                                                )
+                                                              : ""}
                                                       </p>
                                                       <p className="font-semibold">
                                                           {sub.monthly_payment}{" "}
