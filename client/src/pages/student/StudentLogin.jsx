@@ -28,7 +28,10 @@ const StudentLogin = () => {
 
             setLoading(true);
 
-            const res = await axiosInstance.post("/auth/student/login", login);
+            const res = await axiosInstance.post("/auth/student/login", {
+                email: email.toLowerCase(),
+                password: password,
+            });
 
             const { user, token } = res.data;
 

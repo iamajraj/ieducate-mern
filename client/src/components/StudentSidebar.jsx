@@ -27,7 +27,7 @@ const studentItems = [
     getItem("Dashboard", "", <HomeOutlined />),
     getItem("Announcements", "announcements", <SolutionOutlined />),
     getItem("General Feedback", "general-feedback", <GroupOutlined />),
-    getItem("Terms Report", "terms-report", <FileOutlined />),
+    getItem("Term Reports", "term-reports", <FileOutlined />),
     getItem("Invoices", "invoices", <PoundOutlined />),
     getItem("Profile Setting", "setting", <SettingOutlined />),
 ];
@@ -36,7 +36,7 @@ const MenuItems = {
     "": "Dashboard",
     announcements: "Announcements",
     "general-feedback": "General Feedback",
-    "terms-report": "Terms Report",
+    "term-reports": "Term Reports",
     invoices: "Invoices",
     setting: "Change Password",
 };

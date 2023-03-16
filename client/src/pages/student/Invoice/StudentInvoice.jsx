@@ -17,9 +17,9 @@ const StudentInvoice = () => {
     const getFees = async (id) => {
         try {
             setLoading(true);
-            const res = await axiosInstance.get(`/fees/${id}`);
-            const { fees } = res.data;
-            setFees(fees);
+            const res = await axiosInstance.get(`/students/invoices/${id}`);
+            const { invoices } = res.data;
+            setFees(invoices ?? []);
         } catch (err) {
         } finally {
             setLoading(false);
@@ -243,7 +243,7 @@ const FeesTable = ({ data, loading }) => {
                     return {
                         key: d._id,
                         id: d._id,
-                        invoice: dayjs(d.createdAt).format("MMM") + " Invoice",
+                        invoice: dayjs(d.due_date).format("MMM") + " Invoice",
                         due_date_iso: d.due_date,
                         due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
                         status: d.isPaid === "Paid" ? "Paid" : "Pending",

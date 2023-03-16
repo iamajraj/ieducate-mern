@@ -37,7 +37,7 @@ const AdminLogin = () => {
         setLoading(true);
         try {
             const res = await axiosInstance.post("/auth/admin/login", {
-                email: email,
+                email: email.toLowerCase(),
                 password: password,
             });
             localStorage.setItem("user", JSON.stringify(res.data.user));

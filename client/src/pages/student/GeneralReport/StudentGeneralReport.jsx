@@ -28,11 +28,17 @@ const StudentGeneralReport = () => {
             <h1 className="hidden md:block text-[28px] font-medium">
                 General Feedback
             </h1>
-            {/* <p className="text-[13px]">Your subject wise feedback is here</p> */}
             <div className="overflow-y-scroll mt-[20px] md:mt-[32px] no-scrollbar h-full flex flex-wrap gap-[32px]">
-                {generalReports?.map((report) => {
-                    return <GeneralCard report={report} />;
-                })}
+                {generalReports?.length > 0 ? (
+                    generalReports?.map((report) => {
+                        return <GeneralCard report={report} />;
+                    })
+                ) : (
+                    <p className="text-[14px]">
+                        Feedback will be displayed here once we have evaluated
+                        your performance
+                    </p>
+                )}
             </div>
         </div>
     );

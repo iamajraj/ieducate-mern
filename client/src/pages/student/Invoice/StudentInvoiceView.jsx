@@ -46,7 +46,9 @@ const StudentInvoiceView = () => {
                                 {!loading
                                     ? fee === null
                                         ? "Invoice doesn't exists"
-                                        : "Feb Invoice"
+                                        : dayjs(fee.due_date).format(
+                                              "MMM Invoice"
+                                          )
                                     : "Loading..."}
                             </p>
                         </div>

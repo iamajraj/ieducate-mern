@@ -63,7 +63,7 @@ const Dashboard = () => {
                     </h1>
                     <p className="text-[14px]">Dashboard</p>
                 </div>
-                <div className="my-5 border-t"></div>
+                <div className="my-8 border-t"></div>
 
                 <div className="flex flex-row">
                     {/* <div className="flex flex-col w-[50%] h-full">
@@ -73,8 +73,7 @@ const Dashboard = () => {
                             dateCellRender={renderDataCell}
                         />
                     </div> */}
-                    <div className="mx-[25px] border-l"></div>
-                    <div className="flex flex-col w-[50%]">
+                    <div className="flex flex-col w-full">
                         <h1>Recent Reports by You</h1>
                         <Reports />
                     </div>
@@ -108,11 +107,9 @@ const Reports = () => {
         }
     }, [user]);
 
-    console.log(reports);
-
     return (
         <div className="">
-            <div className="my-5 border-b"></div>
+            <div className="my-5"></div>
             {user && (
                 <Tabs
                     type="card"
@@ -131,8 +128,8 @@ const Reports = () => {
                             ),
                         },
                         {
-                            label: "Test Reports",
-                            key: "test_reports",
+                            label: "Term Reports",
+                            key: "term_reports",
                             children: (
                                 <TestReports
                                     dashboard

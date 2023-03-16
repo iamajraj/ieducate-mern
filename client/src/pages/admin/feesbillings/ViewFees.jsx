@@ -144,23 +144,28 @@ const ViewFees = () => {
         a.remove();
     };
 
-    const issueInvoice = async () => {
+    const issueInvoice = async (fee_id) => {
         try {
+            if (!fee_id) return;
+            // await axiosInstance.post("/students/issue-invoice", {
+            //     student_id: fee.student._id,
+            //     student_name: fee.student.student_name,
+            //     year: fee.student.year,
+            //     number_of_subject: fee.student.number_of_subject,
+            //     last_payment_date: fee.student.last_payment_date,
+            //     subjects: fee.subjects.map((sub) => ({
+            //         subject_name: sub.subject_name,
+            //         // last_payment_date: sub.last_payment_date,
+            //         monthly_payment: sub.monthly_payment,
+            //     })),
+            //     total_amount: fee.subjects.reduce((acc, cur) => {
+            //         return (acc += Number(cur.monthly_payment));
+            //     }, 0),
+            //     due_date: fee.due_date,
+            // });
             await axiosInstance.post("/students/issue-invoice", {
                 student_id: fee.student._id,
-                student_name: fee.student.student_name,
-                year: fee.student.year,
-                number_of_subject: fee.student.number_of_subject,
-                last_payment_date: fee.student.last_payment_date,
-                subjects: fee.subjects.map((sub) => ({
-                    subject_name: sub.subject_name,
-                    // last_payment_date: sub.last_payment_date,
-                    monthly_payment: sub.monthly_payment,
-                })),
-                total_amount: fee.subjects.reduce((acc, cur) => {
-                    return (acc += Number(cur.monthly_payment));
-                }, 0),
-                due_date: fee.due_date,
+                invoice_id: fee_id,
             });
             message.success("Invoice issued");
         } catch (err) {
@@ -207,8 +212,10 @@ const ViewFees = () => {
                                 <DownloadOutlined />
                             </button>
                             <button
-                                onClick={issueInvoice}
-                                className="flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
+                                onClick={() => {
+                                    issueInvoice(fee_id);
+                                }}
+                                className="cursor-pointer flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
                             >
                                 <p className="text-[13px]">Issue Invoice</p>
                             </button>

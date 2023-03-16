@@ -1,48 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const SubSubjectSchema = new mongoose.Schema({
-    subject_name: {
-        type: String,
-        required: true,
-    },
-    last_payment_date: {
-        type: Date,
-        default: null,
-    },
-    monthly_payment: {
-        type: Number,
-        required: true,
-    },
-});
-
-const InvoiceSchema = new mongoose.Schema({
-    student_name: {
-        type: String,
-        required: true,
-    },
-    year: {
-        type: Number,
-        required: true,
-    },
-    number_of_subject: {
-        type: Number,
-        required: true,
-    },
-    subjects: {
-        type: [SubSubjectSchema],
-        required: true,
-    },
-    total_amount: {
-        type: Number,
-        required: true,
-    },
-    due_date: {
-        type: Date,
-        required: true,
-    },
-});
-
 const StudentSchema = new mongoose.Schema(
     {
         student_roll_no: {
@@ -83,7 +41,8 @@ const StudentSchema = new mongoose.Schema(
             required: true,
         },
         invoices: {
-            type: [InvoiceSchema],
+            type: [mongoose.SchemaTypes.ObjectId],
+            ref: "Fees",
             default: [],
         },
         number_of_subject: {

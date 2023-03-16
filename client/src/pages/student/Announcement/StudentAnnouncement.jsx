@@ -17,8 +17,6 @@ const StudentAnnouncement = () => {
         getAnnouncements();
     }, []);
 
-    console.log(announcements);
-
     return (
         <div className="px-[15px] md:px-[48px] md:py-[32px] h-full flex flex-col">
             <h1 className="text-[28px] font-medium hidden md:block">
@@ -30,7 +28,7 @@ const StudentAnnouncement = () => {
                         ?.map((item) => <AnnouncementCard item={item} />)
                         .reverse()
                 ) : (
-                    <p>No new announcement</p>
+                    <p className="text-[14px]">No unseen announcements</p>
                 )}
             </div>
         </div>

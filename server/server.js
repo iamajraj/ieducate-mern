@@ -8,7 +8,6 @@ const announcementRoute = require("./routes/announcement.route");
 const teacherRoute = require("./routes/teacher.route");
 const studentRoute = require("./routes/student.route");
 const feesRoute = require("./routes/fees.route");
-const subjectRoute = require("./routes/subject.route");
 const morgan = require("morgan");
 
 const app = express();
@@ -44,9 +43,6 @@ app.use("/api", studentRoute);
 
 // fees
 app.use("/api", feesRoute);
-
-// subject
-app.use("/api", subjectRoute);
 
 const PORT = process.env.PORT || 5000;
 

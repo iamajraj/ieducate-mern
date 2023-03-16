@@ -25,13 +25,19 @@ const StudentTermsReport = () => {
         <div className="px-[15px] md:px-[48px] mt-[15px] md:py-[32px] h-full flex flex-col">
             <div className="h-full w-full bg-[#CFF0FF] px-[10px] pt-[15px] md:px-[38px] md:pt-[43px] pb-[20px] rounded-[14px] overflow-hidden flex flex-col">
                 <h1 className="text-[18px] md:text-[28px] font-medium">
-                    Terms Report
+                    Term Reports
                 </h1>
 
                 <div className="overflow-y-scroll mt-[32px] no-scrollbar h-full flex flex-col gap-[32px]">
-                    {termsReport?.map((report) => (
-                        <TermsReportCard report={report} />
-                    ))}
+                    {termsReport?.length > 0 ? (
+                        termsReport?.map((report) => (
+                            <TermsReportCard report={report} />
+                        ))
+                    ) : (
+                        <p className="text-[14px]">
+                            Your terms report will show here once available
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

@@ -78,7 +78,7 @@ const CreateGeneralReport = () => {
             await axiosInstance.post("/students/test-report", formData);
             message.success("Report has been created !");
             navigate(-1);
-            navigate("#test_reports");
+            navigate("#term_reports");
         } catch (err) {
             message.error(
                 err.response?.data?.message ?? "Something went wrong."
@@ -114,10 +114,10 @@ const CreateGeneralReport = () => {
                     />
                     <div>
                         <h1 className="text-[22px]">
-                            Create Test Report for {student?.student_name}
+                            Create Term Report for {student?.student_name}
                         </h1>
                         <p className="text-[13px]">
-                            Select a subject of the student to create test
+                            Select a subject of the student to create term
                             report
                         </p>
                     </div>

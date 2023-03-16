@@ -84,7 +84,7 @@ const StudentReports = () => {
                                     onClick={() => {
                                         navigate(`test-report`);
                                     }}
-                                    text="Create Test Report"
+                                    text="Create Term Report"
                                 />
                             </div>
                         </div>
@@ -108,8 +108,8 @@ const StudentReports = () => {
                                     ),
                                 },
                                 {
-                                    label: "Test Reports",
-                                    key: "test_reports",
+                                    label: "Term Reports",
+                                    key: "term_reports",
                                     children: (
                                         <TestReports
                                             reports={reports?.test_reports}

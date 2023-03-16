@@ -45,6 +45,7 @@ import StudentInvoice from "../pages/student/Invoice/StudentInvoice";
 import StudentInvoiceView from "../pages/student/Invoice/StudentInvoiceView";
 import ProfileSetting from "../pages/student/Setting/ProfileSetting";
 import StudentLayout from "../components/StudentLayout";
+import PageNotFound from "../components/PageNotFound";
 
 const AdminProtectedRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -104,6 +105,14 @@ const AuthRoute = ({ children }) => {
 };
 
 const router = createBrowserRouter([
+    {
+        path: "/",
+        element: (
+            <AuthRoute>
+                <Navigate to="/student" />
+            </AuthRoute>
+        ),
+    },
     // admin route
     {
         path: "/admin",
@@ -337,7 +346,7 @@ const router = createBrowserRouter([
                         element: <StudentGeneralReport />,
                     },
                     {
-                        path: "terms-report",
+                        path: "term-reports",
                         children: [
                             {
                                 index: true,
@@ -369,6 +378,11 @@ const router = createBrowserRouter([
                 ],
             },
         ],
+    },
+
+    {
+        path: "*",
+        element: <PageNotFound />,
     },
 ]);
 

@@ -7,6 +7,7 @@ import { Slider } from "antd";
 import axiosInstance from "../../services/axiosInstance";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { ClockCircleOutlined } from "@ant-design/icons";
 
 const PROGRESS = [
     "Below Expected Progress",
@@ -75,12 +76,12 @@ const StudentDashboard = () => {
             getAnnouncements();
             getActiveInvoice(user?.id);
             getRecentTermsReport(user?.id);
-            // getRecentGeneralReport(user?.id);
+            getRecentGeneralReport(user?.id);
         }
     }, [user]);
 
     return (
-        <div className="md:pt-[32px] px-[15px] pb-[25px] md:pl-[48px] md:pr-[34px] h-full">
+        <div className="md:pt-[32px] px-[15px] pb-[25px] md:pl-[48px] md:pr-[34px] h-full flex flex-col mb-[50px]">
             <h1 className="hidden md:block text-[30px] font-semibold">
                 Dashboard
             </h1>
@@ -120,9 +121,18 @@ const StudentDashboard = () => {
                             </div>
                         </div>
                         <div className="bg-white w-full px-[24px] py-[17px] rounded-[20px]">
-                            <h1 className="text-[18px] font-medium">
-                                Terms Report
-                            </h1>
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <h1 className="text-[18px] font-medium">
+                                    Terms Report
+                                </h1>
+                                <p className="flex items-center gap-2">
+                                    <ClockCircleOutlined />
+                                    {termReport &&
+                                        dayjs(termReport.date).format(
+                                            "DD MMM YYYY"
+                                        )}
+                                </p>
+                            </div>
                             <div className="h-[1px] w-full bg-[#E9EBEC] my-4"></div>
                             {termReport ? (
                                 <>
@@ -156,15 +166,27 @@ const StudentDashboard = () => {
                                     </div>
                                 </>
                             ) : (
-                                <p>No terms report yet.</p>
+                                <p className="text-[14px]">
+                                    Your terms report will show here once
+                                    available
+                                </p>
                             )}
                         </div>
                     </div>
 
                     <div className="h-full bg-white rounded-[20px] mt-7 px-[25px] pt-[11px]">
-                        <h1 className="text-[18px] font-medium border-b border-b-[#E9EBEC] pb-2">
-                            General Feedback
-                        </h1>
+                        <div className="flex items-center justify-between gap-2 flex-wrap border-b border-b-[#E9EBEC] pb-2">
+                            <h1 className="text-[18px] font-medium ">
+                                General Feedback
+                            </h1>
+                            <p className="flex items-center gap-2">
+                                <ClockCircleOutlined />
+                                {generalReport &&
+                                    dayjs(generalReport.date).format(
+                                        "DD MMM YYYY"
+                                    )}
+                            </p>
+                        </div>
                         {generalReport ? (
                             <>
                                 <h2
@@ -173,6 +195,7 @@ const StudentDashboard = () => {
                                 >
                                     {generalReport.subject.subject_name}
                                 </h2>
+
                                 <p className="font-semibold text-black text-[12px] my-2">
                                     Teacher Comment:
                                 </p>
@@ -185,7 +208,10 @@ const StudentDashboard = () => {
                                 </p>
                                 <div className="flex items-center mt-4 gap-[40px]">
                                     <div className="w-full">
-                                        <p className="text-[14px]">Progress</p>
+                                        <p className="text-[14px]">Progress:</p>
+                                        <p className="text-[13px] mt-2 text-[#73be18] font-medium">
+                                            {generalReport.progress}
+                                        </p>
                                         <Slider
                                             trackStyle={{
                                                 backgroundColor: "#78B72B",
@@ -207,12 +233,16 @@ const StudentDashboard = () => {
                                                         PROGRESS[index - 1];
                                                     return value;
                                                 },
+                                                open: false,
                                             }}
                                         />
                                     </div>
                                     <div className="w-full">
                                         <p className="text-[14px]">
                                             Attainment
+                                        </p>
+                                        <p className="text-[13px] mt-2 text-[#ED6F1B] font-medium">
+                                            {generalReport.attainment}
                                         </p>
                                         <Slider
                                             trackStyle={{
@@ -235,12 +265,16 @@ const StudentDashboard = () => {
                                                         ATTAINMENT[index - 1];
                                                     return value;
                                                 },
+                                                open: false,
                                             }}
                                         />
                                     </div>
                                 </div>
                                 <div className="w-full max-w-[500px]">
                                     <p className="text-[14px]">Effort</p>
+                                    <p className="text-[13px] mt-2 text-[#199FDA] font-medium">
+                                        {generalReport.effort}
+                                    </p>
                                     <Slider
                                         trackStyle={{
                                             backgroundColor: "#199FDA",
@@ -261,14 +295,15 @@ const StudentDashboard = () => {
                                                 let value = EFFORT[index - 1];
                                                 return value;
                                             },
+                                            open: false,
                                         }}
                                     />
                                 </div>
                             </>
                         ) : (
                             <p className="my-3 text-[14px]">
-                                Feedback will show here once we have evaluated
-                                your performance.
+                                Feedback will be displayed here once we have
+                                evaluated your performance
                             </p>
                         )}
                     </div>
@@ -279,29 +314,35 @@ const StudentDashboard = () => {
                     </h1>
 
                     <div className="flex flex-col h-full overflow-y-scroll no-scrollbar mt-5">
-                        {announcements
-                            .map((item) => (
-                                <div className="pb-6">
-                                    <h1
-                                        // style={{ color: randomColor() }}
-                                        className="font-semibold text-[#E5247D]"
-                                    >
-                                        {item.title}
-                                    </h1>
+                        {announcements?.length > 0 ? (
+                            announcements
+                                .map((item) => (
+                                    <div className="pb-6">
+                                        <h1
+                                            // style={{ color: randomColor() }}
+                                            className="font-semibold text-[#E5247D]"
+                                        >
+                                            {item.title}
+                                        </h1>
 
-                                    <p className="font-semibold my-3">
-                                        Dear Student
-                                    </p>
-                                    <p>{item.description}</p>
+                                        <p className="font-semibold my-3">
+                                            Dear Student
+                                        </p>
+                                        <p>{item.description}</p>
 
-                                    <div className="mt-4">
-                                        <p>Thanks</p>
-                                        <p className="font-semibold">Admin</p>
+                                        <div className="mt-4">
+                                            <p>Thanks</p>
+                                            <p className="font-semibold">
+                                                Admin
+                                            </p>
+                                        </div>
+                                        <div className="h-[1px] w-full bg-[#E9EBEC] mt-4"></div>
                                     </div>
-                                    <div className="h-[1px] w-full bg-[#E9EBEC] mt-4"></div>
-                                </div>
-                            ))
-                            .reverse()}
+                                ))
+                                .reverse()
+                        ) : (
+                            <p>No unseen announcements</p>
+                        )}
                     </div>
                 </div>
             </div>
