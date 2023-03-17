@@ -40,11 +40,6 @@ const SetTeacherAttendance = () => {
             });
 
             message.success("Teacher Attendance has been added !");
-            setAttendanceData({
-                fromTime: "",
-                toTime: "",
-                date: "",
-            });
             fetchTeacher(params.id);
         } catch (err) {
             message.error(

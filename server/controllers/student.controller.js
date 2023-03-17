@@ -300,6 +300,7 @@ module.exports.getStudentInvoices = async (req, res) => {
             invoices: student.invoices,
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };
@@ -321,6 +322,7 @@ module.exports.changeStudentPassword = async (req, res) => {
         await student.save();
         res.status(204).end();
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };
@@ -415,6 +417,7 @@ module.exports.getStudent = async (req, res) => {
             student,
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };
@@ -439,6 +442,7 @@ module.exports.studentIssueInvoice = async (req, res) => {
             message: "success",
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };
@@ -613,6 +617,7 @@ module.exports.deleteStudentGeneralReport = async (req, res) => {
             message: "General Report has been deleted",
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };
@@ -709,6 +714,7 @@ module.exports.createTestReport = async (req, res) => {
             test_report,
         });
     } catch (err) {
+        console.log(err);
         sendError(500, "Something went wrong", res);
     }
 };

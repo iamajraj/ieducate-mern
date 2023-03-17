@@ -35,7 +35,7 @@ const StudentTermsReport = () => {
                         ))
                     ) : (
                         <p className="text-[14px]">
-                            Your terms report will show here once available
+                            Your term reports will show here once available
                         </p>
                     )}
                 </div>

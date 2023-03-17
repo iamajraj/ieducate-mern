@@ -170,7 +170,7 @@ const StudentDashboard = () => {
                                 </>
                             ) : (
                                 <p className="text-[14px]">
-                                    Your terms report will show here once
+                                    Your term report will show here once
                                     available
                                 </p>
                             )}
