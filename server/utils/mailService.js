@@ -35,7 +35,7 @@ const mailService = async (to, content, type) => {
 
 const getAnnouncementHtml = async (announcement) => {
     const announcement_html_file = await fs.readFile(
-        path.resolve(__dirname, "..", "static", "announcement.html"),
+        path.resolve(__dirname, "..", "email_template", "announcement.html"),
         {
             encoding: "utf-8",
         }
@@ -49,7 +49,12 @@ const getAnnouncementHtml = async (announcement) => {
 
 const getPaymentReminderHtml = async (payment_date) => {
     const payment_reminder_html_file = await fs.readFile(
-        path.resolve(__dirname, "..", "static", "payment_reminder.html"),
+        path.resolve(
+            __dirname,
+            "..",
+            "email_template",
+            "payment_reminder.html"
+        ),
         {
             encoding: "utf-8",
         }

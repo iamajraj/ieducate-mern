@@ -126,11 +126,14 @@ const StudentDashboard = () => {
                                     Terms Report
                                 </h1>
                                 <p className="flex items-center gap-2">
-                                    <ClockCircleOutlined />
-                                    {termReport &&
-                                        dayjs(termReport.date).format(
-                                            "DD MMM YYYY"
-                                        )}
+                                    {termReport && (
+                                        <>
+                                            <ClockCircleOutlined />
+                                            {dayjs(termReport.date).format(
+                                                "DD MMM YYYY"
+                                            )}
+                                        </>
+                                    )}
                                 </p>
                             </div>
                             <div className="h-[1px] w-full bg-[#E9EBEC] my-4"></div>
@@ -155,7 +158,7 @@ const StudentDashboard = () => {
                                                 className="text-blue-500 ml-5 cursor-pointer relative"
                                                 onClick={() => {
                                                     navigate(
-                                                        `terms-report/${termReport._id}`
+                                                        `term-reports/${termReport._id}`
                                                     );
                                                 }}
                                             >
@@ -180,11 +183,14 @@ const StudentDashboard = () => {
                                 General Feedback
                             </h1>
                             <p className="flex items-center gap-2">
-                                <ClockCircleOutlined />
-                                {generalReport &&
-                                    dayjs(generalReport.date).format(
-                                        "DD MMM YYYY"
-                                    )}
+                                {generalReport && (
+                                    <>
+                                        <ClockCircleOutlined />
+                                        {dayjs(generalReport.date).format(
+                                            "DD MMM YYYY"
+                                        )}
+                                    </>
+                                )}
                             </p>
                         </div>
                         {generalReport ? (
