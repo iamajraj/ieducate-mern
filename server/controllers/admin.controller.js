@@ -92,7 +92,7 @@ module.exports.createAdmin = async (req, res) => {
 
     const newAdmin = new Admin({
         name,
-        email,
+        email: String(email).toLowerCase(),
         username,
         password,
     });

@@ -129,7 +129,9 @@ const router = createBrowserRouter([
                 path: "dashboard",
                 element: (
                     <AdminProtectedRoute>
-                        <MainLayout />
+                        <AutoLogout>
+                            <MainLayout />
+                        </AutoLogout>
                     </AdminProtectedRoute>
                 ),
                 children: [
@@ -316,6 +318,7 @@ const router = createBrowserRouter([
             },
         ],
     },
+    // student route
     {
         path: "/student",
         children: [

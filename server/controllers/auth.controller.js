@@ -5,13 +5,16 @@ const Teacher = require("../models/teacher.model");
 const { jwtSign } = require("../utils/jwtService");
 
 module.exports.loginAdmin = async (req, res) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password)
         return sendError(400, "All fields are required", res);
 
     const admin = await Admin.findOne({
-        email: email,
+        email: {
+            $regex: email,
+            $options: "i",
+        },
     });
 
     if (!admin) return sendError(404, "Account doesn't exist.", res);
@@ -41,7 +44,10 @@ module.exports.loginTeacher = async (req, res) => {
         return sendError(400, "All fields are required", res);
 
     const teacher = await Teacher.findOne({
-        email: email,
+        email: {
+            $regex: email,
+            $options: "i",
+        },
     });
 
     if (!teacher) return sendError(404, "Account doesn't exist.", res);
@@ -74,7 +80,10 @@ module.exports.loginStudent = async (req, res) => {
         return sendError(400, "All fields are required", res);
 
     const student = await Student.findOne({
-        email: email,
+        email: {
+            $regex: email,
+            $options: "i",
+        },
     });
 
     if (!student) return sendError(404, "Account doesn't exist.", res);

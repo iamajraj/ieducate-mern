@@ -60,7 +60,7 @@ module.exports.createStudent = async (req, res) => {
         student_telephone,
         emergency_name,
         emergency_contact_number,
-        email,
+        email: String(email).toLowerCase(),
         learning_support_needs,
         year,
         number_of_subject,

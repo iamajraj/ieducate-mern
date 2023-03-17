@@ -20,7 +20,7 @@ module.exports.createTeacher = async (req, res) => {
     const teacher = new Teacher({
         name,
         username,
-        email,
+        email: String(email).toLowerCase(),
         password,
         speciality,
     });

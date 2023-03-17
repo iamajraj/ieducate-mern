@@ -32,19 +32,24 @@ const AutoLogout = ({ children }) => {
             });
             const local_user = JSON.parse(localStorage.getItem("user"));
             logout(local_user?.user_type);
+            Object.values(events).forEach((ev) => {
+                window.removeEventListener(ev, handle);
+            });
         }, 3600000);
     };
 
-    const resetTimer = () => {
+    function resetTimer() {
         if (timer) clearTimeout(timer);
-    };
+    }
+
+    function handle() {
+        resetTimer();
+        handleLogoutTimer();
+    }
 
     useEffect(() => {
         Object.values(events).forEach((ev) => {
-            window.addEventListener(ev, () => {
-                resetTimer();
-                handleLogoutTimer();
-            });
+            window.addEventListener(ev, handle);
         });
     }, []);
     return children;
