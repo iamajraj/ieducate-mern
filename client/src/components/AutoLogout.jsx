@@ -1,56 +1,47 @@
-import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
+import { useContext, useEffect } from "react";
 import { authContext } from "../context/AuthProvider";
-
-const events = [
-    "load",
-    "mousemove",
-    "mousedown",
-    "click",
-    "scroll",
-    "keypress",
-];
 
 const AutoLogout = ({ children }) => {
     const { setUser } = useContext(authContext);
-
     const navigate = useNavigate();
 
-    const logout = (user_type) => {
-        setUser(null);
+    const logout = () => {
+        const user_type = JSON.parse(localStorage.getItem("user")).user_type;
         localStorage.clear();
+        setUser(null);
         navigate(`/${user_type}`);
     };
-
-    let timer;
-
-    const handleLogoutTimer = () => {
-        timer = setTimeout(() => {
-            resetTimer();
-            Object.values(events).forEach((ev) => {
-                window.removeEventListener(ev, resetTimer);
-            });
-            const local_user = JSON.parse(localStorage.getItem("user"));
-            logout(local_user?.user_type);
-            Object.values(events).forEach((ev) => {
-                window.removeEventListener(ev, handle);
-            });
-        }, 3600000);
+    const setLastOpenTime = () => {
+        localStorage.setItem("last_open", JSON.stringify(new Date()));
+        return true;
     };
 
-    function resetTimer() {
-        if (timer) clearTimeout(timer);
-    }
+    const handleLogoutTimer = () => {
+        const old_d = JSON.parse(localStorage.getItem("last_open"));
+        if (old_d) {
+            if (!compare(old_d)) {
+                logout();
+            } else {
+                window.addEventListener("beforeunload", setLastOpenTime);
+                window.addEventListener("unload", setLastOpenTime);
+                window.addEventListener("close", setLastOpenTime);
+            }
+        } else {
+            window.addEventListener("beforeunload", setLastOpenTime);
+            window.addEventListener("unload", setLastOpenTime);
+            window.addEventListener("close", setLastOpenTime);
+        }
+    };
 
-    function handle() {
-        resetTimer();
-        handleLogoutTimer();
-    }
+    const compare = (date) => {
+        console.log(moment(date).fromNow());
+        return moment(date).isAfter(moment().subtract(1, "hour"));
+    };
 
     useEffect(() => {
-        Object.values(events).forEach((ev) => {
-            window.addEventListener(ev, handle);
-        });
+        window.addEventListener("load", handleLogoutTimer);
     }, []);
     return children;
 };
