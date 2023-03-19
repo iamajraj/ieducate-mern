@@ -93,6 +93,12 @@ module.exports.loginStudent = async (req, res) => {
     if (!isValidPassword)
         return sendError(400, "Email or Password is invalid", res);
 
+    if (student.status === "Suspended") {
+        return sendError(400, "The student has been suspended", res);
+    } else if (student.status === "Left") {
+        return sendError(400, "The student has been left", res);
+    }
+
     const token = jwtSign({
         user_type: student.user_type,
         _id: student._id,

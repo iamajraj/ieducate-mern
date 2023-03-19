@@ -36,10 +36,6 @@ const GeneralCard = ({ report }) => {
                     {dayjs(report.date).format("DD MMM YYYY")}
                 </p>
             </div>
-            <p className="text-[13px] my-3">
-                Your overall {report.subject.subject_name} progress is good...{" "}
-                <span className="text-[#199FDA]">Keep it up!</span>
-            </p>
             <p className="font-semibold mt-4">Comment</p>
             <p className="text-[13px] relative ml-3 mt-3">
                 <QuoteLeft className="absolute -left-3" />

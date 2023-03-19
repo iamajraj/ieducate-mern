@@ -42,7 +42,7 @@ const Students = () => {
                     </Link> */}
                 </div>
                 <div className="mt-10 border">
-                    <StudentsTable loading={loading} data={students} />
+                    <ActiveInvoiceTable loading={loading} data={students} />
                 </div>
             </div>
         </Container>
@@ -51,7 +51,7 @@ const Students = () => {
 
 export default Students;
 
-const StudentsTable = ({ data, loading }) => {
+const ActiveInvoiceTable = ({ data, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -261,23 +261,26 @@ const StudentsTable = ({ data, loading }) => {
             ),
         },
     ];
-
     return (
         <Table
             loading={loading}
             columns={columns}
-            dataSource={data.map((d) => {
-                return {
-                    ...d,
-                    due_date_iso: d.active_invoice.due_date,
-                    payment_reminder_iso: d.active_invoice.payment_reminder,
-                    due_date: dayjs(d.active_invoice.due_date).format(
-                        "DD/MM/YYYY"
-                    ),
-                    active: d.active_invoice.isActive ? "Active" : "Not Active",
-                    is_paid: d.active_invoice.isPaid,
-                };
-            })}
+            dataSource={data
+                .filter((d) => d.active_invoice !== null)
+                .map((d) => {
+                    return {
+                        ...d,
+                        due_date_iso: d.active_invoice.due_date,
+                        payment_reminder_iso: d.active_invoice.payment_reminder,
+                        due_date: dayjs(d.active_invoice.due_date).format(
+                            "DD/MM/YYYY"
+                        ),
+                        active: d.active_invoice.isActive
+                            ? "Active"
+                            : "Not Active",
+                        is_paid: d.active_invoice.isPaid,
+                    };
+                })}
             pagination={{
                 pageSize: 7,
             }}

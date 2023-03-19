@@ -7,7 +7,7 @@ const {
     changeSubjectFee,
     getSingleFee,
     getActiveFees,
-    getStudentActiveInvoice,
+    getStudentLatestIssuedDueInvoice,
     changeFeeDueDate,
 } = require("../controllers/fees.controller");
 
@@ -23,7 +23,11 @@ router.patch("/fees/set-paid", verifyToken, changePaidStatus);
 router.patch("/fees/change-subject-fee", verifyToken, changeSubjectFee);
 router.get("/single-fee/:id", verifyToken, getSingleFee);
 router.get("/active-fees", verifyToken, getActiveFees);
-router.get("/active-invoice/:studentid", verifyToken, getStudentActiveInvoice);
+router.get(
+    "/latest-issued-due-invoice/:studentid",
+    verifyToken,
+    getStudentLatestIssuedDueInvoice
+);
 router.patch("/fees/change-due-date/:id", verifyToken, changeFeeDueDate);
 
 module.exports = router;

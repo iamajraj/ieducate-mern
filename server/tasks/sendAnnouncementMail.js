@@ -6,6 +6,10 @@ process.on("message", async ({ students, announcement }) => {
 
 const sendAnnouncementMail = async (students, announcement) => {
     students.forEach(async (student) => {
-        await mailService(student.email, announcement, "announcement");
+        await mailService({
+            to: student.email,
+            content: announcement,
+            type: "announcement",
+        });
     });
 };

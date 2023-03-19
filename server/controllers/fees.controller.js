@@ -74,30 +74,28 @@ module.exports.changePaidStatus = async (req, res) => {
                 const student = await Student.findById(fee.student._id);
                 student.last_payment_date = Date.now();
 
-                const all_subjects = await Subject.find({
-                    student_id: fee.student._id,
-                });
-                const due_date = dayjs(fee.due_date).add(30, "day");
-                const created_fee = await Fees.create({
-                    subjects: all_subjects,
-                    student: fee.student._id,
-                    due_date: due_date,
-                    payment_reminder: dayjs(fee.due_date)
-                        .add(30, "day")
-                        .subtract(10, "day"),
-                    previous_due_date: fee.previous_due_date,
-                    isActive: true,
-                });
+                let created_fee;
+                if (student.status === "Active") {
+                    const all_subjects = await Subject.find({
+                        student_id: fee.student._id,
+                    });
+                    const due_date = dayjs(fee.due_date).add(30, "day");
 
-                mailService(
-                    student.email,
-                    due_date.format("DD/MM/YYYY"),
-                    "payment"
-                )
-                    .then(() => {})
-                    .catch(() => {});
+                    created_fee = await Fees.create({
+                        subjects: all_subjects,
+                        student: fee.student._id,
+                        due_date: due_date,
+                        payment_reminder: dayjs(fee.due_date)
+                            .add(30, "day")
+                            .subtract(10, "day"),
+                        previous_due_date: fee.previous_due_date,
+                        isActive: true,
+                    });
+                }
 
-                student.active_invoice = created_fee._id;
+                if (student.status === "Active") {
+                    student.active_invoice = created_fee._id;
+                }
                 fee.isActive = false;
 
                 await student.save();
@@ -175,16 +173,18 @@ module.exports.getActiveFees = async (req, res) => {
         sendError(500, "Something went wrong", res);
     }
 };
-module.exports.getStudentActiveInvoice = async (req, res) => {
+module.exports.getStudentLatestIssuedDueInvoice = async (req, res) => {
     const { studentid } = req.params;
     try {
-        const activeInvoice = await Fees.findOne({
-            student: studentid,
+        const issuedDueInvoice = await Fees.findOne({
             isActive: true,
+            student: studentid,
+            issued: {
+                $ne: null,
+            },
         });
-        if (!activeInvoice) return sendError(404, "Fees doesn't exists", res);
         return res.status(200).json({
-            activeInvoice,
+            issuedDueInvoice,
         });
     } catch (err) {
         sendError(500, "Something went wrong", res);

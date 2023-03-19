@@ -108,9 +108,9 @@ module.exports.createStudent = async (req, res) => {
         isActive: true,
     });
 
-    mailService(email, due_date.format("DD/MM/YYYY"), "payment")
-        .then(() => {})
-        .catch(() => {});
+    // mailService(email, due_date.format("DD/MM/YYYY"), "payment")
+    //     .then(() => {})
+    //     .catch(() => {});
 
     try {
         student.active_invoice = fees._id;
@@ -268,11 +268,13 @@ module.exports.updateStudent = async (req, res) => {
             student: student._id,
             isActive: true,
         });
-        await fees.updateOne({
-            $set: {
-                subjects: updated_subjects,
-            },
-        });
+        if (fees) {
+            await fees.updateOne({
+                $set: {
+                    subjects: updated_subjects,
+                },
+            });
+        }
         await student.save();
 
         res.status(201).json({
@@ -435,7 +437,22 @@ module.exports.studentIssueInvoice = async (req, res) => {
 
     if (!student) return sendError(404, "Student not found", res);
 
+    const invoice = await Fees.findById(invoice_id);
+
+    if (!invoice) return sendError(404, "Invoice doesn't exists");
+
     try {
+        invoice.issued = new Date();
+        await invoice.save();
+        if (invoice.isActive && student.status === "Active") {
+            mailService({
+                to: student.email,
+                content: student.student_name,
+                type: "payment",
+            })
+                .then(() => {})
+                .catch(() => {});
+        }
         student.invoices.push(invoice_id);
         await student.save();
         res.status(201).json({

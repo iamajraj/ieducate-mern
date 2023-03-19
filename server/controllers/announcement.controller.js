@@ -22,7 +22,9 @@ module.exports.createAnnouncement = async (req, res) => {
         created_by: req.user._id,
     });
 
-    const students = await Student.find({}).select("email");
+    const students = await Student.find({ status: { $eq: "Active" } }).select(
+        "email"
+    );
 
     child.send({ students, announcement: new_announcement });
 

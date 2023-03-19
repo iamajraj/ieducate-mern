@@ -34,6 +34,10 @@ const FeesSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        issued: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps: true,

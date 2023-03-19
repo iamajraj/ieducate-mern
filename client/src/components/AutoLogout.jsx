@@ -24,6 +24,7 @@ const AutoLogout = ({ children }) => {
             if (!compare(old_d)) {
                 logout();
             } else {
+                // localStorage.removeItem("last_open");
                 window.addEventListener("beforeunload", setLastOpenTime);
                 window.addEventListener("unload", setLastOpenTime);
                 window.addEventListener("close", setLastOpenTime);

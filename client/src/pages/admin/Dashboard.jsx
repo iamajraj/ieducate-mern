@@ -5,7 +5,6 @@ import { useAxios } from "../../hooks/useAxios";
 import Highlighter from "react-highlight-words";
 import { Button, Input, Space, Table } from "antd";
 import { authContext } from "../../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
     const [data, setData] = useState(null);

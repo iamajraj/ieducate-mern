@@ -6,8 +6,9 @@ import QuoteRight from "../../svgassets/QuoteRight";
 import { Slider } from "antd";
 import axiosInstance from "../../services/axiosInstance";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ClockCircleOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const PROGRESS = [
     "Below Expected Progress",
@@ -45,9 +46,12 @@ const StudentDashboard = () => {
 
     const getActiveInvoice = async (id) => {
         try {
-            const res = await axiosInstance.get(`/active-invoice/${id}`);
-            const { activeInvoice } = res.data;
-            setActiveInvoice(activeInvoice);
+            const res = await axiosInstance.get(
+                `/latest-issued-due-invoice/${id}`
+            );
+            const { issuedDueInvoice } = res.data;
+            console.log(issuedDueInvoice);
+            setActiveInvoice(issuedDueInvoice);
         } catch (err) {}
     };
 
@@ -102,39 +106,57 @@ const StudentDashboard = () => {
                                 Payment Reminder
                             </h1>
                             <div className="h-[1px] w-full bg-[#E9EBEC] my-4"></div>
-                            <div className="flex gap-3 items-center justify-around">
-                                <img src="/assets/payment.png" alt="" />
-                                <h1 className="text-[22px] text-[#E5247D] font-medium">
-                                    {dayjs(activeInvoice?.due_date).format(
-                                        "MMMM"
-                                    )}{" "}
-                                    Invoice
-                                </h1>
-                            </div>
-                            <div className="flex items-center justify-between mt-5 pb-4">
-                                <p className="text-[18px]">Due Date: </p>
-                                <p className="text-[#E5247D] font-semibold text-[22px]">
-                                    {dayjs(activeInvoice?.due_date).format(
-                                        "DD/MM/YYYY"
-                                    )}
+                            {activeInvoice ? (
+                                <>
+                                    <div className="flex gap-3 items-center justify-around">
+                                        <img src="/assets/payment.png" alt="" />
+                                        <h1 className="text-[22px] text-[#E5247D] font-medium">
+                                            {dayjs(
+                                                activeInvoice?.due_date
+                                            ).format("MMMM")}{" "}
+                                            Invoice
+                                        </h1>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-5 pb-4">
+                                        <p className="text-[18px]">
+                                            Due Date:{" "}
+                                        </p>
+                                        <p className="text-[#E5247D] font-semibold text-[22px]">
+                                            {dayjs(
+                                                activeInvoice?.due_date
+                                            ).format("DD/MM/YYYY")}
+                                        </p>
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="text-[14px]">
+                                    No invoices are due at present
                                 </p>
-                            </div>
+                            )}
                         </div>
                         <div className="bg-white w-full px-[24px] py-[17px] rounded-[20px]">
                             <div className="flex items-center justify-between gap-2 flex-wrap">
                                 <h1 className="text-[18px] font-medium">
-                                    Terms Report
+                                    Your latest Term Report
                                 </h1>
-                                <p className="flex items-center gap-2">
-                                    {termReport && (
-                                        <>
-                                            <ClockCircleOutlined />
-                                            {dayjs(termReport.date).format(
-                                                "DD MMM YYYY"
-                                            )}
-                                        </>
-                                    )}
-                                </p>
+                                <div className="flex items-center gap-2">
+                                    <p className="flex items-center gap-2">
+                                        {termReport && (
+                                            <>
+                                                <ClockCircleOutlined />
+                                                {dayjs(termReport.date).format(
+                                                    "DD MMM YYYY"
+                                                )}
+                                            </>
+                                        )}
+                                    </p>
+                                    <Link
+                                        to="term-reports"
+                                        className="text-[14px] text-[#E5247D] cursor-pointer"
+                                    >
+                                        View All
+                                    </Link>
+                                </div>
                             </div>
                             <div className="h-[1px] w-full bg-[#E9EBEC] my-4"></div>
                             {termReport ? (
@@ -180,18 +202,26 @@ const StudentDashboard = () => {
                     <div className="h-full bg-white rounded-[20px] mt-7 px-[25px] pt-[11px]">
                         <div className="flex items-center justify-between gap-2 flex-wrap border-b border-b-[#E9EBEC] pb-2">
                             <h1 className="text-[18px] font-medium ">
-                                General Feedback
+                                Your latest performance feedback
                             </h1>
-                            <p className="flex items-center gap-2">
-                                {generalReport && (
-                                    <>
-                                        <ClockCircleOutlined />
-                                        {dayjs(generalReport.date).format(
-                                            "DD MMM YYYY"
-                                        )}
-                                    </>
-                                )}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="flex items-center gap-2">
+                                    {generalReport && (
+                                        <>
+                                            <ClockCircleOutlined />
+                                            {dayjs(generalReport.date).format(
+                                                "DD MMM YYYY"
+                                            )}
+                                        </>
+                                    )}
+                                </p>
+                                <Link
+                                    to="general-feedback"
+                                    className="text-[14px] text-[#E5247D] cursor-pointer"
+                                >
+                                    View All
+                                </Link>
+                            </div>
                         </div>
                         {generalReport ? (
                             <>
@@ -315,21 +345,37 @@ const StudentDashboard = () => {
                     </div>
                 </div>
                 <div className="md:w-[30%] bg-white rounded-[20px] shadow-sm px-[17px] py-[24px] h-full overflow-hidden flex flex-col">
-                    <h1 className="text-[20px] text-[#3F434A] font-semibold pb-[10px] border-b-2 border-b-[#E9EBEC]">
-                        Announcements
-                    </h1>
+                    <div className="flex itesm-center justify-between  pb-[10px] border-b-2 border-b-[#E9EBEC]">
+                        <h1 className="text-[20px] text-[#3F434A] font-semibold">
+                            Announcements
+                        </h1>
+                        <Link
+                            to="announcements"
+                            className="text-[#E5247D] cursor-pointer"
+                        >
+                            View All
+                        </Link>
+                    </div>
 
                     <div className="flex flex-col h-full overflow-y-scroll no-scrollbar mt-5">
                         {announcements?.length > 0 ? (
                             announcements
                                 .map((item) => (
                                     <div className="pb-6">
-                                        <h1
-                                            // style={{ color: randomColor() }}
-                                            className="font-semibold text-[#E5247D]"
-                                        >
-                                            {item.title}
-                                        </h1>
+                                        <div className="flex flex-wrap justify-between itesm-center gap-2">
+                                            <h1
+                                                // style={{ color: randomColor() }}
+                                                className="font-semibold text-[#E5247D]"
+                                            >
+                                                {item.title}
+                                            </h1>
+                                            <p className="flex items-center gap-2 text-[13px]">
+                                                <ClockCircleOutlined />
+                                                {moment(
+                                                    item.createdAt
+                                                ).fromNow()}
+                                            </p>
+                                        </div>
 
                                         <p className="font-semibold my-3">
                                             Dear Student

@@ -167,6 +167,7 @@ const ViewFees = () => {
                 student_id: fee.student._id,
                 invoice_id: fee_id,
             });
+            await fetchFee();
             message.success("Invoice issued");
         } catch (err) {
             message.error(err.reponse?.data?.message ?? "Something went wrong");
@@ -211,14 +212,22 @@ const ViewFees = () => {
                                 <p className="text-[13px]">Standard CSV</p>
                                 <DownloadOutlined />
                             </button>
-                            <button
-                                onClick={() => {
-                                    issueInvoice(fee_id);
-                                }}
-                                className="cursor-pointer flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
-                            >
-                                <p className="text-[13px]">Issue Invoice</p>
-                            </button>
+                            {fee && fee.issued ? (
+                                <button className="flex items-center gap-2 border border-main rounded-lg px-4 bg-transparent text-main transition-all py-2">
+                                    <p className="text-[13px]">
+                                        Invoice has been issued
+                                    </p>
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        issueInvoice(fee_id);
+                                    }}
+                                    className="cursor-pointer flex items-center gap-2 border border-main rounded-lg px-4 bg-main text-white hover:bg-transparent hover:text-main transition-all py-2"
+                                >
+                                    <p className="text-[13px]">Issue Invoice</p>
+                                </button>
+                            )}
                         </div>
 
                         <div className="border-b mt-3 mb-10"></div>
