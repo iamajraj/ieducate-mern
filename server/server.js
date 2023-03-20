@@ -21,11 +21,14 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 
 initPaymentReminderJob();
 
+app.get("/", (req, res) => {
+    res.redirect("/api");
+});
+
 // API SETUP
 app.get("/api", (req, res) => {
     res.status(200).json({
         api: "iEDUCATE API V1",
-        date: "26 Feb 2022",
     });
 });
 
