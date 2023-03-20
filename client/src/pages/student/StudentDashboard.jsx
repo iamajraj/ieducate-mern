@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { authContext } from "../../context/AuthProvider";
 import randomColor from "../../utils/randomColor";
 import QuoteLeft from "../../svgassets/QuoteLeft";
@@ -50,7 +50,6 @@ const StudentDashboard = () => {
                 `/latest-issued-due-invoice/${id}`
             );
             const { issuedDueInvoice } = res.data;
-            console.log(issuedDueInvoice);
             setActiveInvoice(issuedDueInvoice);
         } catch (err) {}
     };
@@ -74,6 +73,18 @@ const StudentDashboard = () => {
             setGeneralReport(report);
         } catch (err) {}
     };
+
+    const showPaymentReminder = useMemo(() => {
+        if (activeInvoice) {
+            const show = dayjs(activeInvoice.payment_reminder)
+                .subtract(1, "day")
+                .isBefore(new Date(), "day");
+
+            return show;
+        } else {
+            return false;
+        }
+    });
 
     useEffect(() => {
         if (user) {
@@ -106,7 +117,7 @@ const StudentDashboard = () => {
                                 Payment Reminder
                             </h1>
                             <div className="h-[1px] w-full bg-[#E9EBEC] my-4"></div>
-                            {activeInvoice ? (
+                            {activeInvoice && showPaymentReminder ? (
                                 <>
                                     <div className="flex gap-3 items-center justify-around">
                                         <img src="/assets/payment.png" alt="" />
