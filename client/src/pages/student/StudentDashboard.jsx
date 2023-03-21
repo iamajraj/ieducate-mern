@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import { Link, useNavigate } from "react-router-dom";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
+import isToday from "dayjs/plugin/isToday";
 
 const PROGRESS = [
     "Below Expected Progress",
@@ -213,7 +214,7 @@ const StudentDashboard = () => {
                     <div className="h-full bg-white rounded-[20px] mt-7 px-[25px] pt-[11px]">
                         <div className="flex items-center justify-between gap-2 flex-wrap border-b border-b-[#E9EBEC] pb-2">
                             <h1 className="text-[18px] font-medium ">
-                                Your latest performance feedback
+                                Your latest Peformance Feedback
                             </h1>
                             <div className="flex items-center gap-2">
                                 <p className="flex items-center gap-2">
@@ -372,7 +373,7 @@ const StudentDashboard = () => {
                         {announcements?.length > 0 ? (
                             announcements
                                 .map((item) => (
-                                    <div className="pb-6">
+                                    <div className="pb-6" key={item?._id}>
                                         <div className="flex flex-wrap justify-between itesm-center gap-2">
                                             <h1
                                                 // style={{ color: randomColor() }}

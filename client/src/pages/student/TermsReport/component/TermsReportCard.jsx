@@ -20,7 +20,7 @@ const TermsReportCard = ({ report }) => {
             <div className="flex items-center gap-1 md:gap-3">
                 <CalendarOutlined className="text-[14px] md:text-[16px]" />
                 <p className="text-[12px] md:text-[16px]">
-                    {dayjs(report.createdAt).format("DD MMM YYYY")}
+                    {dayjs(report.date).format("DD MMM YYYY")}
                 </p>
             </div>
             <button

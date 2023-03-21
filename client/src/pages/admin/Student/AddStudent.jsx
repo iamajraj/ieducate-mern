@@ -261,7 +261,10 @@ const AddStudent = () => {
                     <div className="flex gap-7 flex-wrap">
                         {studentData.subjects.length > 0 ? (
                             studentData.subjects.map((subject) => (
-                                <div className="flex flex-col gap-5">
+                                <div
+                                    className="flex flex-col gap-5"
+                                    key={subject?._id}
+                                >
                                     <h2>Subjects</h2>
                                     <div className="border border-main rounded-md px-10 text-[15px] py-3  hover:bg-gray-200 cursor-pointer relative">
                                         <div

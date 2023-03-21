@@ -206,7 +206,9 @@ const TestReports = ({ loading, reports, fetchReports, dashboard }) => {
                 return record.feedback_files.length > 0 ? (
                     <Space size="middle">
                         {record.feedback_files?.map((file) => (
-                            <Tag color="blue">{file.originalname}</Tag>
+                            <Tag color="blue" key={file?._id}>
+                                {file.originalname}
+                            </Tag>
                         ))}
                     </Space>
                 ) : null;
@@ -273,7 +275,9 @@ const TestReports = ({ loading, reports, fetchReports, dashboard }) => {
                 return record.feedback_files.length > 0 ? (
                     <Space size="middle">
                         {record.feedback_files?.map((file) => (
-                            <Tag color="blue">{file.originalname}</Tag>
+                            <Tag color="blue" key={file?._id}>
+                                {file.originalname}
+                            </Tag>
                         ))}
                     </Space>
                 ) : null;

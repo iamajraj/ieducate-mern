@@ -263,7 +263,10 @@ const ViewFees = () => {
                                 <h1>Subjects: </h1>
                                 <div className="ml-12 flex flex-col gap-2">
                                     {fee.subjects.map((sub) => (
-                                        <div className="flex flex-col gap-4 border-b pb-3">
+                                        <div
+                                            key={sub?._id}
+                                            className="flex flex-col gap-4 border-b pb-3"
+                                        >
                                             <div className="flex items-center gap-4">
                                                 <h1>Name:</h1>
                                                 <span>{sub.subject_name}</span>

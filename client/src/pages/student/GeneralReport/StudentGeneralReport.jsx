@@ -31,7 +31,9 @@ const StudentGeneralReport = () => {
             <div className="overflow-y-scroll mt-[20px] md:mt-[32px] no-scrollbar h-full flex flex-wrap gap-[32px]">
                 {generalReports?.length > 0 ? (
                     generalReports?.map((report) => {
-                        return <GeneralCard report={report} />;
+                        return (
+                            <GeneralCard report={report} key={report?._id} />
+                        );
                     })
                 ) : (
                     <p className="text-[14px]">

@@ -31,7 +31,10 @@ const StudentTermsReport = () => {
                 <div className="overflow-y-scroll mt-[32px] no-scrollbar h-full flex flex-col gap-[32px]">
                     {termsReport?.length > 0 ? (
                         termsReport?.map((report) => (
-                            <TermsReportCard report={report} />
+                            <TermsReportCard
+                                report={report}
+                                key={report?._id}
+                            />
                         ))
                     ) : (
                         <p className="text-[14px]">

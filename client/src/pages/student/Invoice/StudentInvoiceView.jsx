@@ -99,7 +99,10 @@ const StudentInvoiceView = () => {
 
                                           {fee.subjects.map((sub) => {
                                               return (
-                                                  <div className="border-b flex items-center justify-around py-5 text-[12px] md:text-[16px]">
+                                                  <div
+                                                      key={sub?._id}
+                                                      className="border-b flex items-center justify-around py-5 text-[12px] md:text-[16px]"
+                                                  >
                                                       <p>{sub.subject_name}</p>
                                                       <p>
                                                           {fee.student
