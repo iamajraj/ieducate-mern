@@ -2,6 +2,7 @@ const cron = require("node-cron");
 const Student = require("../models/student.model");
 const dayjs = require("dayjs");
 const mailService = require("../utils/mailService");
+const isToday = require("dayjs/plugin/isToday");
 
 module.exports.initPaymentReminderJob = () => {
     const schedule = cron.schedule("0 0 0 * * *", async () => {
@@ -10,9 +11,10 @@ module.exports.initPaymentReminderJob = () => {
         );
         students.forEach((student) => {
             const payment_reminder = student.active_invoice.payment_reminder;
-            const isToday = dayjs(payment_reminder).isSame(new Date(), "day");
+            dayjs.extend(isToday);
+            const today = dayjs(payment_reminder).isToday();
 
-            if (isToday) {
+            if (today && student.active_invoice.issued) {
                 mailService({
                     to: student.email,
                     content: student.student_name,

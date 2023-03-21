@@ -10,6 +10,7 @@ const { Subject } = require("../models/subject.model");
 const GeneralReport = require("../models/generalreport.model");
 const TestReport = require("../models/testreport.model");
 const mailService = require("../utils/mailService");
+const isToday = require("dayjs/plugin/isToday");
 
 module.exports.createStudent = async (req, res) => {
     if (req.user.user_type !== "admin")
@@ -444,7 +445,12 @@ module.exports.studentIssueInvoice = async (req, res) => {
     try {
         invoice.issued = new Date();
         await invoice.save();
-        if (invoice.isActive && student.status === "Active") {
+        dayjs.extend(isToday);
+        if (
+            invoice.isActive &&
+            student.status === "Active" &&
+            dayjs(invoice.payment_reminder).isToday()
+        ) {
             mailService({
                 to: student.email,
                 content: student.student_name,
