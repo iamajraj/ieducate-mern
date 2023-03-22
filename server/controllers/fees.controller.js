@@ -3,8 +3,8 @@ const Fees = require("../models/fees.model");
 const { Subject } = require("../models/subject.model");
 const Student = require("../models/student.model");
 const dayjs = require("dayjs");
-const mailService = require("../utils/mailService");
 const json2csv = require("json2csv").parse;
+const { DUE_DATE_DAYS } = require("../config/constants");
 
 module.exports.getStudentFees = async (req, res) => {
     const { student_id } = req.params;
@@ -60,16 +60,6 @@ module.exports.changePaidStatus = async (req, res) => {
 
     try {
         if (isPaid === "Paid") {
-            // await Subject.updateMany(
-            //     {
-            //         student_id: fee.student,
-            //     },
-            //     {
-            //         $set: {
-            //             last_payment_date: Date.now(),
-            //         },
-            //     }
-            // );
             if (fee.isActive) {
                 const student = await Student.findById(fee.student._id);
                 student.last_payment_date = Date.now();
@@ -79,14 +69,17 @@ module.exports.changePaidStatus = async (req, res) => {
                     const all_subjects = await Subject.find({
                         student_id: fee.student._id,
                     });
-                    const due_date = dayjs(fee.due_date).add(30, "day");
+                    const due_date = dayjs(fee.due_date).add(
+                        DUE_DATE_DAYS,
+                        "day"
+                    );
 
                     created_fee = await Fees.create({
                         subjects: all_subjects,
                         student: fee.student._id,
                         due_date: due_date,
                         payment_reminder: dayjs(fee.due_date)
-                            .add(30, "day")
+                            .add(DUE_DATE_DAYS, "day")
                             .subtract(10, "day"),
                         previous_due_date: fee.previous_due_date,
                         isActive: true,

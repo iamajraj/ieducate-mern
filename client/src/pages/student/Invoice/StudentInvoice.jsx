@@ -243,7 +243,8 @@ const FeesTable = ({ data, loading }) => {
                     return {
                         key: d._id,
                         id: d._id,
-                        invoice: dayjs(d.due_date).format("MMM") + " Invoice",
+                        invoice:
+                            dayjs(d.due_date).format("DD/MM/YYYY") + " Invoice",
                         due_date_iso: d.due_date,
                         due_date: dayjs(d.due_date).format("DD/MM/YYYY"),
                         status: d.isPaid === "Paid" ? "Paid" : "Pending",

@@ -11,6 +11,7 @@ const GeneralReport = require("../models/generalreport.model");
 const TestReport = require("../models/testreport.model");
 const mailService = require("../utils/mailService");
 const isToday = require("dayjs/plugin/isToday");
+const { DUE_DATE_DAYS } = require("../config/constants");
 
 module.exports.createStudent = async (req, res) => {
     if (req.user.user_type !== "admin")
@@ -88,14 +89,14 @@ module.exports.createStudent = async (req, res) => {
     student.subjects.push(...subject_ids);
 
     const due_date = dayjs(subjects[subjects.length - 1].first_lesson_date).add(
-        30,
+        DUE_DATE_DAYS,
         "day"
     );
 
     const payment_reminder_date = dayjs(
         subjects[subjects.length - 1].first_lesson_date
     )
-        .add(30, "day")
+        .add(DUE_DATE_DAYS, "day")
         .subtract(10, "day");
 
     const fees = await Fees.create({
@@ -105,13 +106,9 @@ module.exports.createStudent = async (req, res) => {
         payment_reminder: payment_reminder_date,
         previous_due_date: dayjs(
             subjects[subjects.length - 1].first_lesson_date
-        ).add(30, "day"),
+        ).add(DUE_DATE_DAYS, "day"),
         isActive: true,
     });
-
-    // mailService(email, due_date.format("DD/MM/YYYY"), "payment")
-    //     .then(() => {})
-    //     .catch(() => {});
 
     try {
         student.active_invoice = fees._id;
