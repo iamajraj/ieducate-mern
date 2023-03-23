@@ -236,14 +236,12 @@ const StudentsTable = ({ data, onDelete, loading }) => {
             title: "Roll No",
             dataIndex: "student_roll_no",
             key: "student_roll_no",
-            width: "20%",
             ...getColumnSearchProps("student_roll_no"),
         },
         {
             title: "Student Name",
             dataIndex: "student_name",
             key: "student_name",
-            width: "30%",
             ...getColumnSearchProps("student_name"),
         },
         {
@@ -257,6 +255,28 @@ const StudentsTable = ({ data, onDelete, loading }) => {
             dataIndex: "student_telephone",
             key: "student_telephone",
             ...getColumnSearchProps("student_telephone"),
+        },
+        {
+            title: "Student Status",
+            dataIndex: "status",
+            key: "status",
+            filters: [
+                {
+                    text: "Active",
+                    value: "Active",
+                },
+                {
+                    text: "Suspended",
+                    value: "Suspended",
+                },
+                {
+                    text: "Left",
+                    value: "Left",
+                },
+            ],
+            filterMultiple: false,
+            onFilter: (value, record) => record.status === value,
+            // ...getColumnSearchProps("status"),
         },
         {
             title: "Action",
