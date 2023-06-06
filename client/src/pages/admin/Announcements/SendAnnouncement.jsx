@@ -1,16 +1,29 @@
-import { Input, message } from 'antd';
+import { Input, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../../../components/Container';
 import InputField from '../../../components/InputField';
 import MainButton from '../../../components/MainButton';
 import axiosInstance from '../../../services/axiosInstance';
 
-const AddAnnouncement = () => {
+const SendAnnouncement = () => {
   const [announcement, setAnnouncement] = useState({
     title: '',
     description: '',
   });
+  const [studentEmails, setStudentEmails] = useState([]);
+  const [students, setStudents] = useState([]);
+  const fetchStudents = async () => {
+    try {
+      const res = await axiosInstance.get('/students');
+      setStudents(res.data.students);
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -22,12 +35,23 @@ const AddAnnouncement = () => {
       return message.error('All fields are required', 2);
     }
 
+    if (studentEmails.length == 0) {
+      return message.error('Please select atleast one student');
+    }
+
     setLoading(true);
 
     try {
-      const res = await axiosInstance.post('/announcements', announcement);
+      const res = await axiosInstance.post(
+        '/announcements/to-particular-students',
+        {
+          title,
+          description,
+          emails: studentEmails,
+        }
+      );
 
-      message.success('Announcement has been created !', 2);
+      message.success('Announcement has been sent !', 2);
       setAnnouncement({
         title: '',
         description: '',
@@ -46,13 +70,19 @@ const AddAnnouncement = () => {
     }));
   };
 
+  const handleStudentEmails = (s) => {
+    setStudentEmails(s);
+  };
+
   return (
     <Container>
       <div className="bg-white p-8 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-[24px]">Announcements</h1>
-            <p className="text-[13px]">Create announcements</p>
+            <h1 className="text-[24px]">Send Announcement</h1>
+            <p className="text-[13px]">
+              Send announcements to particular students
+            </p>
           </div>
           <Link to="/admin/dashboard/announcements">
             <MainButton
@@ -64,6 +94,21 @@ const AddAnnouncement = () => {
         </div>
 
         <div className="border-b my-7"></div>
+
+        <div className="my-4 space-y-4">
+          <h2>Select the students</h2>
+          <Select
+            mode="multiple"
+            size="middle"
+            placeholder="Please select"
+            onChange={handleStudentEmails}
+            style={{ width: '100%' }}
+            options={students.map((student) => ({
+              label: student.student_name,
+              value: student.email,
+            }))}
+          />
+        </div>
 
         <div className="">
           <form onSubmit={handleSubmit} className="flex flex-col gap-7">
@@ -84,7 +129,7 @@ const AddAnnouncement = () => {
               />
             </div>
 
-            <MainButton loading={loading} type="submit" text="Create" />
+            <MainButton loading={loading} type="submit" text="Send" />
           </form>
         </div>
       </div>
@@ -92,4 +137,4 @@ const AddAnnouncement = () => {
   );
 };
 
-export default AddAnnouncement;
+export default SendAnnouncement;
