@@ -187,13 +187,6 @@ const ActiveInvoiceTable = ({ data, loading }) => {
             // width: "20%",
             ...getColumnSearchProps("student_roll_no"),
         },
-		{
-            title: "Year",
-            dataIndex: "year",
-            key: "year",
-            // width: "20%",
-            ...getColumnSearchProps("year"),
-        },
         {
             title: "Student Name",
             dataIndex: "student_name",

@@ -69,15 +69,7 @@ const StudentInvoiceView = () => {
                                                       }
                                                   </span>
                                               </p>
-                                              <p className="my-3">
-                                                  Year.{" "}
-                                                  <span>
-                                                      {
-                                                          fee.student
-                                                              .year
-                                                      }
-                                                  </span>
-                                              </p>
+
                                               <ul className="list-disc ml-5 mt-1">
                                                   <li>
                                                       {

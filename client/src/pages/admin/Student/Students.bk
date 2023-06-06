@@ -1,11 +1,13 @@
 import Container from "../../../components/Container";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, message, Modal, Space, Table, Tag } from "antd";
+import { Button, Input, message, Modal, Space, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import MainButton from "../../../components/MainButton";
 import { useAxios } from "../../../hooks/useAxios";
-import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../services/axiosInstance";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 const Students = () => {
     const [students, setStudents] = useState([]);
@@ -14,11 +16,54 @@ const Students = () => {
         url: "/students",
     });
 
+    const fetchStudents = async () => {
+        try {
+            const res = await axiosInstance.get("/students");
+            setStudents(res.data.students);
+        } catch (err) {}
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/students/${id}`);
+            message.success("Student has been deleted");
+            await fetchStudents();
+        } catch (err) {
+            message.error(err.response.data?.message);
+        }
+    };
+
+    const { confirm } = Modal;
+
+    const showConfirm = (student) => {
+        confirm({
+            title: `Do you want to delete ${student.student_name}?`,
+            icon: <ExclamationCircleFilled />,
+            onOk() {
+                handleDelete(student._id);
+            },
+            okButtonProps: { className: "bg-main text-white" },
+            onCancel() {},
+        });
+    };
+
     useEffect(() => {
         if (response) {
             setStudents(response.students);
         }
     }, [response, error, loading]);
+
+    const exportToCSV = async () => {
+        try {
+            const res = await axiosInstance.get("/students/export-to-csv");
+            const a = document.createElement("a");
+            a.download = "students.csv";
+            a.href = "data:text/csv;charset=utf-8," + res.data.exported;
+            a.click();
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <Container>
@@ -26,23 +71,30 @@ const Students = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-end gap-5">
                         <div>
-                            <h1 className="text-[24px]">Fees / Billings</h1>
+                            <h1 className="text-[24px]">Students</h1>
                             <p className="text-[13px]">
-                                You can view the fees of a student by clicking
-                                on the <b>View Fees</b> button.
+                                View all the students that you have added.
                             </p>
                         </div>
-                    </div>
-                    {/* <Link to="view">
                         <MainButton
-                            text="All Fees"
+                            onClick={exportToCSV}
+                            text="Export to CSV"
+                        />
+                    </div>
+                    <Link to="/admin/dashboard/students/register">
+                        <MainButton
+                            text="Add Student"
                             className="py-4"
                             textClass="text-[15px]"
                         />
-                    </Link> */}
+                    </Link>
                 </div>
                 <div className="mt-10 border">
-                    <ActiveInvoiceTable loading={loading} data={students} />
+                    <StudentsTable
+                        loading={loading}
+                        data={students}
+                        onDelete={showConfirm}
+                    />
                 </div>
             </div>
         </Container>
@@ -51,7 +103,7 @@ const Students = () => {
 
 export default Students;
 
-const ActiveInvoiceTable = ({ data, loading }) => {
+const StudentsTable = ({ data, onDelete, loading }) => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
@@ -184,21 +236,12 @@ const ActiveInvoiceTable = ({ data, loading }) => {
             title: "Roll No",
             dataIndex: "student_roll_no",
             key: "student_roll_no",
-            // width: "20%",
             ...getColumnSearchProps("student_roll_no"),
-        },
-		{
-            title: "Year",
-            dataIndex: "year",
-            key: "year",
-            // width: "20%",
-            ...getColumnSearchProps("year"),
         },
         {
             title: "Student Name",
             dataIndex: "student_name",
             key: "student_name",
-            // width: "30%",
             ...getColumnSearchProps("student_name"),
         },
         {
@@ -214,42 +257,26 @@ const ActiveInvoiceTable = ({ data, loading }) => {
             ...getColumnSearchProps("student_telephone"),
         },
         {
-            title: "Due Date",
-            dataIndex: "due_date",
-            key: "due_date",
-            defaultSortOrder: "ascend",
-            sorter: (a, b) =>
-                Date.parse(b.due_date_iso) - Date.parse(a.due_date_iso),
-        },
-        {
-            title: "Is Paid",
-            dataIndex: "is_paid",
-            key: "is_paid",
+            title: "Student Status",
+            dataIndex: "status",
+            key: "status",
             filters: [
                 {
-                    text: "Paid",
-                    value: "Paid",
+                    text: "Active",
+                    value: "Active",
                 },
                 {
-                    text: "Not Paid",
-                    value: "Not Paid",
+                    text: "Suspended",
+                    value: "Suspended",
+                },
+                {
+                    text: "Left",
+                    value: "Left",
                 },
             ],
             filterMultiple: false,
-            onFilter: (value, record) => record.is_paid === value,
-        },
-        {
-            title: "Active",
-            dataIndex: "active",
-            key: "active",
-            render: (_, record) =>
-                record.active === "Active" ? (
-                    <Space size="middle">
-                        <Tag className="bg-green-500 text-white">
-                            {record.active}
-                        </Tag>
-                    </Space>
-                ) : null,
+            onFilter: (value, record) => record.status === value,
+            // ...getColumnSearchProps("status"),
         },
         {
             title: "Action",
@@ -259,35 +286,30 @@ const ActiveInvoiceTable = ({ data, loading }) => {
                     <Button
                         type="dashed"
                         onClick={() => {
-                            navigate(`${record._id}`);
+                            navigate(`edit/${record._id}`);
                         }}
                     >
-                        View Fees
+                        Edit
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            onDelete(record);
+                        }}
+                        danger
+                        type="dashed"
+                    >
+                        Delete
                     </Button>
                 </Space>
             ),
         },
     ];
+
     return (
         <Table
             loading={loading}
             columns={columns}
-            dataSource={data
-                .filter((d) => d.active_invoice !== null)
-                .map((d) => {
-                    return {
-                        ...d,
-                        due_date_iso: d.active_invoice.due_date,
-                        payment_reminder_iso: d.active_invoice.payment_reminder,
-                        due_date: dayjs(d.active_invoice.due_date).format(
-                            "DD/MM/YYYY"
-                        ),
-                        active: d.active_invoice.isActive
-                            ? "Active"
-                            : "Not Active",
-                        is_paid: d.active_invoice.isPaid,
-                    };
-                })}
+            dataSource={data}
             pagination={{
                 pageSize: 7,
             }}

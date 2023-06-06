@@ -238,6 +238,12 @@ const StudentsTable = ({ data, onDelete, loading }) => {
             key: "student_roll_no",
             ...getColumnSearchProps("student_roll_no"),
         },
+		{
+            title: "Year",
+            dataIndex: "year",
+            key: "year",
+            ...getColumnSearchProps("year"),
+        },
         {
             title: "Student Name",
             dataIndex: "student_name",
