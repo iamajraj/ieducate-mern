@@ -121,7 +121,26 @@ module.exports.deleteAnnouncement = async (req, res) => {
 };
 module.exports.getAnnouncements = async (req, res) => {
   try {
-    const announcements = await Announcement.find({}).populate('created_by');
+    let announcements;
+    if (req.user.user_type === 'student') {
+      const allAnnouncements = await Announcement.find({}).populate(
+        'created_by'
+      );
+
+      announcements = allAnnouncements.filter((announcement) => {
+        if (announcement.announcementFor.length === 0) {
+          return true;
+        } else {
+          if (announcement.announcementFor.includes(req.user._id)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+    } else {
+      announcements = await Announcement.find({}).populate('created_by');
+    }
     res.status(200).json({
       announcements,
     });
