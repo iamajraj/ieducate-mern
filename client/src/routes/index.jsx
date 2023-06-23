@@ -43,6 +43,10 @@ import ProfileSetting from '../pages/student/Setting/ProfileSetting';
 import StudentLayout from '../components/StudentLayout';
 import PageNotFound from '../components/PageNotFound';
 import StudentLogin from '../pages/student/StudentLogin';
+import CreateClassActivity from '../pages/teacher/Report/ClassActivity/CreateClassActivity';
+import EditClassActivity from '../pages/teacher/Report/ClassActivity/EditClassActivity';
+import StudentClassActivity from '../pages/student/ClassActivity/ClassActivity';
+import StudentClassActivityView from '../pages/student/ClassActivity/StudentClassActivityView';
 
 // const StudentLogin = lazy(() => import('../pages/student/StudentLogin'));
 // const Admins = lazy(() => import('../pages/admin/Admin/Admins'));
@@ -383,6 +387,19 @@ const router = createBrowserRouter([
                     ],
                   },
                   {
+                    path: 'class-activity',
+                    children: [
+                      {
+                        index: true,
+                        element: <CreateClassActivity />,
+                      },
+                      {
+                        path: 'edit/:classActivityId',
+                        element: <EditClassActivity />,
+                      },
+                    ],
+                  },
+                  {
                     path: 'test-report',
                     children: [
                       {
@@ -443,6 +460,19 @@ const router = createBrowserRouter([
               {
                 path: ':id',
                 element: <StudentTermsReportView />,
+              },
+            ],
+          },
+          {
+            path: 'class-activity',
+            children: [
+              {
+                index: true,
+                element: <StudentClassActivity />,
+              },
+              {
+                path: ':id',
+                element: <StudentClassActivityView />,
               },
             ],
           },

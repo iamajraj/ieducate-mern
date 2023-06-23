@@ -1,14 +1,14 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, message, Modal, Space, Table } from 'antd';
+import { Button, Input, message, Modal, Space, Table, Tag } from 'antd';
 import { useContext, useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
-import { authContext } from '../../../context/AuthProvider';
+import { authContext } from '../../../../context/AuthProvider';
 import dayjs from 'dayjs';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import axiosInstance from '../../../services/axiosInstance';
+import axiosInstance from '../../../../services/axiosInstance';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
+const ClassActivity = ({ loading, classActivity, fetchReports, dashboard }) => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
@@ -130,16 +130,19 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
       ),
   });
 
-  const onDelete = async (report_id, student_id) => {
-    if (!report_id || !student_id) return;
+  const onDelete = async (classActivityId, student_id) => {
+    if (!classActivityId || !student_id) return;
 
     try {
-      await axiosInstance.delete(`/students/general-report/${report_id}`, {
-        data: {
-          student_id,
-        },
-      });
-      message.success('Report has been deleted.');
+      await axiosInstance.delete(
+        `/students/class-activity/${classActivityId}`,
+        {
+          data: {
+            student_id,
+          },
+        }
+      );
+      message.success('Class Activity has been deleted.');
       await fetchReports(id);
     } catch (err) {
       message.error(err.response?.data.message ?? 'Something went wrong.');
@@ -148,12 +151,12 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
 
   const { confirm } = Modal;
 
-  const showConfirm = (report_id, student_id) => {
+  const showConfirm = (classActivityId, student_id) => {
     confirm({
-      title: `Do you want to delete this report?`,
+      title: `Do you want to delete this class activity?`,
       icon: <ExclamationCircleFilled />,
       onOk() {
-        onDelete(report_id, student_id);
+        onDelete(classActivityId, student_id);
       },
       okButtonProps: { className: 'bg-main text-white' },
       onCancel() {},
@@ -171,26 +174,7 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
       title: 'Subject',
       dataIndex: 'subject',
       key: 'subject',
-      ...getColumnSearchProps('progress'),
-    },
-    {
-      title: 'Progress',
-      dataIndex: 'progress',
-      key: 'progress',
-
-      ...getColumnSearchProps('progress'),
-    },
-    {
-      title: 'Effort',
-      dataIndex: 'effort',
-      key: 'effort',
-      ...getColumnSearchProps('effort'),
-    },
-    {
-      title: 'Attainment',
-      dataIndex: 'attainment',
-      key: 'attainment',
-      ...getColumnSearchProps('attainment'),
+      ...getColumnSearchProps('subject'),
     },
     {
       title: 'Comment',
@@ -198,6 +182,25 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
       key: 'comment',
       ellipsis: true,
       ...getColumnSearchProps('comment'),
+    },
+    {
+      title: 'Homework',
+      dataIndex: 'homework',
+      key: 'homework',
+      ellipsis: true,
+      ...getColumnSearchProps('homework'),
+    },
+    {
+      title: 'Attachments',
+      dataIndex: 'attachments',
+      key: 'attachments',
+      render: (_, record) => {
+        return (
+          <Space size="middle">
+            <Tag color="blue">{record.attachments.length} Attachments</Tag>
+          </Space>
+        );
+      },
     },
     {
       title: 'Teacher',
@@ -212,7 +215,7 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
         <Space size="middle">
           <Button
             type="dashed"
-            onClick={() => navigate(`general-report/edit/${record.id}`)}
+            onClick={() => navigate(`class-activity/edit/${record.id}`)}
           >
             Edit
           </Button>
@@ -242,13 +245,25 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
       title: 'Subject',
       dataIndex: 'subject',
       key: 'subject',
-      ...getColumnSearchProps('progress'),
+      ...getColumnSearchProps('subject'),
     },
     {
       title: 'Student',
       dataIndex: 'student',
       key: 'student',
       ...getColumnSearchProps('student'),
+    },
+    {
+      title: 'Attachments',
+      dataIndex: 'attachments',
+      key: 'attachments',
+      render: (_, record) => {
+        return (
+          <Space size="middle">
+            <Tag color="blue">{record.attachments.length} Attachments</Tag>
+          </Space>
+        );
+      },
     },
     {
       title: 'Teacher',
@@ -262,21 +277,20 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
     <Table
       loading={loading}
       columns={dashboard ? dashboard_columns : columns}
-      dataSource={reports
+      dataSource={classActivity
         ?.map((report, i) => {
           return {
             key: report._id,
             id: report._id,
             subject: report.subject.subject_name,
+            student: report.student.student_name,
             student_id: report.student._id,
             date: dayjs(report.date).format('DD/MM/YYYY'),
-            progress: report.progress,
-            attainment: report.attainment,
-            effort: report.effort,
             comment: report.comment,
+            homework: report.homework,
+            attachments: report.attachments,
             report_by: report.report_by.name,
             teacher_id: report.report_by._id,
-            student: report.student.student_name,
           };
         })
         .reverse()}
@@ -287,4 +301,4 @@ const GeneralReports = ({ loading, reports, fetchReports, dashboard }) => {
   );
 };
 
-export default GeneralReports;
+export default ClassActivity;

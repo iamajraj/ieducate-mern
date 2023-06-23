@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Upload } from 'antd';
 
-const CreateGeneralReport = () => {
+const CreateTermReport = () => {
   const [student, setStudent] = useState(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
   const [report, setReport] = useState({
@@ -302,4 +302,4 @@ const CreateGeneralReport = () => {
   );
 };
 
-export default CreateGeneralReport;
+export default CreateTermReport;

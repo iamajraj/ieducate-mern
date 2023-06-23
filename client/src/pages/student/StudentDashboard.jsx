@@ -35,7 +35,7 @@ const StudentDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [activeInvoice, setActiveInvoice] = useState(null);
   const [termReport, setTermReport] = useState(null);
-  const [generalReport, setGeneralReport] = useState(null);
+  const [classActivity, setClassActivity] = useState(null);
 
   const navigate = useNavigate();
 
@@ -62,13 +62,13 @@ const StudentDashboard = () => {
     } catch (err) {}
   };
 
-  const getRecentGeneralReport = async (id) => {
+  const getRecentClassActivity = async (id) => {
     try {
       const res = await axiosInstance.get(
-        `/students/general-report/recent/${id}`
+        `/students/class-activity/recent/${id}`
       );
-      const { report } = res.data;
-      setGeneralReport(report);
+      const data = res.data;
+      setClassActivity(data.classActivity);
     } catch (err) {}
   };
 
@@ -89,7 +89,7 @@ const StudentDashboard = () => {
       getAnnouncements();
       getActiveInvoice(user?.id);
       getRecentTermsReport(user?.id);
-      getRecentGeneralReport(user?.id);
+      getRecentClassActivity(user?.id);
     }
   }, [user]);
 
@@ -192,128 +192,151 @@ const StudentDashboard = () => {
             <div className="h-full bg-white rounded-[20px] px-[25px] pt-[11px]">
               <div className="flex items-center justify-between gap-2 flex-wrap border-b border-b-[#E9EBEC] pb-2">
                 <h1 className="text-[18px] font-medium ">
-                  Your latest Peformance Feedback
+                  Your latest Class Activity
                 </h1>
                 <div className="flex items-center gap-2">
                   <p className="flex items-center gap-2">
-                    {generalReport && (
+                    {classActivity && (
                       <>
                         <ClockCircleOutlined />
-                        {dayjs(generalReport.date).format('DD MMM YYYY')}
+                        {dayjs(classActivity.date).format('DD MMM YYYY')}
                       </>
                     )}
                   </p>
                   <Link
-                    to="general-feedback"
+                    to="class-activity"
                     className="text-[14px] text-[#E5247D] cursor-pointer"
                   >
                     View All
                   </Link>
                 </div>
               </div>
-              {generalReport ? (
-                <>
-                  <h2
-                    style={{ color: randomColor() }}
-                    className="text-[22px] font-medium mt-2"
-                  >
-                    {generalReport.subject.subject_name}
-                  </h2>
+              {classActivity ? (
+                // <>
+                //   <h2
+                //     style={{ color: randomColor() }}
+                //     className="text-[22px] font-medium mt-2"
+                //   >
+                //     {classActivity.subject.subject_name}
+                //   </h2>
 
-                  <p className="font-semibold text-black text-[12px] my-2">
-                    Teacher Comment:
-                  </p>
-                  <p className="text-[13px] relative ml-3">
-                    <QuoteLeft className="absolute -left-3" />
-                    {generalReport?.comment}
-                    <span className="text-blue-500 ml-5 cursor-pointer relative">
-                      <QuoteRight className="absolute top-0 -left-5" />
-                    </span>
-                  </p>
-                  <div className="flex items-center mt-4 gap-[40px]">
-                    <div className="w-full">
-                      <p className="text-[14px]">Progress:</p>
-                      <p className="text-[13px] mt-2 text-[#73be18] font-medium">
-                        {generalReport.progress}
-                      </p>
-                      <Slider
-                        trackStyle={{
-                          backgroundColor: '#78B72B',
-                        }}
-                        railStyle={{
-                          backgroundColor: '#ECFFD4',
-                        }}
-                        className="progress_slider"
-                        min={0}
-                        max={3}
-                        value={PROGRESS.indexOf(generalReport?.progress) + 1}
-                        tooltip={{
-                          formatter: (index) => {
-                            let value = PROGRESS[index - 1];
-                            return value;
-                          },
-                          open: false,
-                        }}
-                      />
-                    </div>
-                    <div className="w-full">
-                      <p className="text-[14px]">Attainment</p>
-                      <p className="text-[13px] mt-2 text-[#ED6F1B] font-medium">
-                        {generalReport.attainment}
-                      </p>
-                      <Slider
-                        trackStyle={{
-                          backgroundColor: '#ED6F1B',
-                        }}
-                        railStyle={{
-                          backgroundColor: '#FFE6D6',
-                        }}
-                        className="attainment_slider"
-                        min={0}
-                        max={3}
-                        value={
-                          ATTAINMENT.indexOf(generalReport?.attainment) + 1
-                        }
-                        tooltip={{
-                          formatter: (index) => {
-                            let value = ATTAINMENT[index - 1];
-                            return value;
-                          },
-                          open: false,
-                        }}
-                      />
-                    </div>
+                //   <p className="font-semibold text-black text-[12px] my-2">
+                //     Teacher Comment:
+                //   </p>
+                //   <p className="text-[13px] relative ml-3">
+                //     <QuoteLeft className="absolute -left-3" />
+                //     {classActivity?.comment}
+                //     <span className="text-blue-500 ml-5 cursor-pointer relative">
+                //       <QuoteRight className="absolute top-0 -left-5" />
+                //     </span>
+                //   </p>
+                //   <div className="flex items-center mt-4 gap-[40px]">
+                //     <div className="w-full">
+                //       <p className="text-[14px]">Progress:</p>
+                //       <p className="text-[13px] mt-2 text-[#73be18] font-medium">
+                //         {classActivity.progress}
+                //       </p>
+                //       <Slider
+                //         trackStyle={{
+                //           backgroundColor: '#78B72B',
+                //         }}
+                //         railStyle={{
+                //           backgroundColor: '#ECFFD4',
+                //         }}
+                //         className="progress_slider"
+                //         min={0}
+                //         max={3}
+                //         value={PROGRESS.indexOf(classActivity?.progress) + 1}
+                //         tooltip={{
+                //           formatter: (index) => {
+                //             let value = PROGRESS[index - 1];
+                //             return value;
+                //           },
+                //           open: false,
+                //         }}
+                //       />
+                //     </div>
+                //     <div className="w-full">
+                //       <p className="text-[14px]">Attainment</p>
+                //       <p className="text-[13px] mt-2 text-[#ED6F1B] font-medium">
+                //         {classActivity.attainment}
+                //       </p>
+                //       <Slider
+                //         trackStyle={{
+                //           backgroundColor: '#ED6F1B',
+                //         }}
+                //         railStyle={{
+                //           backgroundColor: '#FFE6D6',
+                //         }}
+                //         className="attainment_slider"
+                //         min={0}
+                //         max={3}
+                //         value={
+                //           ATTAINMENT.indexOf(classActivity?.attainment) + 1
+                //         }
+                //         tooltip={{
+                //           formatter: (index) => {
+                //             let value = ATTAINMENT[index - 1];
+                //             return value;
+                //           },
+                //           open: false,
+                //         }}
+                //       />
+                //     </div>
+                //   </div>
+                //   <div className="w-full max-w-[500px]">
+                //     <p className="text-[14px]">Effort</p>
+                //     <p className="text-[13px] mt-2 text-[#199FDA] font-medium">
+                //       {classActivity.effort}
+                //     </p>
+                //     <Slider
+                //       trackStyle={{
+                //         backgroundColor: '#199FDA',
+                //       }}
+                //       railStyle={{
+                //         backgroundColor: '#EFFAFF',
+                //       }}
+                //       className="effort_slider"
+                //       min={0}
+                //       max={3}
+                //       value={EFFORT.indexOf(classActivity?.effort) + 1}
+                //       tooltip={{
+                //         formatter: (index) => {
+                //           let value = EFFORT[index - 1];
+                //           return value;
+                //         },
+                //         open: false,
+                //       }}
+                //     />
+                //   </div>
+                // </>
+                <>
+                  <div className="flex gap-3 items-center justify-around mt-4">
+                    <img src="/assets/report.png" alt="" />
+                    <h1 className="text-[22px] text-[#E5247D] font-medium">
+                      {classActivity.subject.subject_name}
+                    </h1>
                   </div>
-                  <div className="w-full max-w-[500px]">
-                    <p className="text-[14px]">Effort</p>
-                    <p className="text-[13px] mt-2 text-[#199FDA] font-medium">
-                      {generalReport.effort}
+                  <div className="flex flex-col gap-3 mt-5">
+                    <p className="text-[15px]">Homework:</p>
+                    <p className="text-[14px] relative">
+                      <QuoteLeft className="absolute -left-3" />
+                      {classActivity?.homework.slice(0, 70) + '...'}
+                      <span
+                        className="text-blue-500 ml-5 cursor-pointer relative"
+                        onClick={() => {
+                          navigate(`class-activity/${classActivity._id}`);
+                        }}
+                      >
+                        <QuoteRight className="absolute top-0 -left-5" />
+                        View More
+                      </span>
                     </p>
-                    <Slider
-                      trackStyle={{
-                        backgroundColor: '#199FDA',
-                      }}
-                      railStyle={{
-                        backgroundColor: '#EFFAFF',
-                      }}
-                      className="effort_slider"
-                      min={0}
-                      max={3}
-                      value={EFFORT.indexOf(generalReport?.effort) + 1}
-                      tooltip={{
-                        formatter: (index) => {
-                          let value = EFFORT[index - 1];
-                          return value;
-                        },
-                        open: false,
-                      }}
-                    />
                   </div>
                 </>
               ) : (
                 <p className="my-3 text-[14px]">
-                  Feedback will be displayed here once we have evaluated your
-                  performance
+                  No Class Activity report for now
                 </p>
               )}
             </div>
