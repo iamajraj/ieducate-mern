@@ -8,6 +8,7 @@ const path = require('path');
 const Student = require('../models/student.model');
 const { Subject } = require('../models/subject.model');
 const GeneralReport = require('../models/generalreport.model');
+const ClassActivity = require('../models/classactivity.model');
 const TestReport = require('../models/testreport.model');
 const mailService = require('../utils/mailService');
 const isToday = require('dayjs/plugin/isToday');
@@ -467,16 +468,16 @@ module.exports.studentIssueInvoice = async (req, res) => {
 module.exports.getStudentReports = async (req, res) => {
   const { id } = req.params;
   try {
-    const general_reports = await GeneralReport.find({
+    const term_reports = await TestReport.find({
       student: id,
     }).populate(['student', 'subject', 'report_by']);
-    const test_reports = await TestReport.find({
+    const class_activity = await ClassActivity.find({
       student: id,
     }).populate(['student', 'subject', 'report_by']);
 
     res.status(200).json({
-      general_reports,
-      test_reports,
+      term_reports,
+      class_activity,
     });
   } catch (err) {
     console.log(err);
@@ -487,8 +488,9 @@ module.exports.getStudentReports = async (req, res) => {
 // Teacher Specific
 module.exports.studentSingleTeacherReports = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const general_reports = await GeneralReport.find(
+    const classActivity = await ClassActivity.find(
       {
         report_by: id,
       },
@@ -512,182 +514,8 @@ module.exports.studentSingleTeacherReports = async (req, res) => {
     ).populate(['student', 'subject', 'report_by']);
 
     res.status(200).json({
-      general_reports,
+      classActivity,
       test_reports,
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-
-// General Report
-module.exports.createStudentGeneralReport = async (req, res) => {
-  if (req.user.user_type !== 'teacher')
-    return sendError(401, 'You are not allowed', res);
-  const {
-    student_id,
-    subject_id,
-    date,
-    progress,
-    attainment,
-    effort,
-    comment,
-  } = req.body;
-
-  if (
-    !student_id ||
-    !subject_id ||
-    !date ||
-    !progress ||
-    !attainment ||
-    !effort ||
-    !comment
-  )
-    return sendError(400, 'Please provide all fields', res);
-
-  const student = await Student.findById(student_id);
-
-  if (!student) return res.sendError(404, "Student doesn't exists", res);
-
-  try {
-    const created_report = new GeneralReport({
-      student: student_id,
-      subject: subject_id,
-      date,
-      progress,
-      attainment,
-      effort,
-      comment,
-      report_by: req.user._id,
-    });
-
-    await created_report.save();
-
-    student.general_reports.push(created_report._id);
-
-    await student.save();
-
-    res.status(201).json({
-      message: 'General Report has been created',
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-module.exports.getStudentGeneralReports = async (req, res) => {
-  const { student_id } = req.params;
-
-  try {
-    const reports = await GeneralReport.find({
-      student: student_id,
-    }).populate('subject');
-
-    res.status(201).json({
-      reports,
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-module.exports.getStudentSingleGeneralReport = async (req, res) => {
-  if (req.user.user_type !== 'teacher')
-    return sendError(401, 'You are not allowed', res);
-
-  const { reportid } = req.params;
-
-  try {
-    const report = await GeneralReport.findById(reportid);
-
-    if (!report) {
-      return sendError(404, "Report doesn't exists", res);
-    }
-
-    res.status(201).json({
-      report,
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-module.exports.deleteStudentGeneralReport = async (req, res) => {
-  if (req.user.user_type !== 'teacher')
-    return sendError(401, 'You are not allowed', res);
-
-  const { student_id } = req.body;
-  const { reportid } = req.params;
-
-  const student = await Student.findById(student_id);
-
-  if (!student) return sendError(404, "Student doesn't exists", res);
-
-  student.general_reports = student.general_reports.filter((report) => {
-    return report.toString() !== reportid;
-  });
-
-  try {
-    await GeneralReport.findByIdAndDelete(reportid);
-    await student.save();
-    res.status(201).json({
-      message: 'General Report has been deleted',
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-module.exports.updateStudentGeneralReport = async (req, res) => {
-  if (req.user.user_type !== 'teacher')
-    return sendError(401, 'You are not allowed', res);
-  const { date, progress, attainment, effort, comment } = req.body;
-
-  if (!date || !progress || !attainment || !effort || !comment)
-    return sendError(400, 'Please provide all fields', res);
-
-  const { reportid } = req.params;
-
-  const report = await GeneralReport.findById(reportid);
-
-  if (!report) return sendError(404, "Report doesn't exists", res);
-
-  try {
-    await GeneralReport.findByIdAndUpdate(reportid, {
-      $set: {
-        date,
-        progress,
-        attainment,
-        effort,
-        comment,
-      },
-    });
-
-    res.status(201).json({
-      message: 'General Report has been updated',
-    });
-  } catch (err) {
-    console.log(err);
-    sendError(500, 'Something went wrong', res);
-  }
-};
-module.exports.getStudentRecentGeneralReport = async (req, res) => {
-  const { studentId } = req.params;
-
-  try {
-    const report = await GeneralReport.findOne(
-      {
-        student: studentId,
-      },
-      {},
-      {
-        sort: { createdAt: -1 },
-      }
-    ).populate('subject');
-
-    res.status(201).json({
-      report,
     });
   } catch (err) {
     console.log(err);
@@ -924,6 +752,223 @@ module.exports.getStudentAllTestReports = async (req, res) => {
 
     res.status(201).json({
       reports,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+// Class Activity
+module.exports.createStudentClassActivity = async (req, res) => {
+  if (req.user.user_type !== 'teacher')
+    return sendError(401, 'You are not allowed', res);
+
+  const { student_id, subject_id, date, comment, homework } = req.body;
+
+  if (!student_id || !subject_id || !date || !comment || !homework)
+    return sendError(400, 'Please provide required fields', res);
+
+  const class_activity = new ClassActivity({
+    student: student_id,
+    subject: subject_id,
+    date: date,
+    comment: comment,
+    homework: homework,
+    report_by: req.user._id,
+  });
+
+  if (req.files.length > 0) {
+    const files = req.files.map((file) => {
+      return {
+        filename: file.filename,
+        originalname: file.originalname,
+        url: `/uploads/${file.filename}`,
+      };
+    });
+    class_activity.attachments = files;
+  }
+
+  try {
+    await class_activity.save();
+
+    res.status(201).json({
+      class_activity,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.getStudentClassActivity = async (req, res) => {
+  const { classActivityId } = req.params;
+
+  try {
+    const classActivity = await ClassActivity.findById(classActivityId);
+
+    if (!classActivity) {
+      return sendError(404, "Class Activity doesn't exists", res);
+    }
+
+    res.status(201).json({
+      classActivity,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.deleteStudentClassActivity = async (req, res) => {
+  if (req.user.user_type !== 'teacher')
+    return sendError(401, 'You are not allowed', res);
+
+  const { student_id } = req.body;
+  const { classActivityId } = req.params;
+
+  const student = await Student.findById(student_id);
+  const classActivity = await ClassActivity.findById(classActivityId);
+
+  if (!student) return sendError(404, "Student doesn't exists", res);
+  if (!classActivity)
+    return sendError(404, "Class Activity doesn't exists", res);
+
+  try {
+    if (classActivity?.attachments && classActivity.attachments.length > 0) {
+      classActivity.attachments.forEach(async (file) => {
+        await fsPromise.unlink(path.join(__dirname, '..', file.url));
+      });
+    }
+
+    student.class_activity = student.class_activity.filter((report) => {
+      return report.toString() !== classActivityId;
+    });
+
+    await ClassActivity.findByIdAndDelete(classActivityId);
+    await student.save();
+    res.status(201).json({
+      message: 'Class Activity has been deleted',
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.updateStudentClassActivity = async (req, res) => {
+  if (req.user.user_type !== 'teacher')
+    return sendError(401, 'You are not allowed', res);
+  const { date, comment, homework, removed_files } = req.body;
+
+  if (!date || !comment || !homework)
+    return sendError(400, 'Please provide all fields', res);
+
+  const { classActivityId } = req.params;
+  const classActivity = await ClassActivity.findById(classActivityId);
+  if (!classActivity)
+    return sendError(404, "Class Activity doesn't exists", res);
+
+  try {
+    if (removed_files) {
+      let edited_attachments_files_list;
+      JSON.parse(removed_files).forEach((removed_file) => {
+        edited_attachments_files_list = classActivity.attachments.map(
+          (file) => {
+            if (String(file._id) === String(removed_file.uid)) {
+              fs.unlinkSync(path.join(__dirname, '..', file.url));
+              return null;
+            } else {
+              return file;
+            }
+          }
+        );
+      });
+      classActivity.attachments = edited_attachments_files_list.filter(Boolean);
+    }
+
+    if (req.files.length > 0) {
+      const files = req.files.map((file) => {
+        return {
+          filename: file.filename,
+          originalname: file.originalname,
+          url: `/uploads/${file.filename}`,
+        };
+      });
+      classActivity.attachments =
+        [...classActivity.attachments, ...files].length < 1
+          ? null
+          : [...classActivity.attachments, ...files];
+    }
+    await classActivity.save();
+    await ClassActivity.findByIdAndUpdate(classActivityId, {
+      $set: {
+        date,
+        comment,
+        homework,
+      },
+    });
+
+    res.status(201).json({
+      message: 'Class Activity has been updated',
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.getStudentRecentClassActivity = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    const classActivity = await ClassActivity.findOne(
+      {
+        student: studentId,
+      },
+      {},
+      {
+        sort: { createdAt: -1 },
+      }
+    ).populate('subject');
+
+    res.status(201).json({
+      classActivity,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.getStudentSingleClassActivity = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const classActivity = await ClassActivity.findById(id).populate([
+      'subject',
+      'report_by',
+    ]);
+
+    res.status(201).json({
+      classActivity,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.getStudentAllClassActivity = async (req, res) => {
+  const { student_id } = req.params;
+
+  try {
+    const classActivity = await ClassActivity.find({
+      student: student_id,
+    }).populate('subject');
+
+    res.status(201).json({
+      classActivity,
     });
   } catch (err) {
     console.log(err);

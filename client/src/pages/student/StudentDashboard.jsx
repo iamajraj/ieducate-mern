@@ -12,24 +12,6 @@ import moment from 'moment';
 import FeedbackCard from '../../components/FeedbackCard';
 import isToday from 'dayjs/plugin/isToday';
 
-const PROGRESS = [
-  'Below Expected Progress',
-  'Making Expected Progress',
-  'Above Expected Progress',
-];
-
-const ATTAINMENT = [
-  'Working towards the national standard',
-  'Working at the National Standard',
-  'Working at greater depth than the national standard',
-];
-
-const EFFORT = [
-  'Sometimes tried hard',
-  'Tries hard most of the time',
-  'Always tries hard',
-];
-
 const StudentDashboard = () => {
   const { user } = useContext(authContext);
   const [announcements, setAnnouncements] = useState([]);
@@ -212,104 +194,6 @@ const StudentDashboard = () => {
                 </div>
               </div>
               {classActivity ? (
-                // <>
-                //   <h2
-                //     style={{ color: randomColor() }}
-                //     className="text-[22px] font-medium mt-2"
-                //   >
-                //     {classActivity.subject.subject_name}
-                //   </h2>
-
-                //   <p className="font-semibold text-black text-[12px] my-2">
-                //     Teacher Comment:
-                //   </p>
-                //   <p className="text-[13px] relative ml-3">
-                //     <QuoteLeft className="absolute -left-3" />
-                //     {classActivity?.comment}
-                //     <span className="text-blue-500 ml-5 cursor-pointer relative">
-                //       <QuoteRight className="absolute top-0 -left-5" />
-                //     </span>
-                //   </p>
-                //   <div className="flex items-center mt-4 gap-[40px]">
-                //     <div className="w-full">
-                //       <p className="text-[14px]">Progress:</p>
-                //       <p className="text-[13px] mt-2 text-[#73be18] font-medium">
-                //         {classActivity.progress}
-                //       </p>
-                //       <Slider
-                //         trackStyle={{
-                //           backgroundColor: '#78B72B',
-                //         }}
-                //         railStyle={{
-                //           backgroundColor: '#ECFFD4',
-                //         }}
-                //         className="progress_slider"
-                //         min={0}
-                //         max={3}
-                //         value={PROGRESS.indexOf(classActivity?.progress) + 1}
-                //         tooltip={{
-                //           formatter: (index) => {
-                //             let value = PROGRESS[index - 1];
-                //             return value;
-                //           },
-                //           open: false,
-                //         }}
-                //       />
-                //     </div>
-                //     <div className="w-full">
-                //       <p className="text-[14px]">Attainment</p>
-                //       <p className="text-[13px] mt-2 text-[#ED6F1B] font-medium">
-                //         {classActivity.attainment}
-                //       </p>
-                //       <Slider
-                //         trackStyle={{
-                //           backgroundColor: '#ED6F1B',
-                //         }}
-                //         railStyle={{
-                //           backgroundColor: '#FFE6D6',
-                //         }}
-                //         className="attainment_slider"
-                //         min={0}
-                //         max={3}
-                //         value={
-                //           ATTAINMENT.indexOf(classActivity?.attainment) + 1
-                //         }
-                //         tooltip={{
-                //           formatter: (index) => {
-                //             let value = ATTAINMENT[index - 1];
-                //             return value;
-                //           },
-                //           open: false,
-                //         }}
-                //       />
-                //     </div>
-                //   </div>
-                //   <div className="w-full max-w-[500px]">
-                //     <p className="text-[14px]">Effort</p>
-                //     <p className="text-[13px] mt-2 text-[#199FDA] font-medium">
-                //       {classActivity.effort}
-                //     </p>
-                //     <Slider
-                //       trackStyle={{
-                //         backgroundColor: '#199FDA',
-                //       }}
-                //       railStyle={{
-                //         backgroundColor: '#EFFAFF',
-                //       }}
-                //       className="effort_slider"
-                //       min={0}
-                //       max={3}
-                //       value={EFFORT.indexOf(classActivity?.effort) + 1}
-                //       tooltip={{
-                //         formatter: (index) => {
-                //           let value = EFFORT[index - 1];
-                //           return value;
-                //         },
-                //         open: false,
-                //       }}
-                //     />
-                //   </div>
-                // </>
                 <>
                   <div className="flex gap-3 items-center justify-around mt-4">
                     <img src="/assets/report.png" alt="" />

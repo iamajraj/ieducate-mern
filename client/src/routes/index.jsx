@@ -374,19 +374,6 @@ const router = createBrowserRouter([
                     element: <StudentReports />,
                   },
                   {
-                    path: 'general-report',
-                    children: [
-                      {
-                        index: true,
-                        element: <CreateGeneralReport />,
-                      },
-                      {
-                        path: 'edit/:reportId',
-                        element: <EditGeneralReport />,
-                      },
-                    ],
-                  },
-                  {
                     path: 'class-activity',
                     children: [
                       {
@@ -445,10 +432,6 @@ const router = createBrowserRouter([
           {
             path: 'announcements',
             element: <StudentAnnouncement />,
-          },
-          {
-            path: 'general-feedback',
-            element: <StudentGeneralReport />,
           },
           {
             path: 'term-reports',

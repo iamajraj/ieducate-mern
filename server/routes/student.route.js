@@ -1,128 +1,136 @@
-const express = require("express");
-const verifyToken = require("../middlewares/verifyToken");
-const upload = require("../utils/upload");
+const express = require('express');
+const verifyToken = require('../middlewares/verifyToken');
+const upload = require('../utils/upload');
 const {
-    createStudent,
-    updateStudent,
-    getStudentInvoices,
-    changeStudentPassword,
-    deleteStudent,
-    getStudents,
-    exportStudentsToCSV,
-    getStudent,
-    studentIssueInvoice,
-    getStudentReports,
-    studentSingleTeacherReports,
-    createStudentGeneralReport,
-    getStudentGeneralReports,
-    getStudentSingleGeneralReport,
-    deleteStudentGeneralReport,
-    updateStudentGeneralReport,
-    getStudentRecentGeneralReport,
-    createTestReport,
-    deleteStudentTestReport,
-    updateStudentTestReport,
-    getStudentRecentTestReport,
-    getStudentTestReport,
-    getStudentSingleTestReport,
-    getStudentAllTestReports,
-} = require("../controllers/student.controller");
+  createStudent,
+  updateStudent,
+  getStudentInvoices,
+  changeStudentPassword,
+  deleteStudent,
+  getStudents,
+  exportStudentsToCSV,
+  getStudent,
+  studentIssueInvoice,
+  getStudentReports,
+  studentSingleTeacherReports,
+  createTestReport,
+  deleteStudentTestReport,
+  updateStudentTestReport,
+  getStudentRecentTestReport,
+  getStudentTestReport,
+  getStudentSingleTestReport,
+  getStudentAllTestReports,
+  createStudentClassActivity,
+  getStudentClassActivity,
+  deleteStudentClassActivity,
+  updateStudentClassActivity,
+  getStudentRecentClassActivity,
+  getStudentSingleClassActivity,
+  getStudentAllClassActivity,
+} = require('../controllers/student.controller');
 
 const router = express.Router();
 
-router.post("/students", verifyToken, createStudent);
-router.put("/students/:id", verifyToken, updateStudent);
-router.get("/students/invoices/:student_id", verifyToken, getStudentInvoices);
-router.patch("/students/change-password", verifyToken, changeStudentPassword);
-router.delete("/students/:id", verifyToken, deleteStudent);
-router.get("/students", verifyToken, getStudents);
-router.get("/students/export-to-csv", verifyToken, exportStudentsToCSV);
-router.get("/students/:id", verifyToken, getStudent);
-router.post("/students/issue-invoice", verifyToken, studentIssueInvoice);
-router.get("/students/:id/reports", verifyToken, getStudentReports);
+router.post('/students', verifyToken, createStudent);
+router.put('/students/:id', verifyToken, updateStudent);
+router.get('/students/invoices/:student_id', verifyToken, getStudentInvoices);
+router.patch('/students/change-password', verifyToken, changeStudentPassword);
+router.delete('/students/:id', verifyToken, deleteStudent);
+router.get('/students', verifyToken, getStudents);
+router.get('/students/export-to-csv', verifyToken, exportStudentsToCSV);
+router.get('/students/:id', verifyToken, getStudent);
+router.post('/students/issue-invoice', verifyToken, studentIssueInvoice);
+router.get('/students/:id/reports', verifyToken, getStudentReports);
 
 // teacher specific reports
 router.get(
-    "/students/single-teacher-reports/:id",
-    verifyToken,
-    studentSingleTeacherReports
-);
-
-// GENERAL REPORT
-router.post(
-    "/students/general-report",
-    verifyToken,
-    createStudentGeneralReport
-);
-router.get(
-    "/students/general-reports/:student_id",
-    verifyToken,
-    getStudentGeneralReports
-);
-
-router.get(
-    "/students/general-report/:reportid",
-    verifyToken,
-    getStudentSingleGeneralReport
-);
-
-router.delete(
-    "/students/general-report/:reportid",
-    verifyToken,
-    deleteStudentGeneralReport
-);
-router.put(
-    "/students/general-report/:reportid",
-    verifyToken,
-    updateStudentGeneralReport
-);
-
-router.get(
-    "/students/general-report/recent/:studentId",
-    verifyToken,
-    getStudentRecentGeneralReport
+  '/students/single-teacher-reports/:id',
+  verifyToken,
+  studentSingleTeacherReports
 );
 
 // TEST REPORT
 router.post(
-    "/students/test-report",
-    verifyToken,
-    upload.array("feedback_files[]"),
-    createTestReport
+  '/students/test-report',
+  verifyToken,
+  upload.array('feedback_files[]'),
+  createTestReport
 );
 router.get(
-    "/students/test-report/:reportid",
-    verifyToken,
-    getStudentTestReport
+  '/students/test-report/:reportid',
+  verifyToken,
+  getStudentTestReport
 );
 router.delete(
-    "/students/test-report/:reportid",
-    verifyToken,
-    deleteStudentTestReport
+  '/students/test-report/:reportid',
+  verifyToken,
+  deleteStudentTestReport
 );
 router.put(
-    "/students/test-report/:reportid",
-    upload.array("feedback_files[]"),
-    verifyToken,
-    updateStudentTestReport
+  '/students/test-report/:reportid',
+  upload.array('feedback_files[]'),
+  verifyToken,
+  updateStudentTestReport
 );
 
 router.get(
-    "/students/test-report/recent/:studentId",
-    verifyToken,
-    getStudentRecentTestReport
+  '/students/test-report/recent/:studentId',
+  verifyToken,
+  getStudentRecentTestReport
 );
 
 router.get(
-    "/students/test-reports/single/:id",
-    verifyToken,
-    getStudentSingleTestReport
+  '/students/test-reports/single/:id',
+  verifyToken,
+  getStudentSingleTestReport
 );
 
 router.get(
-    "/students/test-reports/:student_id",
-    verifyToken,
-    getStudentAllTestReports
+  '/students/test-reports/:student_id',
+  verifyToken,
+  getStudentAllTestReports
+);
+
+// CLASS ACTIVITY
+router.post(
+  '/students/class-activity',
+  verifyToken,
+  upload.array('attachments[]'),
+  createStudentClassActivity
+);
+router.get(
+  '/students/class-activity/:classActivityId',
+  verifyToken,
+  getStudentClassActivity
+);
+router.delete(
+  '/students/class-activity/:classActivityId',
+  verifyToken,
+  deleteStudentClassActivity
+);
+router.put(
+  '/students/class-activity/:classActivityId',
+  upload.array('attachments[]'),
+  verifyToken,
+  updateStudentClassActivity
+);
+
+router.get(
+  '/students/class-activity/recent/:studentId',
+  verifyToken,
+  getStudentRecentClassActivity
+);
+
+router.get(
+  '/students/class-activity/single/:id',
+  verifyToken,
+  getStudentSingleClassActivity
+);
+
+router.get(
+  '/students/class-activity/student/:student_id',
+  verifyToken,
+  getStudentAllClassActivity
 );
 
 module.exports = router;
