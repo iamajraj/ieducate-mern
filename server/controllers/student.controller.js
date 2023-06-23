@@ -7,7 +7,6 @@ const fs = require('fs');
 const path = require('path');
 const Student = require('../models/student.model');
 const { Subject } = require('../models/subject.model');
-const GeneralReport = require('../models/generalreport.model');
 const ClassActivity = require('../models/classactivity.model');
 const TestReport = require('../models/testreport.model');
 const mailService = require('../utils/mailService');
@@ -346,7 +345,7 @@ module.exports.deleteStudent = async (req, res) => {
       student: student._id,
     });
 
-    await GeneralReport.deleteMany({
+    await ClassActivity.deleteMany({
       student: student._id,
     });
 
@@ -371,8 +370,8 @@ module.exports.getStudents = async (req, res) => {
   try {
     const students = await Student.find({}, { password: 0 }).populate([
       'subjects',
-      'general_reports',
       'test_reports',
+      'class_activity',
       'active_invoice',
     ]);
     return res.status(200).json({
@@ -409,8 +408,8 @@ module.exports.getStudent = async (req, res) => {
   try {
     const student = await Student.findById(id, { password: 0 }).populate([
       'subjects',
-      'general_reports',
       'test_reports',
+      'class_activity',
     ]);
     return res.status(200).json({
       student,
@@ -696,7 +695,7 @@ module.exports.updateStudentTestReport = async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'General Report has been updated',
+      message: 'Test Report has been updated',
     });
   } catch (err) {
     console.log(err);
