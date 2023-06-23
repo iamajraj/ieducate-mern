@@ -9,12 +9,17 @@ import {
   DownloadOutlined,
   EditOutlined,
 } from '@ant-design/icons';
+import InputField from '../../../components/InputField';
+import MainButton from '../../../components/MainButton';
 
 const ViewFees = () => {
   const [fee, setFee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updateSubjectMonthlyPayment, setUpdateSubjectMonthlyPayment] =
     useState(null);
+
+  const [internalComment, setInternalComment] = useState('');
+  const [comment, setComment] = useState('');
 
   const { fee_id } = useParams();
 
@@ -36,6 +41,30 @@ const ViewFees = () => {
       });
       await fetchFee();
       message.success('Paid status changed');
+    } catch (err) {
+      message.error(err.response?.data?.message ?? 'Something went wrong');
+    }
+  };
+  const updateInternalComment = async () => {
+    try {
+      await axiosInstance.patch('/fees/set-internal-comment', {
+        fee_id: fee_id,
+        internal_comment: internalComment,
+      });
+      await fetchFee();
+      message.success('Internal comment has been updated');
+    } catch (err) {
+      message.error(err.response?.data?.message ?? 'Something went wrong');
+    }
+  };
+  const updateComment = async () => {
+    try {
+      await axiosInstance.patch('/fees/set-comment', {
+        fee_id: fee_id,
+        comment: comment,
+      });
+      await fetchFee();
+      message.success('Comment has been updated');
     } catch (err) {
       message.error(err.response?.data?.message ?? 'Something went wrong');
     }
@@ -161,6 +190,13 @@ const ViewFees = () => {
   };
 
   useEffect(() => {
+    if (fee) {
+      setInternalComment(fee.internal_comment);
+      setComment(fee.comment);
+    }
+  }, [fee]);
+
+  useEffect(() => {
     fetchFee();
   }, [fee_id]);
 
@@ -216,95 +252,118 @@ const ViewFees = () => {
 
             <div className="border-b mt-3 mb-10"></div>
 
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-5">
-                <h1>Student Roll No: </h1>
-                <span>{fee.student.student_roll_no}</span>
-              </div>
-              <div className="flex items-center gap-5">
-                <h1>Student Name: </h1>
-                <span>{fee.student.student_name}</span>
-              </div>
-              <div className="flex items-center gap-5">
-                <h1>Student Telephone: </h1>
-                <span>{fee.student.student_telephone}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <h1>Last Month's Due Date:</h1>
-                <span>
-                  {fee.previous_due_date
-                    ? dayjs(fee.previous_due_date).format('DD/MM/YYYY')
-                    : '_'}
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <h1>Last Payment Date:</h1>
-                <span>
-                  {fee.student.last_payment_date
-                    ? dayjs(fee.student.last_payment_date).format('DD/MM/YYYY')
-                    : '_'}
-                </span>
-              </div>
-              <div className="flex items-center gap-5">
-                <h1>Number of Subjects: </h1>
-                <span>{fee.subjects.length}</span>
-              </div>
-              <div className="flex flex-col gap-3">
-                <h1>Subjects: </h1>
-                <div className="ml-12 flex flex-col gap-2">
-                  {fee.subjects.map((sub) => (
-                    <div
-                      key={sub?._id}
-                      className="flex flex-col gap-4 border-b pb-3"
-                    >
-                      <div className="flex items-center gap-4">
-                        <h1>Name:</h1>
-                        <span>{sub.subject_name}</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <h1>Monthly Payment:</h1>
-                        <span>£ {sub.monthly_payment}</span>
-                        {fee.isActive && (
-                          <div className="cursor-pointer">
-                            <EditOutlined
-                              onClick={() => {
-                                setUpdateSubjectMonthlyPayment(sub);
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+            <div className="flex w-full gap-10">
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex items-center gap-5">
+                  <h1>Student Roll No: </h1>
+                  <span>{fee.student.student_roll_no}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-5">
-                <h1>Total Amount: </h1>
-                <span>
-                  £{' '}
-                  {fee.subjects.reduce((acc, cur) => {
-                    return (acc += Number(cur.monthly_payment));
-                  }, 0)}
-                </span>
-              </div>
-              <div className="flex items-center gap-5">
-                <h1>Due Date: </h1>
-                <span>{dayjs(fee.due_date).format('DD/MM/YYYY')}</span>
+                <div className="flex items-center gap-5">
+                  <h1>Student Name: </h1>
+                  <span>{fee.student.student_name}</span>
+                </div>
+                <div className="flex items-center gap-5">
+                  <h1>Student Telephone: </h1>
+                  <span>{fee.student.student_telephone}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <h1>Last Month's Due Date:</h1>
+                  <span>
+                    {fee.previous_due_date
+                      ? dayjs(fee.previous_due_date).format('DD/MM/YYYY')
+                      : '_'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <h1>Last Payment Date:</h1>
+                  <span>
+                    {fee.student.last_payment_date
+                      ? dayjs(fee.student.last_payment_date).format(
+                          'DD/MM/YYYY'
+                        )
+                      : '_'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-5">
+                  <h1>Number of Subjects: </h1>
+                  <span>{fee.subjects.length}</span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h1>Subjects: </h1>
+                  <div className="ml-12 flex flex-col gap-2">
+                    {fee.subjects.map((sub) => (
+                      <div
+                        key={sub?._id}
+                        className="flex flex-col gap-4 border-b pb-3"
+                      >
+                        <div className="flex items-center gap-4">
+                          <h1>Name:</h1>
+                          <span>{sub.subject_name}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <h1>Monthly Payment:</h1>
+                          <span>£ {sub.monthly_payment}</span>
+                          {fee.isActive && (
+                            <div className="cursor-pointer">
+                              <EditOutlined
+                                onClick={() => {
+                                  setUpdateSubjectMonthlyPayment(sub);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-5">
+                  <h1>Total Amount: </h1>
+                  <span>
+                    £{' '}
+                    {fee.subjects.reduce((acc, cur) => {
+                      return (acc += Number(cur.monthly_payment));
+                    }, 0)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-5">
+                  <h1>Due Date: </h1>
+                  <span>{dayjs(fee.due_date).format('DD/MM/YYYY')}</span>
+                </div>
+
+                <Select
+                  value={fee.isPaid}
+                  onChange={(value) => {
+                    setPaid(value);
+                    return value;
+                  }}
+                  placeholder="Set Paid"
+                  style={{ width: 120 }}
+                  options={[
+                    { value: 'Paid', label: 'Paid' },
+                    { value: 'Not Paid', label: 'Not Paid' },
+                  ]}
+                />
               </div>
 
-              <Select
-                value={fee.isPaid}
-                onChange={(value) => {
-                  setPaid(value);
-                  return value;
-                }}
-                placeholder="Set Paid"
-                style={{ width: 120 }}
-                options={[
-                  { value: 'Paid', label: 'Paid' },
-                  { value: 'Not Paid', label: 'Not Paid' },
-                ]}
-              />
+              <div className="w-full flex flex-col gap-10">
+                <div className="space-y-2">
+                  <InputField
+                    label="Internal Comment (Private)"
+                    value={internalComment}
+                    onChange={(e) => setInternalComment(e.target.value)}
+                  />
+                  <MainButton text="Set" onClick={updateInternalComment} />
+                </div>
+                <div className="space-y-2">
+                  <InputField
+                    label="Comments (Visible to Student)"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                  <MainButton text="Set" onClick={updateComment} />
+                </div>
+              </div>
             </div>
           </div>
         )}
