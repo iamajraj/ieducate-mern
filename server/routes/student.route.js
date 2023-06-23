@@ -27,20 +27,22 @@ const {
   getStudentRecentClassActivity,
   getStudentSingleClassActivity,
   getStudentAllClassActivity,
+  assignTeacherToStudent,
 } = require('../controllers/student.controller');
 
 const router = express.Router();
 
 router.post('/students', verifyToken, createStudent);
-router.put('/students/:id', verifyToken, updateStudent);
+router.get('/students', verifyToken, getStudents);
+router.put('/students', verifyToken, updateStudent);
+router.delete('/students/delete/:id', verifyToken, deleteStudent);
 router.get('/students/invoices/:student_id', verifyToken, getStudentInvoices);
 router.patch('/students/change-password', verifyToken, changeStudentPassword);
-router.delete('/students/:id', verifyToken, deleteStudent);
-router.get('/students', verifyToken, getStudents);
 router.get('/students/export-to-csv', verifyToken, exportStudentsToCSV);
-router.get('/students/:id', verifyToken, getStudent);
 router.post('/students/issue-invoice', verifyToken, studentIssueInvoice);
 router.get('/students/:id/reports', verifyToken, getStudentReports);
+router.put('/students/assign-teacher', verifyToken, assignTeacherToStudent);
+router.get('/students/:id', verifyToken, getStudent);
 
 // teacher specific reports
 router.get(

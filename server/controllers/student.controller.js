@@ -126,8 +126,6 @@ module.exports.createStudent = async (req, res) => {
   }
 };
 module.exports.updateStudent = async (req, res) => {
-  const id = req.params.id;
-
   if (req.user.user_type !== 'admin')
     return sendError(401, 'Only Admins are allowed', res);
 
@@ -148,6 +146,7 @@ module.exports.updateStudent = async (req, res) => {
     new_subject_local_ids,
     status,
     password,
+    id,
   } = req.body;
 
   if (
@@ -477,6 +476,34 @@ module.exports.getStudentReports = async (req, res) => {
     res.status(200).json({
       term_reports,
       class_activity,
+    });
+  } catch (err) {
+    console.log(err);
+    sendError(500, 'Something went wrong', res);
+  }
+};
+
+module.exports.assignTeacherToStudent = async (req, res) => {
+  if (req.user.user_type !== 'admin')
+    return sendError(401, 'Only Admins are allowed', res);
+
+  const { teacherIds, studentId } = req.body;
+  console.log(teacherIds, studentId);
+
+  if (!studentId) {
+    return sendError(400, 'Student id required', res);
+  }
+
+  const student = await Student.findById(studentId);
+
+  if (!student) {
+    return sendError(400, "Student doesn't exist", res);
+  }
+  try {
+    student.assigned_teachers = teacherIds;
+    await student.save();
+    res.status(201).json({
+      message: 'Success',
     });
   } catch (err) {
     console.log(err);

@@ -9,9 +9,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../services/axiosInstance';
 import SortIcon from '../../../assets/SortIcon';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import AssignTeachersModal from './AssignTeachersModal';
 
 const Students = () => {
   const [students, setStudents] = useState([]);
+  const [assignTeacher, setAssignTeacher] = useState(null);
   const { loading, error, response } = useAxios({
     method: 'get',
     url: '/students',
@@ -26,7 +28,7 @@ const Students = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axiosInstance.delete(`/students/${id}`);
+      await axiosInstance.delete(`/students/delete/${id}`);
       message.success('Student has been deleted');
       await fetchStudents();
     } catch (err) {
@@ -92,16 +94,27 @@ const Students = () => {
             loading={loading}
             data={students}
             onDelete={showConfirm}
+            onAssign={(record) => {
+              setAssignTeacher(record);
+            }}
           />
         </div>
       </div>
+      {assignTeacher && (
+        <AssignTeachersModal
+          open={assignTeacher}
+          student={assignTeacher}
+          fetchStudent={fetchStudents}
+          handleCancel={() => setAssignTeacher(null)}
+        />
+      )}
     </Container>
   );
 };
 
 export default Students;
 
-const StudentsTable = ({ data, onDelete, loading }) => {
+const StudentsTable = ({ data, onDelete, loading, onAssign }) => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
@@ -290,6 +303,22 @@ const StudentsTable = ({ data, onDelete, loading }) => {
       // ...getColumnSearchProps("status"),
     },
     {
+      title: 'Assign Teachers',
+      key: 'assign_teachers',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            onClick={() => {
+              onAssign(record);
+            }}
+            type="dashed"
+          >
+            Assign/Remove
+          </Button>
+        </Space>
+      ),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -302,6 +331,7 @@ const StudentsTable = ({ data, onDelete, loading }) => {
           >
             Edit
           </Button>
+
           <Button
             onClick={() => {
               onDelete(record);

@@ -94,6 +94,11 @@ const StudentSchema = new mongoose.Schema(
       ref: 'Fees',
       default: null,
     },
+    assigned_teachers: {
+      type: [mongoose.SchemaTypes.ObjectId],
+      ref: 'Teacher',
+      default: [],
+    },
   },
   {
     timestamps: true,

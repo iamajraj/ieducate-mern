@@ -1,12 +1,14 @@
 import Container from '../../../components/Container';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useAxios } from '../../../hooks/useAxios';
 import { useNavigate } from 'react-router-dom';
+import { authContext } from '../../../context/AuthProvider';
 
 const AllStudents = () => {
+  const { user } = useContext(authContext);
   const [students, setStudents] = useState([]);
   const { loading, error, response } = useAxios({
     method: 'get',
@@ -14,10 +16,24 @@ const AllStudents = () => {
   });
 
   useEffect(() => {
-    if (response) {
-      setStudents(response.students);
+    if (response && user) {
+      let filteredStudents = [];
+      if (response.students) {
+        filteredStudents = response.students.filter((student) => {
+          if (student.assigned_teachers.length === 0) {
+            return true;
+          } else {
+            if (student.assigned_teachers.includes(user.id)) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        });
+      }
+      setStudents(filteredStudents);
     }
-  }, [response, error, loading]);
+  }, [response, error, loading, user]);
 
   return (
     <Container>
