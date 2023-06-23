@@ -4,7 +4,6 @@ import Container from '../../../components/Container';
 import axiosInstance from '../../../services/axiosInstance';
 import { Tabs } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import GeneralReports from './GeneralReports';
 import TestReports from './TestReports';
 import MainButton from '../../../components/MainButton';
 import ClassActivity from './ClassActivity/ClassActivity';
