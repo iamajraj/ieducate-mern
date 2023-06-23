@@ -34,7 +34,7 @@ const router = express.Router();
 
 router.post('/students', verifyToken, createStudent);
 router.get('/students', verifyToken, getStudents);
-router.put('/students', verifyToken, updateStudent);
+router.put('/students/update/:id', verifyToken, updateStudent);
 router.delete('/students/delete/:id', verifyToken, deleteStudent);
 router.get('/students/invoices/:student_id', verifyToken, getStudentInvoices);
 router.patch('/students/change-password', verifyToken, changeStudentPassword);

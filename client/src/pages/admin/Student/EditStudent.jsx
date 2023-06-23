@@ -80,10 +80,8 @@ const EditStudent = () => {
 
     setLoading(true);
 
-    studentData.id = id;
-
     try {
-      await axiosInstance.put(`/students`, studentData);
+      await axiosInstance.put(`/students/update/${id}`, studentData);
       message.success('Student has been modified', 2);
     } catch (err) {
       message.error(err.response?.data?.message ?? 'Something went wrong');

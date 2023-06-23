@@ -126,6 +126,7 @@ module.exports.createStudent = async (req, res) => {
   }
 };
 module.exports.updateStudent = async (req, res) => {
+  const id = req.params.id;
   if (req.user.user_type !== 'admin')
     return sendError(401, 'Only Admins are allowed', res);
 
@@ -146,7 +147,6 @@ module.exports.updateStudent = async (req, res) => {
     new_subject_local_ids,
     status,
     password,
-    id,
   } = req.body;
 
   if (
