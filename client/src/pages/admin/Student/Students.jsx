@@ -308,6 +308,11 @@ const StudentsTable = ({ data, onDelete, loading, onAssign }) => {
       render: (_, record) => (
         <Space size="middle">
           <Button
+            className={`${
+              record.assigned_teachers.length > 0
+                ? 'border-green-500 bg-green-200'
+                : ''
+            }`}
             onClick={() => {
               onAssign(record);
             }}
@@ -317,6 +322,22 @@ const StudentsTable = ({ data, onDelete, loading, onAssign }) => {
           </Button>
         </Space>
       ),
+      filters: [
+        {
+          text: 'Assigned',
+          value: 1,
+        },
+        {
+          text: 'Not Assigned',
+          value: 0,
+        },
+      ],
+      filterMultiple: false,
+      onFilter: (value, record) => {
+        return Boolean(value)
+          ? record.assigned_teachers.length > 0
+          : record.assigned_teachers.length === 0;
+      },
     },
     {
       title: 'Action',
