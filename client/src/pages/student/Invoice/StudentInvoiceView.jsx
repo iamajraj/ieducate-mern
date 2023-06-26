@@ -83,6 +83,7 @@ const StudentInvoiceView = () => {
                       <div className="flex items-center justify-around py-4 bg-[#CFF0FF] border-b text-[12px] md:text-[16px]">
                         <p>Subject</p>
                         <p>Payment last date</p>
+                        <p>Last Month's Due Date</p>
                         <p>Fees</p>
                       </div>
                       {fee.subjects.map((sub) => {
@@ -99,6 +100,13 @@ const StudentInvoiceView = () => {
                                   )
                                 : ''}
                             </p>
+                            <p>
+                              {fee.previous_due_date
+                                ? dayjs(fee.previous_due_date).format(
+                                    'DD/MM/YYYY'
+                                  )
+                                : ''}
+                            </p>
                             <p className="font-semibold">
                               {sub.monthly_payment} <span>GBP</span>
                             </p>
@@ -106,6 +114,7 @@ const StudentInvoiceView = () => {
                         );
                       })}
                     </div>
+
                     <div className="mt-10 flex flex-col gap-5">
                       <div className="flex items-center justify-between">
                         <p className="text-[14px] md:text-[24px] font-medium">

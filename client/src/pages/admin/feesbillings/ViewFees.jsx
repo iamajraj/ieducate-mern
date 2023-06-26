@@ -202,6 +202,8 @@ const ViewFees = () => {
 
   const navigate = useNavigate();
 
+  console.log(fee);
+
   return (
     <Container>
       <div className="bg-white p-8 rounded-lg flex flex-col">

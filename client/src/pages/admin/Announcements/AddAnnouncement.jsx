@@ -52,7 +52,9 @@ const AddAnnouncement = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-[24px]">Announcements</h1>
-            <p className="text-[13px]">Create announcements</p>
+            <p className="text-[13px]">
+              Create announcements for every students.
+            </p>
           </div>
           <Link to="/admin/dashboard/announcements">
             <MainButton

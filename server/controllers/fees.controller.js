@@ -76,7 +76,7 @@ module.exports.changePaidStatus = async (req, res) => {
             payment_reminder: dayjs(fee.due_date)
               .add(DUE_DATE_DAYS, 'day')
               .subtract(10, 'day'),
-            previous_due_date: fee.previous_due_date,
+            previous_due_date: fee.due_date,
             isActive: true,
           });
         }
