@@ -44,6 +44,7 @@ import CreateClassActivity from '../pages/teacher/Report/ClassActivity/CreateCla
 import EditClassActivity from '../pages/teacher/Report/ClassActivity/EditClassActivity';
 import StudentClassActivity from '../pages/student/ClassActivity/ClassActivity';
 import StudentClassActivityView from '../pages/student/ClassActivity/StudentClassActivityView';
+import DemoPanel from '../components/DemoPanel';
 
 // const StudentLogin = lazy(() => import('../pages/student/StudentLogin'));
 // const Admins = lazy(() => import('../pages/admin/Admin/Admins'));
@@ -184,7 +185,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <AuthRoute>
-        <Navigate to="/student" />
+        <DemoPanel />
       </AuthRoute>
     ),
   },
