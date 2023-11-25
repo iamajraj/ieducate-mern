@@ -15,7 +15,10 @@ The admin dashboard, on the other hand, allowed administrators to create, edit, 
 
 Finally, the student dashboard allowed students to view their reports, invoices, and announcements. They could also update their own credentials as needed. This feature made it easy for students to stay on top of their academic progress and ensure that they were meeting their goals.
 
-One of the standout features of the ieducate platform was the integration of SMTP email. Whenever an announcement or invoice was generated, an email would be sent to the student. This feature ensured that students were always kept up-to-date with the latest information and helped to reduce the risk of missed deadlines or other important information.
+It also has the integration of SMTP email. Whenever an announcement or invoice was generated, an email would be sent to the student. This feature ensured that students were always kept up-to-date with the latest information and helped to reduce the risk of missed deadlines or other important information.
+
+There are many more features in this application like Auto Logout, Assigning specific teachers to Students, Exporting Data to CSV and a lot!!
+# I higly recommend you to visit the website if you want to check the full potential and features of this application that I built (the link is in this repo also there's the credentials in the login page)
 
 Throughout the development process, I faced a range of challenges and obstacles. However, with careful planning and problem-solving, I was able to overcome these challenges and deliver a high-quality product that met the needs of the client.
 
