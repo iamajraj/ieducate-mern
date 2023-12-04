@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+  web:
+    image: client-ieducate
+    build: ./client
+    ports:
+      - 80:80
+    environment:
+      VITE_API_URL: server:5000/api
+      VITE_BACKEND: server:5000
+    depends_on:
+      - server
+  server:
+    build: ./server
+    ports:
+      - 5000:5000
+    environment:
+      DB_URL: mongodb://db/ieducate
+    depends_on:
+      - db
+    image: server-ieducate
+    command: ./entrypoint.sh
+  db:
+    image: mongo:4.0-xenial
+    ports:
+      - 27017:27017
